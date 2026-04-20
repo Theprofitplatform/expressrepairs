@@ -22,12 +22,12 @@ const ISSUES = [
 ];
 
 const REPAIR_CARDS = [
-  { id: 'screen', title: 'Screen Repair', desc: 'Cracked or shattered? Back to mint in under an hour.', from: 'from $99', img: 'https://images.unsplash.com/photo-1585338107529-13afc5f02586?w=1200&q=80', tag: 'Most Popular', size: 'hero' },
-  { id: 'battery', title: 'Battery Replacement', desc: 'Fresh cells so you stop chasing power outlets.', from: 'from $59', img: 'https://images.unsplash.com/photo-1609692814857-1bb94b8b3e2b?w=900&q=80', size: 'tall' },
-  { id: 'backglass', title: 'Back Glass', desc: 'Restore the finish — no shards, no sharp edges.', from: 'from $69', img: 'https://images.unsplash.com/photo-1511707171634-5f897ff02aa9?w=700&q=80', size: 'small' },
-  { id: 'port', title: 'Charging Port', desc: 'Finicky cable? We clean or replace it, fast.', from: 'from $49', img: 'https://images.unsplash.com/photo-1583863788434-e58a36330cf0?w=700&q=80', size: 'small' },
-  { id: 'other', title: 'Other Repairs', desc: 'Water damage, speakers, cameras — we\'ve seen it all.', from: 'custom quote', img: 'https://images.unsplash.com/photo-1592434134753-a70baf7979d5?w=1100&q=80', size: 'wide' },
-  { id: 'diagnostic', title: 'Free Diagnostic', desc: 'Not sure what\'s wrong? Bring it in, no charge.', from: 'free', img: 'https://images.unsplash.com/photo-1580910051074-3eb694886505?w=700&q=80', tag: 'Free', size: 'small' },
+  { id: 'screen', title: 'Screen Repair', desc: 'Cracked or shattered? Back to mint in under an hour.', from: 'from $99', img: '/images/screen-repair.jpg', tag: 'Most Popular', size: 'hero' },
+  { id: 'battery', title: 'Battery Replacement', desc: 'Fresh cells so you stop chasing power outlets.', from: 'from $59', img: '/images/battery-repair.jpg', size: 'tall' },
+  { id: 'backglass', title: 'Back Glass', desc: 'Restore the finish — no shards, no sharp edges.', from: 'from $69', img: '/images/glass-repair.jpg', size: 'small' },
+  { id: 'port', title: 'Charging Port', desc: 'Finicky cable? We clean or replace it, fast.', from: 'from $49', img: '/images/port-repair.jpg', size: 'small' },
+  { id: 'other', title: 'Other Repairs', desc: 'Water damage, speakers, cameras — we\'ve seen it all.', from: 'custom quote', img: '/images/other-repairs.jpg', size: 'wide' },
+  { id: 'diagnostic', title: 'Free Diagnostic', desc: 'Not sure what\'s wrong? Bring it in, no charge.', from: 'free', img: '/images/diagnostic.jpg', tag: 'Free', size: 'small' },
 ];
 
 const SIM_PLANS = [
@@ -47,12 +47,12 @@ const HANDSET_PLANS = [
 ];
 
 const ACCESSORIES = [
-  { title: 'Protective Cases', desc: 'Drop-tested for every phone model.', price: 'from $19', img: 'https://images.unsplash.com/photo-1603313011108-4f10d7bb1b25?w=800&q=80', tag: 'New' },
-  { title: 'Screen Protectors', desc: 'Tempered glass, fitted in-store.', price: 'from $15', img: 'https://images.unsplash.com/photo-1550399105-c4db5fb85c18?w=800&q=80' },
-  { title: 'Wireless Earbuds', desc: 'Big sound, smaller price.', price: 'from $39', img: 'https://images.unsplash.com/photo-1590658268037-6bf12165a8df?w=800&q=80' },
-  { title: 'Fast Chargers', desc: 'USB-C PD up to 65W.', price: 'from $25', img: 'https://images.unsplash.com/photo-1583863788434-e58a36330cf0?w=800&q=80', tag: 'Sale' },
-  { title: 'Charging Cables', desc: 'USB-C, Lightning, Micro USB.', price: 'from $9', img: 'https://images.unsplash.com/photo-1618410320928-25228d811631?w=800&q=80' },
-  { title: 'Power Banks', desc: '10,000mAh — a full day off-grid.', price: 'from $35', img: 'https://images.unsplash.com/photo-1609091839311-d5365f9ff1c5?w=800&q=80' },
+  { title: 'Protective Cases', desc: 'Drop-tested for every phone model.', price: 'from $19', img: '/images/case-1.jpg', tag: 'New' },
+  { title: 'Screen Protectors', desc: 'Tempered glass, fitted in-store.', price: 'from $15', img: '/images/protector-1.jpg' },
+  { title: 'Wireless Earbuds', desc: 'Big sound, smaller price.', price: 'from $39', img: '/images/earbuds-1.jpg' },
+  { title: 'Fast Chargers', desc: 'USB-C PD up to 65W.', price: 'from $25', img: '/images/charger-1.jpg', tag: 'Sale' },
+  { title: 'Charging Cables', desc: 'USB-C, Lightning, Micro USB.', price: 'from $9', img: '/images/cable-1.jpg' },
+  { title: 'Power Banks', desc: '10,000mAh — a full day off-grid.', price: 'from $35', img: '/images/powerbank-1.jpg' },
 ];
 
 const BRAND_TILES = [
