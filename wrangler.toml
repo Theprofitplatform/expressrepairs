@@ -1,0 +1,10 @@
+# Cloudflare Pages config for expressrepairs.com.au
+#
+# IMPORTANT: `name` MUST match the EXISTING Pages project on the Cloudflare
+# account, or `wrangler pages deploy` will create a DUPLICATE project that is
+# NOT bound to the domain. After `wrangler login`, run:
+#     npx wrangler pages project list
+# and set `name` below to whatever already serves expressrepairs.com.au.
+name = "expressrepairs"
+compatibility_date = "2026-06-09"
+pages_build_output_dir = "public"

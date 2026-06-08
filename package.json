@@ -1,0 +1,15 @@
+{
+  "name": "expressrepairs",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Landing site for expressrepairs.com.au — no-build React SPA on Cloudflare Pages",
+  "scripts": {
+    "whoami": "wrangler whoami",
+    "projects": "wrangler pages project list",
+    "dev": "wrangler pages dev public",
+    "deploy": "wrangler pages deploy public"
+  },
+  "devDependencies": {
+    "wrangler": "^4"
+  }
+}
