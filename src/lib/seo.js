@@ -1,5 +1,6 @@
-import { dayName, parseTimeToMinutes } from './hours.js';
+import { dayName, parseTimeToMinutes, splitHoursRange } from './hours.js';
 
+// Keep in sync with the `site` field in astro.config.mjs.
 export const SITE_URL = 'https://expressrepairs.com.au';
 
 export function canonical(path = '/') {
@@ -33,7 +34,7 @@ export function localBusinessSchema(site, hours) {
     },
     geo: { '@type': 'GeoCoordinates', latitude: site.geo.lat, longitude: site.geo.lng },
     openingHoursSpecification: hours.map((h) => {
-      const [open, close] = h.hrs.split(' – ');
+      const [open, close] = splitHoursRange(h.hrs);
       return {
         '@type': 'OpeningHoursSpecification',
         dayOfWeek: dayName(h.dow),

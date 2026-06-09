@@ -1,5 +1,17 @@
 const DAYS = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
 
+// space + EN DASH (U+2013) + space — matches the hrs format in src/data/content.js
+const HOURS_SEP = ' – ';
+
+// Split a "9:00 AM – 6:00 PM" range into [open, close]; throws if malformed.
+export function splitHoursRange(hrs) {
+  const parts = String(hrs).split(HOURS_SEP);
+  if (parts.length !== 2) {
+    throw new Error(`Malformed hours range (expected "open – close"): "${hrs}"`);
+  }
+  return parts;
+}
+
 export function dayName(dow) {
   return DAYS[dow];
 }
@@ -25,7 +37,7 @@ export function parseHourTo24(s) {
 export function isOpenAt(date, hours) {
   const row = hours.find((h) => h.dow === date.getDay());
   if (!row) return false;
-  const [openPart, closePart] = row.hrs.split(' – ');
+  const [openPart, closePart] = splitHoursRange(row.hrs);
   const open = parseTimeToMinutes(openPart);
   const close = parseTimeToMinutes(closePart);
   if (open === null || close === null) return false;

@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { parseHourTo24, parseTimeToMinutes, dayName, isOpenAt } from '../src/lib/hours.js';
+import { parseHourTo24, parseTimeToMinutes, dayName, isOpenAt, splitHoursRange } from '../src/lib/hours.js';
 import { HOURS } from '../src/data/content.js';
 
 describe('hours helpers', () => {
@@ -34,5 +34,10 @@ describe('hours helpers', () => {
     // Monday 9:00 AM – 6:00 PM
     expect(isOpenAt(new Date('2026-06-08T09:00:00'), HOURS)).toBe(true);
     expect(isOpenAt(new Date('2026-06-08T18:00:00'), HOURS)).toBe(false);
+  });
+
+  it('splitHoursRange returns [open, close] and throws on malformed input', () => {
+    expect(splitHoursRange('9:00 AM – 6:00 PM')).toEqual(['9:00 AM', '6:00 PM']);
+    expect(() => splitHoursRange('9:00 AM to 6:00 PM')).toThrow();
   });
 });
