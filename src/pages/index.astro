@@ -1,7 +1,20 @@
 ---
 import Layout from '../layouts/Layout.astro';
 import App from '../components/App.jsx';
+import { localBusinessSchema, faqPageSchema } from '../lib/seo.js';
+import { SITE } from '../data/site.js';
+import { FAQS, HOURS } from '../data/content.js';
+
+const schema = [localBusinessSchema(SITE, HOURS), faqPageSchema(FAQS)];
+const description =
+  'Same-day phone repairs in Sydney — screen, battery, charging port and more, backed by a 6–12 month warranty. Free 20-second quote.';
 ---
-<Layout title="Express Repairs" description="Same-day phone repairs." path="/">
+<Layout
+  title="Express Repairs — Fast, trusted phone & device repairs"
+  description={description}
+  path="/"
+  schema={schema}
+  htmlAttrs={{ 'data-palette': 'electric-blue', 'data-herovariant': 'split', 'data-planstyle': 'cards', 'data-fontpair': 'mix', 'data-dark': 'false' }}
+>
   <App client:load />
 </Layout>
