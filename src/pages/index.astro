@@ -1,7 +1,6 @@
 ---
-const ok = true;
+import Layout from '../layouts/Layout.astro';
 ---
-<html lang="en">
-  <head><meta charset="utf-8" /><title>Express Repairs</title></head>
-  <body><h1>Astro is up{ok ? '' : '?'}</h1></body>
-</html>
+<Layout title="Express Repairs" description="Same-day phone repairs." path="/">
+  <h1>Layout works</h1>
+</Layout>

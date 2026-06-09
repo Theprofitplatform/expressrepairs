@@ -1,0 +1,46 @@
+---
+import '../styles/global.css';
+import { canonical } from '../lib/seo.js';
+
+const {
+  title,
+  description = '',
+  path = '/',
+  schema = [],          // array of JSON-LD objects
+  htmlAttrs = {},       // e.g. data-palette etc. carried from the original <html>
+} = Astro.props;
+
+if (!title) throw new Error('Layout.astro requires a `title` prop');
+
+const url = canonical(path);
+const jsonld = Array.isArray(schema) ? schema : [schema];
+---
+<!doctype html>
+<html lang="en" {...htmlAttrs}>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>{title}</title>
+    {description && <meta name="description" content={description} />}
+    <link rel="canonical" href={url} />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content={url} />
+    <meta property="og:title" content={title} />
+    {description && <meta property="og:description" content={description} />}
+    {/* TODO: add og:image once a real social share image exists (Phase 1 follow-up) */}
+    <meta name="twitter:card" content="summary_large_image" />
+
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=DM+Sans:wght@400;500;700&display=swap" />
+
+    {jsonld.map((obj) => (
+      <script type="application/ld+json" set:html={JSON.stringify(obj)} />
+    ))}
+  </head>
+  <body>
+    <slot />
+  </body>
+</html>
