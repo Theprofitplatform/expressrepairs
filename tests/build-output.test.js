@@ -19,8 +19,16 @@ describe('built homepage', () => {
     expect(html).toContain('rel="canonical" href="https://expressrepairs.com.au/"');
   });
   it('server-renders core content (not a blank SPA shell)', () => {
-    expect(html).toContain('1300 373 773');
+    expect(html).toContain('(02) 9533 3300');
     expect(html).toContain('Get a free quote');
+  });
+  it('renders the real NAP (Riverwood Plaza, minute-accurate closes)', () => {
+    expect(html).toContain('Riverwood NSW 2210');
+    const lb = jsonLdBlocks(html).find((b) => b['@type'] === 'LocalBusiness');
+    expect(lb.address.addressLocality).toBe('Riverwood');
+    expect(lb.address.postalCode).toBe('2210');
+    const monday = lb.openingHoursSpecification.find((o) => o.dayOfWeek === 'Monday');
+    expect(monday.closes).toBe('17:30');
   });
   it('includes LocalBusiness and FAQ JSON-LD (parsed, order-independent)', () => {
     const types = jsonLdBlocks(html).map((b) => b['@type']);

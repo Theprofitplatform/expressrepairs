@@ -1,14 +1,15 @@
 import { siteSchema } from './schema.js';
 
-// NOTE: address/geo below are PLACEHOLDERS — replace with the real shop NAP at launch.
+// Real NAP — Mertel Pty Ltd (ABN 88 644 567 019) trading as Xpress Phone Repairs,
+// the former Metro Wireless Vodafone dealer at Riverwood Plaza.
 export const SITE = siteSchema.parse({
   name: 'Express Repairs',
-  phone: '1300 373 773',
-  phoneHref: 'tel:+611300373773',
-  addressLines: ['Shop 12, 100 Main Street', 'Sydney NSW 2000'],
-  addressShort: '100 Main Street, Sydney NSW 2000',
-  mapsQuery: '100 Main Street Sydney',
+  phone: '(02) 9533 3300',
+  phoneHref: 'tel:+61295333300',
+  addressLines: ['Shop 7C, Riverwood Plaza, 247-267 Belmore Rd', 'Riverwood NSW 2210'],
+  addressShort: 'Riverwood Plaza, 247-267 Belmore Rd, Riverwood NSW 2210',
+  mapsQuery: 'Riverwood Plaza 247-267 Belmore Rd Riverwood NSW 2210',
   tagline: 'Same-day phone repairs done right',
-  address: { locality: 'Sydney', region: 'NSW', postalCode: '2000', country: 'AU' },
-  geo: { lat: -33.8688, lng: 151.2093 },
+  address: { locality: 'Riverwood', region: 'NSW', postalCode: '2210', country: 'AU' },
+  geo: { lat: -33.9522, lng: 151.051 },
 });
