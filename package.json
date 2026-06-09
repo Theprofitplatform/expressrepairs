@@ -2,14 +2,28 @@
   "name": "expressrepairs",
   "version": "0.1.0",
   "private": true,
-  "description": "Landing site for expressrepairs.com.au — no-build React SPA on Cloudflare Pages",
+  "type": "module",
+  "description": "Astro site for expressrepairs.com.au on Cloudflare Pages",
   "scripts": {
+    "dev": "astro dev",
+    "build": "astro build",
+    "preview": "astro preview",
+    "test": "vitest run",
+    "test:watch": "vitest",
     "whoami": "wrangler whoami",
     "projects": "wrangler pages project list",
-    "dev": "wrangler pages dev public",
-    "deploy": "wrangler pages deploy public"
+    "deploy": "astro build && wrangler pages deploy dist"
+  },
+  "dependencies": {
+    "astro": "^5.0.0",
+    "@astrojs/react": "^4.0.0",
+    "@astrojs/sitemap": "^3.2.0",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1",
+    "zod": "^3.23.0"
   },
   "devDependencies": {
+    "vitest": "^2.1.0",
     "wrangler": "^4"
   }
 }
