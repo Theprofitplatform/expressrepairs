@@ -1,6 +1,7 @@
 ---
 import Layout from '../layouts/Layout.astro';
+import App from '../components/App.jsx';
 ---
 <Layout title="Express Repairs" description="Same-day phone repairs." path="/">
-  <h1>Layout works</h1>
+  <App client:load />
 </Layout>
