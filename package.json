@@ -3,7 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "type": "module",
-  "description": "Astro site for expressrepairs.com.au on Cloudflare Pages",
+  "description": "Astro site for expressrepairs.com.au on Cloudflare Workers",
   "scripts": {
     "dev": "astro dev",
     "build": "astro build",
@@ -11,8 +11,8 @@
     "test": "vitest run",
     "test:watch": "vitest",
     "whoami": "wrangler whoami",
-    "projects": "wrangler pages project list",
-    "deploy": "astro build && wrangler pages deploy dist"
+    "deployments": "wrangler deployments list",
+    "deploy": "astro build && wrangler deploy"
   },
   "dependencies": {
     "astro": "^5.0.0",
