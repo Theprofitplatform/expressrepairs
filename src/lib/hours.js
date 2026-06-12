@@ -34,9 +34,14 @@ export function parseHourTo24(s) {
   return mins === null ? 0 : Math.floor(mins / 60);
 }
 
+// True when the day has a real time range (i.e. not "Closed").
+export function isTradingDay(hrs) {
+  return String(hrs).includes(HOURS_SEP);
+}
+
 export function isOpenAt(date, hours) {
   const row = hours.find((h) => h.dow === date.getDay());
-  if (!row) return false;
+  if (!row || !isTradingDay(row.hrs)) return false;
   const [openPart, closePart] = splitHoursRange(row.hrs);
   const open = parseTimeToMinutes(openPart);
   const close = parseTimeToMinutes(closePart);

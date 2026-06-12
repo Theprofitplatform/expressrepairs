@@ -1,0 +1,96 @@
+---
+import Layout from '../../layouts/Layout.astro';
+import SiteNav from '../../components/SiteNav.astro';
+import SiteFooter from '../../components/SiteFooter.astro';
+import MobileCta from '../../components/MobileCta.astro';
+import CtaBand from '../../components/CtaBand.astro';
+import { POSTS } from '../../data/posts.js';
+import { SITE } from '../../data/site.js';
+import { canonical } from '../../lib/seo.js';
+
+export function getStaticPaths() {
+  return POSTS.filter((p) => p.slug).map((post) => ({ params: { slug: post.slug }, props: { post } }));
+}
+
+const { post } = Astro.props;
+const path = `/blog/${post.slug}/`;
+
+const navLinks = [
+  { label: 'Repairs', href: '/repairs/' },
+  { label: 'Screen Repair', href: '/repairs/screen/' },
+  { label: 'Blog', href: '/blog/' },
+];
+
+const schema = [
+  {
+    '@context': 'https://schema.org',
+    '@type': 'BlogPosting',
+    headline: post.title,
+    datePublished: post.dateISO,
+    image: `${canonical('/').replace(/\/$/, '')}${post.img}`,
+    author: { '@type': 'Organization', name: SITE.name },
+    publisher: { '@type': 'Organization', name: SITE.name },
+    mainEntityOfPage: canonical(path),
+  },
+  {
+    '@context': 'https://schema.org',
+    '@type': 'BreadcrumbList',
+    itemListElement: [
+      { '@type': 'ListItem', position: 1, name: 'Blog', item: canonical('/blog/') },
+      { '@type': 'ListItem', position: 2, name: post.title, item: canonical(path) },
+    ],
+  },
+];
+---
+<Layout
+  title={`${post.title} | Express Repairs`}
+  description={post.excerpt}
+  path={path}
+  schema={schema}
+  htmlAttrs={{ 'data-palette': 'electric-blue', 'data-fontpair': 'jakarta', 'data-dark': 'false' }}
+>
+  <SiteNav links={navLinks} ctaHref="/repairs/screen/" />
+
+  <article>
+    <div class="article-hero">
+      <div class="container-wide">
+        <div class="article-head">
+          <nav class="breadcrumb" aria-label="Breadcrumb">
+            <a href="/">Home</a>
+            <span class="crumb-sep">/</span>
+            <a href="/blog/">Blog</a>
+            <span class="crumb-sep">/</span>
+            <span class="crumb-current">{post.tag}</span>
+          </nav>
+          <div class="post-meta">
+            <span class="post-tag">{post.tag}</span>
+            <span>{post.date}</span>
+            <span class="meta-dot">·</span>
+            <span>{post.read}</span>
+          </div>
+          <h1 class="article-title">{post.title}</h1>
+          <p class="article-lede">{post.lede}</p>
+        </div>
+        <div class="article-hero-img" style={`background-image: url('${post.img}');`}></div>
+      </div>
+    </div>
+
+    <div class="container-wide">
+      <div class="article-body" set:html={post.body}></div>
+      <div class="article-foot">
+        <span>Written by the Express Repairs team · Riverwood, Sydney</span>
+        <a href="/blog/" style="color: var(--brand-700); font-weight: 700;">← All posts</a>
+      </div>
+    </div>
+  </article>
+
+  <CtaBand
+    title="Cracked screen? Fixed by this afternoon."
+    sub="Free diagnostic at Riverwood Plaza — price confirmed before we start."
+    secondaryLabel="See pricing"
+    secondaryHref="/repairs/screen/"
+  />
+
+  <SiteFooter />
+  <MobileCta />
+</Layout>

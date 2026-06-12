@@ -1,5 +1,6 @@
 import { describe, it, expect } from 'vitest';
 import { canonical, localBusinessSchema, faqPageSchema, breadcrumbSchema } from '../src/lib/seo.js';
+import { isTradingDay } from '../src/lib/hours.js';
 import { SITE } from '../src/data/site.js';
 import { FAQS, HOURS } from '../src/data/content.js';
 
@@ -21,8 +22,9 @@ describe('localBusinessSchema()', () => {
     expect(s.address['@type']).toBe('PostalAddress');
     expect(s.address.addressRegion).toBe(SITE.address.region);
   });
-  it('emits one openingHours entry per day', () => {
-    expect(s.openingHoursSpecification).toHaveLength(HOURS.length);
+  it('emits one openingHours entry per trading day (closed days omitted)', () => {
+    const tradingDays = HOURS.filter((h) => isTradingDay(h.hrs)).length;
+    expect(s.openingHoursSpecification).toHaveLength(tradingDays);
     expect(s.openingHoursSpecification[0].dayOfWeek).toBeTruthy();
   });
 });

@@ -56,7 +56,7 @@ export function WhyUs() {
             <div style={{display:'flex', gap:16, marginTop:22, flexWrap:'wrap'}}>
               <div style={{padding:'12px 16px', background:'var(--ink-25)', borderRadius:12, border:'1px solid var(--border)'}}>
                 <div style={{fontSize:12, color:'var(--text-muted)', fontWeight:600}}>Walk-ins</div>
-                <div style={{fontSize:13, marginTop:2}}>Welcome · Open 7 days</div>
+                <div style={{fontSize:13, marginTop:2}}>Welcome · Mon–Sat</div>
               </div>
               <div style={{padding:'12px 16px', background:'var(--ink-25)', borderRadius:12, border:'1px solid var(--border)'}}>
                 <div style={{fontSize:12, color:'var(--text-muted)', fontWeight:600}}>Call anytime</div>
@@ -239,7 +239,7 @@ export function Store() {
             <div style={{position:'absolute', inset:0, display:'grid', placeItems:'center'}}>
               <div style={{textAlign:'center', padding:'24px 32px', background:'var(--surface)', border:'1px solid var(--border)', borderRadius:18, boxShadow:'var(--shadow-md)', maxWidth:300}}>
                 <div style={{width:48, height:48, borderRadius:'50%', background:'var(--brand-600)', color:'#fff', display:'grid', placeItems:'center', margin:'0 auto 12px'}}><Icon.Pin size={22}/></div>
-                <div style={{fontWeight:800, fontSize:18}}>{SITE.name}</div>
+                <div style={{fontWeight:800, fontSize:18, lineHeight:1.25}}>{SITE.storeName}<span style={{display:'block', fontWeight:600, fontSize:13, color:'var(--text-muted)', marginTop:3}}>{SITE.storeSub}</span></div>
                 <div style={{fontSize:13, color:'var(--text-muted)', marginTop:2}}>{SITE.addressShort}</div>
                 <a href={`https://maps.google.com/?q=${encodeURIComponent(SITE.mapsQuery)}`} target="_blank" rel="noreferrer" className="btn btn-primary btn-sm" style={{marginTop:14}}>Open in Maps <Icon.ArrowRight size={12}/></a>
               </div>
@@ -296,7 +296,7 @@ export function Contact() {
                 <div className="store-icon"><Icon.Clock size={18}/></div>
                 <div>
                   <div className="store-row-title">Opening hours</div>
-                  <div className="store-row-body">Mon–Fri 9AM – 6PM · Sat 9AM – 5PM · Sun 10AM – 2PM</div>
+                  <div className="store-row-body">Mon–Fri 9AM – 6PM (Thu to 7) · Sat 9AM – 5PM · Sun closed</div>
                 </div>
               </div>
             </div>

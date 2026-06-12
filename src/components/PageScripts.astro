@@ -1,0 +1,30 @@
+---
+// Shared client behaviour for static pages: FAQ accordion + live "today's hours"
+// and open-now status. Drives #today-hours and #open-status when present.
+---
+<script>
+  import { HOURS } from '../data/content.js';
+  import { isOpenNow } from '../lib/hours.js';
+
+  // FAQ accordion — single-open, matching the prototype.
+  document.querySelectorAll('.faq-q').forEach((btn) => {
+    btn.addEventListener('click', () => {
+      const item = btn.closest('.faq-item');
+      const isOpen = item.getAttribute('data-open') === 'true';
+      document.querySelectorAll('.faq-item').forEach((i) => i.setAttribute('data-open', 'false'));
+      item.setAttribute('data-open', String(!isOpen));
+    });
+  });
+
+  // Today's hours + open-now status from the single source of truth.
+  const now = new Date();
+  const today = HOURS.find((h) => h.dow === now.getDay());
+  const todayEl = document.getElementById('today-hours');
+  if (todayEl && today) todayEl.textContent = today.hrs;
+  const status = document.getElementById('open-status');
+  if (status) {
+    const open = isOpenNow(HOURS);
+    status.textContent = open ? '● Open now' : '○ Closed';
+    status.style.color = open ? '#16a34a' : 'var(--text-muted)';
+  }
+</script>

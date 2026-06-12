@@ -26,13 +26,14 @@ export const FAQS = z.array(faqSchema).parse([
   { q: 'What payment methods do you accept?', a: 'Cash, all major credit cards (Visa, Mastercard, Amex), debit cards, and digital payments including Apple Pay and Google Pay.' },
 ]);
 
-// Real trading hours — Riverwood Plaza shop (Thu late-night trading).
+// Real trading hours — Riverwood Plaza shop. Weekdays 9–6, Thu late-night to 7,
+// Sat 9–5, closed Sunday (confirmed by Avi). 'Closed' days carry no time range.
 export const HOURS = z.array(hoursSchema).parse([
-  { day: 'Monday', hrs: '9:00 AM – 5:30 PM', dow: 1 },
-  { day: 'Tuesday', hrs: '9:00 AM – 5:30 PM', dow: 2 },
-  { day: 'Wednesday', hrs: '9:00 AM – 5:30 PM', dow: 3 },
-  { day: 'Thursday', hrs: '9:00 AM – 9:00 PM', dow: 4 },
-  { day: 'Friday', hrs: '9:00 AM – 5:30 PM', dow: 5 },
-  { day: 'Saturday', hrs: '9:00 AM – 5:30 PM', dow: 6 },
-  { day: 'Sunday', hrs: '10:00 AM – 4:00 PM', dow: 0 },
+  { day: 'Monday', hrs: '9:00 AM – 6:00 PM', dow: 1 },
+  { day: 'Tuesday', hrs: '9:00 AM – 6:00 PM', dow: 2 },
+  { day: 'Wednesday', hrs: '9:00 AM – 6:00 PM', dow: 3 },
+  { day: 'Thursday', hrs: '9:00 AM – 7:00 PM', dow: 4 },
+  { day: 'Friday', hrs: '9:00 AM – 6:00 PM', dow: 5 },
+  { day: 'Saturday', hrs: '9:00 AM – 5:00 PM', dow: 6 },
+  { day: 'Sunday', hrs: 'Closed', dow: 0 },
 ]);

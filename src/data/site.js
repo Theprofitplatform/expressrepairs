@@ -4,6 +4,9 @@ import { siteSchema } from './schema.js';
 // the former Metro Wireless Vodafone dealer at Riverwood Plaza.
 export const SITE = siteSchema.parse({
   name: 'Express Repairs',
+  // Store-location display name (Avi's correction) — distinct from the brand name.
+  storeName: 'Xpress Phone Repairs Riverwood',
+  storeSub: 'Inside Metro Wireless Store',
   phone: '(02) 9533 3300',
   phoneHref: 'tel:+61295333300',
   addressLines: ['Shop 7C, Riverwood Plaza, 247-267 Belmore Rd', 'Riverwood NSW 2210'],

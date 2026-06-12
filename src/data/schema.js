@@ -53,6 +53,8 @@ export const hoursSchema = z.object({ day: z.string(), hrs: z.string(), dow: z.n
 
 export const siteSchema = z.object({
   name: z.string(),
+  storeName: z.string(),
+  storeSub: z.string(),
   phone: z.string(),
   phoneHref: z.string().startsWith('tel:'),
   addressLines: z.array(z.string()).min(1),
