@@ -8,6 +8,56 @@ import { REPAIR_CARDS } from '../data/services.js';
 import { SIM_PLANS, HANDSET_PLANS } from '../data/plans.js';
 import { ACCESSORIES } from '../data/accessories.js';
 
+// International-call inclusions (shown in the Plans modal).
+const INTL_UNLIMITED = [
+  ['🇧🇩','Bangladesh'],['🇨🇦','Canada'],['🇨🇴','Colombia'],['🇬🇷','Greece'],['🇮🇳','India'],
+  ['🇯🇵','Japan'],['🇳🇿','New Zealand'],['🇸🇬','Singapore'],['🇹🇭','Thailand'],['🇺🇸','USA'],
+  ['🇧🇷','Brazil'],['🇨🇳','China'],['🇩🇰','Denmark'],['🇭🇰','Hong Kong'],['🇮🇪','Ireland'],
+  ['🇲🇾','Malaysia'],['🇳🇴','Norway'],['🇰🇷','South Korea'],['🇬🇧','UK'],['🇻🇳','Vietnam'],
+];
+const INTL_LIMITED = [
+  ['🇰🇭','Cambodia'],['🇨🇾','Cyprus'],['🇪🇬','Egypt'],['🇩🇪','Germany'],['🇮🇹','Italy'],
+  ['🇲🇺','Mauritius'],['🇳🇬','Nigeria'],['🇵🇭','Philippines'],['🇪🇸','Spain'],['🇹🇼','Taiwan'],
+  ['🇨🇱','Chile'],['🇨🇿','Czechia'],['🇫🇷','France'],['🇮🇩','Indonesia'],['🇱🇧','Lebanon'],
+  ['🇳🇵','Nepal'],['🇵🇰','Pakistan'],['🇷🇴','Romania'],['🇱🇰','Sri Lanka'],['🇹🇷','Turkey'],
+];
+
+function IntlCallModal({ open, onClose }) {
+  React.useEffect(() => {
+    if (!open) return;
+    const onKey = (e) => { if (e.key === 'Escape') onClose(); };
+    document.addEventListener('keydown', onKey);
+    return () => document.removeEventListener('keydown', onKey);
+  }, [open, onClose]);
+
+  return (
+    <div className="intl-modal-overlay" data-open={open} role="dialog" aria-modal="true" aria-labelledby="intl-modal-title"
+      onClick={(e) => { if (e.target === e.currentTarget) onClose(); }}>
+      <div className="intl-modal">
+        <div className="intl-modal-head">
+          <div className="intl-modal-title" id="intl-modal-title">International Call Inclusions</div>
+          <button type="button" className="intl-modal-close" aria-label="Close" onClick={onClose}>✕</button>
+        </div>
+        <div className="intl-modal-body">
+          <div className="intl-subhead"><span className="intl-badge">Unlimited</span> Calls to these 20 countries</div>
+          <div className="intl-grid">
+            {INTL_UNLIMITED.map(([flag, name]) => (
+              <div key={name} className="intl-country"><span className="intl-flag">{flag}</span>{name}</div>
+            ))}
+          </div>
+          <div className="intl-subhead"><span className="intl-badge limited">Limited</span> Calls to these 20 countries</div>
+          <div className="intl-grid">
+            {INTL_LIMITED.map(([flag, name]) => (
+              <div key={name} className="intl-country"><span className="intl-flag">{flag}</span>{name}</div>
+            ))}
+          </div>
+          <p className="intl-modal-note">Inclusions vary by plan — plans marked “International calling (20 countries)” include the unlimited list. Ask in-store or call <a href={SITE.phoneHref} style={{color:'var(--brand-700)', fontWeight:700}}>{SITE.phone}</a> for details.</p>
+        </div>
+      </div>
+    </div>
+  );
+}
+
 // Top sections: Nav, Hero, Repairs, Plans, Accessories
 
 export function Nav() {
@@ -21,10 +71,10 @@ export function Nav() {
           {SITE.name}
         </a>
         <nav className="nav-links">
-          <a href="#repairs">Repairs</a>
+          <a href="/repairs/">Repairs</a>
           <a href="#plans">Plans</a>
           <a href="#accessories">Accessories</a>
-          <a href="#reviews">Reviews</a>
+          <a href="/blog/">Blog</a>
           <a href="#visit">Visit</a>
           <a href="#faq">FAQ</a>
         </nav>
@@ -51,7 +101,7 @@ export function Hero() {
           <div>
             <span className="hero-badge">
               <span className="hero-badge-pill">Express</span>
-              <span>Open 7 days · Same-day repairs</span>
+              <span>Open Mon–Sat · Same-day repairs</span>
             </span>
             <h1 className="hero-title">
               Your phone, <em>fixed fast</em>, by people you can actually talk to.
@@ -107,6 +157,16 @@ export function Hero() {
   );
 }
 
+// Map homepage bento cards to their service-page routes.
+const REPAIR_HREF = {
+  screen: '/repairs/screen/',
+  battery: '/repairs/battery/',
+  backglass: '/repairs/back-glass/',
+  port: '/repairs/charging-port/',
+  other: '/repairs/water-damage/',
+  diagnostic: '/repairs/',
+};
+
 export function RepairServices() {
   return (
     <section className="section" id="repairs">
@@ -117,7 +177,7 @@ export function RepairServices() {
 
         <div className="bento-grid">
           {REPAIR_CARDS.map((r) => (
-            <a key={r.id} href="#booking" className={`bento-card bento-${r.size}`}>
+            <a key={r.id} href={REPAIR_HREF[r.id] || '#booking'} className={`bento-card bento-${r.size}`}>
               <div className="bento-img" style={{backgroundImage: `url(${r.img})`}} />
               <div className="bento-overlay" />
               {r.tag && <span className={`bento-badge ${r.tag.includes('Popular') ? 'pop' : r.tag === 'Free' ? 'free' : ''}`}>{r.tag}</span>}
@@ -139,6 +199,7 @@ export function RepairServices() {
 
 export function Plans() {
   const [mode, setMode] = useState('sim');
+  const [intlOpen, setIntlOpen] = useState(false);
   const plans = mode === 'sim' ? SIM_PLANS : HANDSET_PLANS;
   return (
     <section className="section" id="plans" style={{background:'var(--bg-soft)'}}>
@@ -176,10 +237,18 @@ export function Plans() {
           ))}
         </div>
 
+        <div style={{display:'flex', justifyContent:'center', marginTop:32}}>
+          <button type="button" className="btn btn-ghost" onClick={() => setIntlOpen(true)}>
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>
+            International call inclusions
+          </button>
+        </div>
+
         <p className="plan-footer-note">
           All plans include unlimited talk &amp; text to standard numbers, data banking, and data gifting. Call <a href={SITE.phoneHref} style={{color:'var(--brand-700)', fontWeight:700}}>{SITE.phone}</a> or visit us in-store.
         </p>
       </div>
+      <IntlCallModal open={intlOpen} onClose={() => setIntlOpen(false)} />
     </section>
   );
 }
