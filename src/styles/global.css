@@ -568,7 +568,9 @@ input, select, textarea { font-family: inherit; font-size: inherit; color: inher
 .brand-tile:hover { border-color: var(--brand-500); transform: translateY(-2px); box-shadow: var(--shadow-sm); }
 .brand-tile-name { font-size: 15px; font-weight: 700; margin-top: 8px; }
 .brand-tile-sub { font-size: 12px; color: var(--text-muted); margin-top: 2px; }
-.brand-tile-logo { font-size: 28px; font-weight: 800; color: var(--brand-700); font-family: var(--font-display); }
+.brand-tile-logo { font-size: 28px; font-weight: 800; color: var(--brand-700); font-family: var(--font-display); height: 34px; display: flex; align-items: center; justify-content: center; }
+.brand-tile-logo svg { display: block; }
+.brand-wordmark { font-family: var(--font-display); font-weight: 800; font-size: 16px; letter-spacing: .04em; }
 
 /* ============ Features / why us ============ */
 .why-grid { display:grid; grid-template-columns: repeat(12, 1fr); gap: 20px; }
