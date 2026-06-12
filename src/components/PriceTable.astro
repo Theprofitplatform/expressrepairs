@@ -1,0 +1,35 @@
+---
+// Per-brand price table. Props: colLabel, note, rows ([{logo,name,models,price,time}]),
+// optional `compact` to drop the models column (used in-article).
+const { colLabel, note, rows = [], compact = false } = Astro.props;
+---
+<div class="price-table-wrap">
+  <table class="price-table">
+    <thead>
+      <tr>
+        <th>Brand</th>
+        {!compact && <th class="pt-models-col">Popular models</th>}
+        <th>{colLabel}</th>
+        <th class="pt-time-col">Turnaround</th>
+        {!compact && <th></th>}
+      </tr>
+    </thead>
+    <tbody>
+      {rows.map((r) => (
+        <tr>
+          <td><span class="pt-brand"><span class="pt-brand-logo">{r.logo}</span>{r.name}</span></td>
+          {!compact && <td class="pt-models-col"><span class="pt-models">{r.models}</span></td>}
+          <td><span class="pt-price"><span class="pt-from">from</span>${r.price}</span></td>
+          <td class="pt-time-col"><span class="pt-time">{r.time}</span></td>
+          {!compact && <td class="pt-cta"><a href="#cta" class="btn btn-ghost btn-sm">Quote</a></td>}
+        </tr>
+      ))}
+    </tbody>
+  </table>
+  {note && (
+    <div class="price-table-note">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="16" x2="12" y2="12"></line><line x1="12" y1="8" x2="12.01" y2="8"></line></svg>
+      {note}
+    </div>
+  )}
+</div>

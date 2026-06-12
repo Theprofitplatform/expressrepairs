@@ -1,0 +1,48 @@
+---
+import { SITE } from '../data/site.js';
+---
+<footer class="footer">
+  <div class="container-wide">
+    <div class="footer-grid">
+      <div class="footer-brand">
+        <div class="brand" style="color: #fff;">
+          <span class="brand-mark">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><rect x="7" y="2" width="10" height="20" rx="2"></rect><line x1="11" y1="18" x2="13" y2="18"></line></svg>
+          </span>
+          {SITE.name}
+        </div>
+        <p class="footer-desc">Your trusted local for phone repairs, plans, and accessories. Same-day service, 6–12 month warranty, honest prices.</p>
+      </div>
+      <div>
+        <h4>Repairs</h4>
+        <ul>
+          <li><a href="/repairs/screen/">Screen Repair</a></li>
+          <li><a href="/repairs/battery/">Battery Replacement</a></li>
+          <li><a href="/repairs/">All Repairs</a></li>
+          <li><a href="/#contact">Free Diagnostic</a></li>
+        </ul>
+      </div>
+      <div>
+        <h4>Areas</h4>
+        <ul>
+          <li><a href="/repairs/screen/riverwood/">Riverwood</a></li>
+          <li><a href="/repairs/battery/padstow/">Padstow</a></li>
+          <li><a href="/repairs/">Beverly Hills</a></li>
+          <li><a href="/repairs/">Hurstville</a></li>
+        </ul>
+      </div>
+      <div>
+        <h4>Contact</h4>
+        <ul>
+          <li><a href={SITE.phoneHref}>{SITE.phone}</a></li>
+          <li><a href="/#visit">{SITE.addressShort}</a></li>
+          <li><a href="/blog/">Blog</a></li>
+        </ul>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <div>© 2026 {SITE.name}. All rights reserved.</div>
+      <div>ABN on request</div>
+    </div>
+  </div>
+</footer>
