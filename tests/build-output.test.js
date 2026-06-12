@@ -28,7 +28,9 @@ describe('built homepage', () => {
     expect(lb.address.addressLocality).toBe('Riverwood');
     expect(lb.address.postalCode).toBe('2210');
     const monday = lb.openingHoursSpecification.find((o) => o.dayOfWeek === 'Monday');
-    expect(monday.closes).toBe('17:30');
+    expect(monday.closes).toBe('18:00');
+    // Sunday is closed → omitted from the opening-hours spec entirely.
+    expect(lb.openingHoursSpecification.find((o) => o.dayOfWeek === 'Sunday')).toBeUndefined();
   });
   it('includes LocalBusiness and FAQ JSON-LD (parsed, order-independent)', () => {
     const types = jsonLdBlocks(html).map((b) => b['@type']);

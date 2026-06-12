@@ -1,4 +1,4 @@
-import { dayName, parseTimeToMinutes, splitHoursRange } from './hours.js';
+import { dayName, parseTimeToMinutes, splitHoursRange, isTradingDay } from './hours.js';
 
 // Keep in sync with the `site` field in astro.config.mjs.
 export const SITE_URL = 'https://expressrepairs.com.au';
@@ -33,7 +33,8 @@ export function localBusinessSchema(site, hours) {
       addressCountry: site.address.country,
     },
     geo: { '@type': 'GeoCoordinates', latitude: site.geo.lat, longitude: site.geo.lng },
-    openingHoursSpecification: hours.map((h) => {
+    // Closed days are omitted from the spec (schema.org convention).
+    openingHoursSpecification: hours.filter((h) => isTradingDay(h.hrs)).map((h) => {
       const [open, close] = splitHoursRange(h.hrs);
       return {
         '@type': 'OpeningHoursSpecification',
