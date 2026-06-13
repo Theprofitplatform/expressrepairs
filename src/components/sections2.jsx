@@ -4,6 +4,7 @@ import { isOpenNow } from '../lib/hours.js';
 import { SITE } from '../data/site.js';
 import { HOURS, TESTIMONIALS, WARRANTIES, FAQS } from '../data/content.js';
 import { BRAND_TILES } from '../data/accessories.js';
+import { sendLead } from '../lib/sendLead.js';
 
 // Lower sections: Brands, WhyUs, Testimonials, Warranty, FAQ, Store, Contact, Footer
 
@@ -252,12 +253,14 @@ export function Store() {
 }
 
 export function Contact() {
-  const [form, setForm] = useState({ name:'', phone:'', email:'', model:'', type:'', details:'' });
+  const [form, setForm] = useState({ name:'', phone:'', email:'', model:'', type:'', details:'', company:'' });
   const [errors, setErrors] = useState({});
   const [sent, setSent] = useState(false);
+  const [sending, setSending] = useState(false);
+  const [sendError, setSendError] = useState('');
   const upd = (k, v) => setForm(f => ({...f, [k]: v}));
 
-  const submit = (e) => {
+  const submit = async (e) => {
     e.preventDefault();
     const errs = {};
     if (!form.name.trim()) errs.name = 'Please enter your name';
@@ -265,7 +268,14 @@ export function Contact() {
     if (form.email && !/^\S+@\S+\.\S+$/.test(form.email)) errs.email = 'Email looks off';
     if (!form.type) errs.type = 'Pick a repair type';
     setErrors(errs);
-    if (Object.keys(errs).length === 0) setSent(true);
+    if (Object.keys(errs).length > 0) return;
+
+    setSending(true);
+    setSendError('');
+    const res = await sendLead({ source: 'contact', ...form });
+    setSending(false);
+    if (res.ok) setSent(true);
+    else setSendError(`Sorry — that didn't send. Please call us on ${SITE.phone} and we'll sort it out.`);
   };
 
   return (
@@ -343,11 +353,20 @@ export function Contact() {
                 <label>Additional details <span style={{color:'var(--text-subtle)', fontWeight:400}}>(optional)</span></label>
                 <textarea rows="3" value={form.details} onChange={e => upd('details', e.target.value)} placeholder="Tell us what happened..."></textarea>
               </div>
+              {/* Honeypot — hidden from users, catches bots. */}
+              <input type="text" name="company" value={form.company} onChange={e => upd('company', e.target.value)}
+                tabIndex="-1" autoComplete="off" aria-hidden="true"
+                style={{position:'absolute', left:'-9999px', width:1, height:1, opacity:0}} />
               <div className="form-field full">
-                <button type="submit" className="btn btn-primary btn-lg btn-block">Get my free quote <Icon.ArrowRight /></button>
+                <button type="submit" className="btn btn-primary btn-lg btn-block" disabled={sending}>
+                  {sending ? 'Sending…' : <>Get my free quote <Icon.ArrowRight /></>}
+                </button>
               </div>
             </div>
 
+            {sendError && (
+              <div className="form-error" style={{marginTop:14}}>{sendError}</div>
+            )}
             {sent && (
               <div className="form-success">
                 <Icon.Check /> Thanks {form.name || 'mate'} — we'll be in touch within 30 min.

@@ -3,6 +3,7 @@ import { Icon, BrandLogo } from './icons.jsx';
 import { BRANDS } from '../data/brands.js';
 import { ISSUES } from '../data/services.js';
 import { SITE } from '../data/site.js';
+import { sendLead } from '../lib/sendLead.js';
 
 // Booking widget — 5 steps: brand → model → issue → quote → details
 
@@ -14,8 +15,10 @@ export function BookingWidget() {
   const [details, setDetails] = useState({ name: '', phone: '' });
   const [detailsErr, setDetailsErr] = useState({});
   const [submitted, setSubmitted] = useState(false);
+  const [sending, setSending] = useState(false);
+  const [sendError, setSendError] = useState('');
 
-  const reset = () => { setStep(0); setBrand(null); setModel(null); setIssue(null); setDetails({name:'',phone:''}); setDetailsErr({}); setSubmitted(false); };
+  const reset = () => { setStep(0); setBrand(null); setModel(null); setIssue(null); setDetails({name:'',phone:''}); setDetailsErr({}); setSubmitted(false); setSending(false); setSendError(''); };
 
   const price = (brand && issue) ? issue.basePrice[brand.id] : 0;
   const back = () => setStep(s => Math.max(s - 1, 0));
@@ -143,17 +146,32 @@ export function BookingWidget() {
                 </div>
 
                 <div style={{display:'flex', gap:10, marginTop:16}}>
-                  <button className="btn btn-primary btn-block" onClick={() => {
+                  <button className="btn btn-primary btn-block" disabled={sending} onClick={async () => {
                     const errs = {};
                     if (!details.name.trim()) errs.name = 'Please enter your name';
                     if (!details.phone.trim()) errs.phone = 'We need a number to call back';
                     else if (!/^[\d\s+()-]{8,}$/.test(details.phone.trim())) errs.phone = 'That phone number looks off';
                     setDetailsErr(errs);
-                    if (Object.keys(errs).length === 0) setSubmitted(true);
+                    if (Object.keys(errs).length > 0) return;
+
+                    setSending(true);
+                    setSendError('');
+                    const res = await sendLead({
+                      source: 'booking',
+                      name: details.name,
+                      phone: details.phone,
+                      model: `${brand.name} ${model}`,
+                      type: issue.label,
+                      quote: price > 0 ? `$${price}` : 'Free',
+                    });
+                    setSending(false);
+                    if (res.ok) setSubmitted(true);
+                    else setSendError(`Couldn't send your booking — please call us on ${SITE.phone}.`);
                   }}>
-                    Confirm booking <Icon.ArrowRight />
+                    {sending ? 'Sending…' : <>Confirm booking <Icon.ArrowRight /></>}
                   </button>
                 </div>
+                {sendError && <div className="form-error" style={{marginTop:10}}>{sendError}</div>}
                 <div className="quote-note" style={{marginTop:10}}>
                   By booking you agree to a friendly call-back — no spam, no obligation.
                 </div>
