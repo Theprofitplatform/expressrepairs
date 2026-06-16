@@ -2,7 +2,8 @@
 import '../styles/global.css';
 import '../styles/local-page.css';
 import '../styles/blog.css';
-import { canonical } from '../lib/seo.js';
+import { canonical, absoluteUrl } from '../lib/seo.js';
+import { SITE } from '../data/site.js';
 
 const {
   title,
@@ -10,39 +11,57 @@ const {
   path = '/',
   schema = [],          // array of JSON-LD objects
   htmlAttrs = {},       // e.g. data-palette etc. carried from the original <html>
+  ogType = 'website',   // 'article' for blog posts
+  image = SITE.image,   // share image path; defaults to the site share image
+  noindex = false,
 } = Astro.props;
 
 if (!title) throw new Error('Layout.astro requires a `title` prop');
 
 const url = canonical(path);
+const ogImage = image ? absoluteUrl(image) : null;
 const jsonld = Array.isArray(schema) ? schema : [schema];
+
+const FONTS_HREF =
+  'https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=DM+Sans:wght@400;500;600;700&display=swap';
 ---
 <!doctype html>
-<html lang="en" {...htmlAttrs}>
+<html lang="en-AU" {...htmlAttrs}>
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="theme-color" content="#0a66ff" />
     <title>{title}</title>
     {description && <meta name="description" content={description} />}
+    {noindex && <meta name="robots" content="noindex, nofollow" />}
     <link rel="canonical" href={url} />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
 
-    <meta property="og:type" content="website" />
+    <meta property="og:type" content={ogType} />
+    <meta property="og:site_name" content={SITE.name} />
+    <meta property="og:locale" content="en_AU" />
     <meta property="og:url" content={url} />
     <meta property="og:title" content={title} />
     {description && <meta property="og:description" content={description} />}
-    {/* TODO: add og:image once a real social share image exists (Phase 1 follow-up) */}
-    <meta name="twitter:card" content="summary_large_image" />
+    {ogImage && <meta property="og:image" content={ogImage} />}
+    <meta name="twitter:card" content={ogImage ? 'summary_large_image' : 'summary'} />
+    <meta name="twitter:title" content={title} />
+    {description && <meta name="twitter:description" content={description} />}
+    {ogImage && <meta name="twitter:image" content={ogImage} />}
 
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=DM+Sans:wght@400;500;600;700&display=swap" />
+    {/* Load fonts without blocking first paint; swap to all media once loaded. */}
+    <link rel="preload" as="style" href={FONTS_HREF} />
+    <link rel="stylesheet" href={FONTS_HREF} media="print" onload="this.media='all'" />
+    <noscript><link rel="stylesheet" href={FONTS_HREF} /></noscript>
 
     {jsonld.map((obj) => (
       <script type="application/ld+json" set:html={JSON.stringify(obj)} />
     ))}
   </head>
   <body>
+    <a href="#main-content" class="skip-link">Skip to content</a>
     <slot />
   </body>
 </html>

@@ -1,69 +1,69 @@
 # expressrepairs.com.au
 
-Landing site for **expressrepairs.com.au**, hosted on **Cloudflare** (DNS + proxy + serving).
-
-This repo was **reconstructed from the live site** on 2026-06-09 — the original source
-wasn't on this machine. It is a faithful mirror of what's currently served, wired for
-versioned deploys via Wrangler.
+Marketing + local-SEO site for **expressrepairs.com.au** (Xpress Phone Repairs,
+Riverwood Plaza). Built with **Astro 5**, deployed to **Cloudflare Pages**.
 
 ## What it is
 
-A **no-build static SPA**:
+A statically-generated **Astro 5** site with a few **React islands** for the
+interactive bits:
 
-- `public/index.html` loads React 18 (UMD) + Babel Standalone from `unpkg.com`
-- Six JSX files transformed **in the browser** (no bundler, no build step):
-  `data → icons → booking → sections → sections2 → app`
-- `public/styles.css` — all styling (~42 KB)
-- `public/robots.txt` — real file served at the root
-- `public/_redirects` — `/* /index.html 200` SPA fallback (reproduces the live
-  catch-all where every unknown path returns the app)
+- `src/pages/**` — routes. The homepage (`index.astro`) plus a programmatic
+  local-SEO family: `repairs/`, `repairs/[service]/`, `repairs/[service]/[suburb]/`,
+  and `blog/[slug]/`.
+- `src/components/*.astro` — static page chrome (nav, footer, CTA, price table).
+- `src/components/*.jsx` — React islands hydrated only where needed
+  (booking widget, plans toggle, FAQ accordion, contact form).
+- `src/data/*` — the single source of truth (Zod-validated): services, prices,
+  suburbs, posts, hours, business NAP, and schema.org definitions.
+- `functions/api/lead.js` — a Cloudflare **Pages Function** (`POST /api/lead`)
+  that emails contact/booking submissions to the shop via [Resend](https://resend.com).
+- `astro.config.mjs` — `@astrojs/react` + `@astrojs/sitemap`, `site` set to the
+  production URL, `build.format: 'directory'` (trailing-slash URLs).
 
-> Note: the live site loads React/Babel **development** builds and transpiles JSX
-> on every page load in the browser. That's fine for a small landing page but slow.
-> A future improvement is a real build step (Vite) — see below. Left as-is for now
-> to stay faithful to production.
+Build output goes to `dist/` (git-ignored).
 
-## Deploy (first time)
-
-You need the Cloudflare account that owns the domain.
-
-```bash
-# 1. Authenticate (opens a browser)
-npx wrangler login
-npx wrangler whoami
-
-# 2. Find the EXISTING project name that serves the domain.
-#    DO NOT skip this — deploying with the wrong name creates a duplicate
-#    Pages project that is NOT attached to expressrepairs.com.au.
-npx wrangler pages project list
-
-# 3. Set `name` in wrangler.toml to that exact project name, then:
-npm run deploy        # = wrangler pages deploy public
-```
-
-If `pages project list` is empty, the site is served by a **Worker**, not Pages —
-stop and check `npx wrangler deployments list`; the deploy path is different
-(`wrangler deploy` against the Worker, with these files as static assets).
-
-## Edit → ship workflow
+## Develop
 
 ```bash
-npm run dev           # local preview at http://localhost:8788
-# edit files in public/ ...
-git add -p && git commit -m "..."
-npm run deploy
+npm install
+npm run dev        # http://localhost:4321
+npm test           # vitest (data integrity, SEO helpers, hours, lead API, build output)
+npm run build      # static build → dist/
+npm run preview    # serve the built dist/
 ```
 
-## Local preview without Wrangler
+> Requires Node ≥ 20 (CI uses Node 22).
 
-Any static server works, e.g.:
+## Lead delivery (`/api/lead`)
 
-```bash
-npx serve public      # or: python3 -m http.server -d public 8000
-```
+The contact form and booking widget POST to `/api/lead`, which emails the lead
+to the shop via Resend. Configure these in the Cloudflare **Pages** project
+(Settings → Environment variables / Secrets):
 
-## Possible future improvement: real build
+| Variable          | Required | Notes                                              |
+| ----------------- | -------- | -------------------------------------------------- |
+| `RESEND_API_KEY`  | yes      | Resend API key (secret).                           |
+| `LEAD_TO_EMAIL`   | no       | Recipient. Defaults to `sales@funcovers.com.au`.   |
+| `LEAD_FROM_EMAIL` | no       | Sender on a **Resend-verified** domain.            |
 
-Move JSX to a Vite app so React/Babel aren't shipped to the browser:
-smaller payload, faster first paint, type-checking. Non-trivial refactor — only
-worth it if the site grows beyond a landing page.
+Until `RESEND_API_KEY` is set the endpoint returns `503` and the form shows a
+"please call us" fallback — it never silently swallows a lead.
+
+## Deploy
+
+Production is the Cloudflare **Pages** project **`expressrepairs`**; the custom
+domain `expressrepairs.com.au` is attached there.
+
+- **Automatic (normal path):** every push to `main` runs
+  `.github/workflows/deploy.yml`, which builds and runs
+  `wrangler pages deploy dist --project-name expressrepairs --branch main`.
+  Requires repo secrets `CLOUDFLARE_API_TOKEN` and `CLOUDFLARE_ACCOUNT_ID`.
+- **Manual:** `npm run deploy` (same command; needs `wrangler login` or the
+  Cloudflare env vars).
+
+> ⚠️ Do **not** run `wrangler deploy` (the Workers command). It publishes a
+> separate Worker that does not serve the domain and drops the `functions/`
+> Pages Function (the `/api/lead` endpoint). Always use `wrangler pages deploy`.
+
+See `../VERIFY.md` for the live-site health checks.

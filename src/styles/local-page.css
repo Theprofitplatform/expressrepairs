@@ -126,6 +126,10 @@
 .link-chip:hover { border-color: var(--brand-500); color: var(--brand-700); background: var(--brand-50); transform: translateY(-1px); }
 [data-dark="true"] .link-chip:hover { background: color-mix(in oklab, var(--brand-600) 18%, var(--surface)); color: var(--brand-200); }
 .link-chip .chip-arrow { color: var(--brand-600); font-weight: 700; }
+/* Suburb we serve but don't yet have a dedicated page for — shown as a plain
+   label (not a crawlable dead link), no hover affordance. */
+.link-chip--static { color: var(--text-subtle); cursor: default; }
+.link-chip--static:hover { border-color: var(--border); color: var(--text-subtle); background: var(--surface); transform: none; }
 
 /* CTA band */
 .cta-band {

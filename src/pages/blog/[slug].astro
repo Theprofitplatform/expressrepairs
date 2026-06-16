@@ -36,8 +36,9 @@ const schema = [
     '@context': 'https://schema.org',
     '@type': 'BreadcrumbList',
     itemListElement: [
-      { '@type': 'ListItem', position: 1, name: 'Blog', item: canonical('/blog/') },
-      { '@type': 'ListItem', position: 2, name: post.title, item: canonical(path) },
+      { '@type': 'ListItem', position: 1, name: 'Home', item: canonical('/') },
+      { '@type': 'ListItem', position: 2, name: 'Blog', item: canonical('/blog/') },
+      { '@type': 'ListItem', position: 3, name: post.title, item: canonical(path) },
     ],
   },
 ];
@@ -47,11 +48,13 @@ const schema = [
   description={post.excerpt}
   path={path}
   schema={schema}
+  ogType="article"
+  image={post.img}
   htmlAttrs={{ 'data-palette': 'electric-blue', 'data-fontpair': 'jakarta', 'data-dark': 'false' }}
 >
   <SiteNav links={navLinks} ctaHref="/repairs/screen/" />
 
-  <article>
+  <article id="main-content">
     <div class="article-hero">
       <div class="container-wide">
         <div class="article-head">

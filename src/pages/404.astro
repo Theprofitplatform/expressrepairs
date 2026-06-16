@@ -2,8 +2,8 @@
 import Layout from '../layouts/Layout.astro';
 import { SITE } from '../data/site.js';
 ---
-<Layout title="Page not found — Express Repairs" description="That page doesn't exist." path="/404">
-  <main style="max-width:640px;margin:120px auto;padding:0 24px;text-align:center;">
+<Layout title="Page not found — Express Repairs" description="That page doesn't exist." path="/404" noindex={true}>
+  <main id="main-content" style="max-width:640px;margin:120px auto;padding:0 24px;text-align:center;">
     <h1 style="font-size:40px;margin-bottom:12px;">Page not found</h1>
     <p style="color:#555;margin-bottom:24px;">We couldn't find that page. It may have moved.</p>
     <a class="btn btn-primary" href="/">Back to home</a>

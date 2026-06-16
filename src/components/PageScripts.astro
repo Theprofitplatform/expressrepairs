@@ -6,13 +6,16 @@
   import { HOURS } from '../data/content.js';
   import { isOpenNow } from '../lib/hours.js';
 
-  // FAQ accordion — single-open, matching the prototype.
+  // FAQ accordion — single-open, matching the prototype. Keeps aria-expanded
+  // in sync so screen readers announce the open/closed state.
   document.querySelectorAll('.faq-q').forEach((btn) => {
     btn.addEventListener('click', () => {
       const item = btn.closest('.faq-item');
       const isOpen = item.getAttribute('data-open') === 'true';
       document.querySelectorAll('.faq-item').forEach((i) => i.setAttribute('data-open', 'false'));
+      document.querySelectorAll('.faq-q').forEach((b) => b.setAttribute('aria-expanded', 'false'));
       item.setAttribute('data-open', String(!isOpen));
+      btn.setAttribute('aria-expanded', String(!isOpen));
     });
   });
 

@@ -4,6 +4,7 @@ import { isOpenNow } from '../lib/hours.js';
 import { SITE } from '../data/site.js';
 import { HOURS, TESTIMONIALS, WARRANTIES, FAQS } from '../data/content.js';
 import { BRAND_TILES } from '../data/accessories.js';
+import { sendLead } from '../lib/sendLead.js';
 
 // Lower sections: Brands, WhyUs, Testimonials, Warranty, FAQ, Store, Contact, Footer
 
@@ -43,7 +44,7 @@ export function WhyUs() {
             <h3 className="why-title" style={{color:'#fff'}}>Professional repairs using industry-leading techniques and genuine parts.</h3>
             <p className="why-sub">Certified processes, original-quality components, and a 6–12 month warranty on every repair. Your device back to factory-fresh.</p>
             <div className="stat-row">
-              <div className="stat"><div className="stat-num">100%</div><div className="stat-label">Quality</div></div>
+              <div className="stat"><div className="stat-num">6–12mo</div><div className="stat-label">Warranty</div></div>
               <div className="stat"><div className="stat-num">5,000+</div><div className="stat-label">Repairs done</div></div>
               <div className="stat"><div className="stat-num">4.9★</div><div className="stat-label">Google rating</div></div>
             </div>
@@ -113,7 +114,7 @@ export function Testimonials() {
               <div className="t-stars">★★★★★</div>
               <p className="t-quote">"{t.text}"</p>
               <div className="t-author">
-                <img src={t.avatar} alt={t.name} />
+                <span className="avatar-initials" aria-hidden="true">{t.initials}</span>
                 <div>
                   <div className="t-author-name">{t.name}</div>
                   <div className="t-author-source">{t.source}</div>
@@ -167,11 +168,11 @@ export function FAQ() {
         <div className="faq-list">
           {FAQS.map((f, i) => (
             <div key={i} className="faq-item" data-open={open === i}>
-              <button className="faq-q" onClick={() => setOpen(open === i ? -1 : i)}>
+              <button type="button" className="faq-q" aria-expanded={open === i} aria-controls={`home-faq-a-${i}`} onClick={() => setOpen(open === i ? -1 : i)}>
                 <span>{f.q}</span>
-                <span className="faq-toggle">+</span>
+                <span className="faq-toggle" aria-hidden="true">+</span>
               </button>
-              <div className="faq-a">{f.a}</div>
+              <div className="faq-a" id={`home-faq-a-${i}`} role="region">{f.a}</div>
             </div>
           ))}
         </div>
@@ -252,12 +253,14 @@ export function Store() {
 }
 
 export function Contact() {
-  const [form, setForm] = useState({ name:'', phone:'', email:'', model:'', type:'', details:'' });
+  const [form, setForm] = useState({ name:'', phone:'', email:'', model:'', type:'', details:'', company:'' });
   const [errors, setErrors] = useState({});
   const [sent, setSent] = useState(false);
+  const [sending, setSending] = useState(false);
+  const [sendError, setSendError] = useState('');
   const upd = (k, v) => setForm(f => ({...f, [k]: v}));
 
-  const submit = (e) => {
+  const submit = async (e) => {
     e.preventDefault();
     const errs = {};
     if (!form.name.trim()) errs.name = 'Please enter your name';
@@ -265,7 +268,14 @@ export function Contact() {
     if (form.email && !/^\S+@\S+\.\S+$/.test(form.email)) errs.email = 'Email looks off';
     if (!form.type) errs.type = 'Pick a repair type';
     setErrors(errs);
-    if (Object.keys(errs).length === 0) setSent(true);
+    if (Object.keys(errs).length > 0) return;
+
+    setSending(true);
+    setSendError('');
+    const res = await sendLead({ source: 'contact', ...form });
+    setSending(false);
+    if (res.ok) setSent(true);
+    else setSendError(`Sorry — that didn't send. Please call us on ${SITE.phone} and we'll sort it out.`);
   };
 
   return (
@@ -308,27 +318,31 @@ export function Contact() {
 
             <div className="form-grid">
               <div className="form-field">
-                <label>Full name</label>
-                <input type="text" value={form.name} onChange={e => upd('name', e.target.value)} placeholder="Jane Doe" />
-                {errors.name && <div className="form-error">{errors.name}</div>}
+                <label htmlFor="contact-name">Full name</label>
+                <input id="contact-name" type="text" value={form.name} onChange={e => upd('name', e.target.value)} placeholder="Jane Doe"
+                  aria-invalid={errors.name ? 'true' : undefined} aria-describedby={errors.name ? 'contact-name-err' : undefined} />
+                {errors.name && <div id="contact-name-err" className="form-error" role="alert">{errors.name}</div>}
               </div>
               <div className="form-field">
-                <label>Phone</label>
-                <input type="tel" value={form.phone} onChange={e => upd('phone', e.target.value)} placeholder="04xx xxx xxx" />
-                {errors.phone && <div className="form-error">{errors.phone}</div>}
+                <label htmlFor="contact-phone">Phone</label>
+                <input id="contact-phone" type="tel" value={form.phone} onChange={e => upd('phone', e.target.value)} placeholder="04xx xxx xxx"
+                  aria-invalid={errors.phone ? 'true' : undefined} aria-describedby={errors.phone ? 'contact-phone-err' : undefined} />
+                {errors.phone && <div id="contact-phone-err" className="form-error" role="alert">{errors.phone}</div>}
               </div>
               <div className="form-field">
-                <label>Email <span style={{color:'var(--text-subtle)', fontWeight:400}}>(optional)</span></label>
-                <input type="email" value={form.email} onChange={e => upd('email', e.target.value)} placeholder="you@email.com" />
-                {errors.email && <div className="form-error">{errors.email}</div>}
+                <label htmlFor="contact-email">Email <span style={{color:'var(--text-subtle)', fontWeight:400}}>(optional)</span></label>
+                <input id="contact-email" type="email" value={form.email} onChange={e => upd('email', e.target.value)} placeholder="you@email.com"
+                  aria-invalid={errors.email ? 'true' : undefined} aria-describedby={errors.email ? 'contact-email-err' : undefined} />
+                {errors.email && <div id="contact-email-err" className="form-error" role="alert">{errors.email}</div>}
               </div>
               <div className="form-field">
-                <label>Device model</label>
-                <input type="text" value={form.model} onChange={e => upd('model', e.target.value)} placeholder="e.g. iPhone 14 Pro" />
+                <label htmlFor="contact-model">Device model</label>
+                <input id="contact-model" type="text" value={form.model} onChange={e => upd('model', e.target.value)} placeholder="e.g. iPhone 14 Pro" />
               </div>
               <div className="form-field full">
-                <label>Repair type</label>
-                <select value={form.type} onChange={e => upd('type', e.target.value)}>
+                <label htmlFor="contact-type">Repair type</label>
+                <select id="contact-type" value={form.type} onChange={e => upd('type', e.target.value)}
+                  aria-invalid={errors.type ? 'true' : undefined} aria-describedby={errors.type ? 'contact-type-err' : undefined}>
                   <option value="">Select repair type</option>
                   <option value="screen">Screen Repair — from $99</option>
                   <option value="battery">Battery Replacement — from $59</option>
@@ -337,19 +351,28 @@ export function Contact() {
                   <option value="diagnostic">Free Diagnostic</option>
                   <option value="other">Other (describe below)</option>
                 </select>
-                {errors.type && <div className="form-error">{errors.type}</div>}
+                {errors.type && <div id="contact-type-err" className="form-error" role="alert">{errors.type}</div>}
               </div>
               <div className="form-field full">
-                <label>Additional details <span style={{color:'var(--text-subtle)', fontWeight:400}}>(optional)</span></label>
-                <textarea rows="3" value={form.details} onChange={e => upd('details', e.target.value)} placeholder="Tell us what happened..."></textarea>
+                <label htmlFor="contact-details">Additional details <span style={{color:'var(--text-subtle)', fontWeight:400}}>(optional)</span></label>
+                <textarea id="contact-details" rows="3" value={form.details} onChange={e => upd('details', e.target.value)} placeholder="Tell us what happened..."></textarea>
               </div>
+              {/* Honeypot — hidden from users, catches bots. */}
+              <input type="text" name="company" tabIndex="-1" autoComplete="off" aria-hidden="true"
+                value={form.company} onChange={e => upd('company', e.target.value)}
+                style={{position:'absolute', left:'-9999px', width:1, height:1, opacity:0}} />
               <div className="form-field full">
-                <button type="submit" className="btn btn-primary btn-lg btn-block">Get my free quote <Icon.ArrowRight /></button>
+                <button type="submit" className="btn btn-primary btn-lg btn-block" disabled={sending}>
+                  {sending ? 'Sending…' : <>Get my free quote <Icon.ArrowRight /></>}
+                </button>
               </div>
             </div>
 
+            {sendError && (
+              <div className="form-error" role="alert" style={{marginTop:14}}>{sendError}</div>
+            )}
             {sent && (
-              <div className="form-success">
+              <div className="form-success" role="status" aria-live="polite">
                 <Icon.Check /> Thanks {form.name || 'mate'} — we'll be in touch within 30 min.
               </div>
             )}
