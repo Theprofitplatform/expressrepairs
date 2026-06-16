@@ -64,7 +64,7 @@ export function Nav() {
   return (
     <header className="nav">
       <div className="container-wide nav-inner">
-        <a href="#" className="brand">
+        <a href="/" className="brand">
           <span className="brand-mark">
             <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round"><rect x="7" y="2" width="10" height="20" rx="2"/><line x1="11" y1="18" x2="13" y2="18"/></svg>
           </span>
@@ -118,8 +118,8 @@ export function Hero() {
               </a>
             </div>
             <div className="trust-row">
-              <div className="avatars">
-                {[1,2,3,4,5].map(i => <img key={i} src={`https://i.pravatar.cc/80?img=${i}`} alt="" />)}
+              <div className="avatars" aria-hidden="true">
+                {['LB','RT','SM','JK','TE'].map(ini => <span key={ini} className="avatar-initials">{ini}</span>)}
               </div>
               <div className="trust-text">
                 <div className="stars">★★★★★ <strong style={{marginLeft:6}}>4.9/5</strong></div>

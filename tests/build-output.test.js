@@ -45,4 +45,41 @@ describe('built homepage', () => {
     expect(existsSync('dist/sitemap-index.xml')).toBe(true);
     expect(existsSync('dist/404.html')).toBe(true);
   });
+  it('ships an og:image and a real <main> landmark + skip link', () => {
+    expect(html).toContain('property="og:image"');
+    expect(html).toContain('id="main-content"');
+    expect(html).toContain('class="skip-link"');
+  });
+  it('no longer pulls avatars from the i.pravatar.cc placeholder service', () => {
+    expect(html).not.toContain('pravatar');
+  });
+});
+
+describe('built local-SEO pages', () => {
+  it('the suburb page carries Service + FAQPage + a single canonical LocalBusiness @id', () => {
+    const suburb = readFileSync('dist/repairs/screen/riverwood/index.html', 'utf8');
+    const blocks = jsonLdBlocks(suburb);
+    const types = blocks.map((b) => b['@type']);
+    expect(types).toContain('Service');
+    expect(types).toContain('FAQPage');
+    const lb = blocks.find((b) => b['@type'] === 'LocalBusiness');
+    expect(lb['@id']).toContain('#business');
+    const svc = blocks.find((b) => b['@type'] === 'Service');
+    expect(String(svc.offers.price)).toBeTruthy();
+  });
+  it('the service page carries an FAQPage and a Home-rooted breadcrumb', () => {
+    const svc = readFileSync('dist/repairs/screen/index.html', 'utf8');
+    const blocks = jsonLdBlocks(svc);
+    expect(blocks.map((b) => b['@type'])).toContain('FAQPage');
+    const crumbs = blocks.find((b) => b['@type'] === 'BreadcrumbList');
+    expect(crumbs.itemListElement[0].name).toBe('Home');
+  });
+  it('does not ship crawlable dead "#" suburb links', () => {
+    const svc = readFileSync('dist/repairs/back-glass/index.html', 'utf8');
+    expect(svc).not.toContain('class="link-chip" href="#"');
+  });
+  it('the sitemap lists a built local page', () => {
+    const sm = readFileSync('dist/sitemap-0.xml', 'utf8');
+    expect(sm).toContain('/repairs/screen/riverwood/');
+  });
 });

@@ -8,7 +8,8 @@ import PriceTable from '../../components/PriceTable.astro';
 import CtaBand from '../../components/CtaBand.astro';
 import { SITE } from '../../data/site.js';
 import { SERVICES, SUBURB_CHIPS, LOCAL_PAGES } from '../../data/repairs.js';
-import { canonical } from '../../lib/seo.js';
+import { HOURS } from '../../data/content.js';
+import { canonical, faqPageSchema, businessRef } from '../../lib/seo.js';
 
 export function getStaticPaths() {
   return SERVICES.map((svc) => ({ params: { service: svc.slug }, props: { svc } }));
@@ -16,6 +17,10 @@ export function getStaticPaths() {
 
 const { svc } = Astro.props;
 const path = `/repairs/${svc.slug}/`;
+
+// Real weekday hours as the no-JS/server fallback (PageScripts refines this to
+// the visitor's actual "today" client-side). Never a made-up time.
+const todayHours = HOURS.find((h) => h.dow === 1)?.hrs || '9:00 AM – 6:00 PM';
 
 const navLinks = [
   { label: 'Repairs', href: '/repairs/' },
@@ -25,9 +30,9 @@ const navLinks = [
   { label: 'FAQ', href: '#faq' },
 ];
 
-// Suburbs built for THIS service get a real href.
+// Suburbs built for THIS service get a real href; the rest render as plain
+// (non-link) chips so we never ship crawlable dead "#" links.
 const localFor = new Map(LOCAL_PAGES.filter((l) => l.service === svc.slug).map((l) => [l.suburbName, `/repairs/${l.service}/${l.suburb}/`]));
-const suburbHref = (name) => localFor.get(name) || '#';
 
 const otherServices = SERVICES.filter((s) => s.slug !== svc.slug);
 
@@ -36,15 +41,17 @@ const schema = [
     '@context': 'https://schema.org',
     '@type': 'Service',
     name: svc.schemaName,
-    provider: { '@type': 'LocalBusiness', name: SITE.name },
+    provider: businessRef(SITE),
     offers: { '@type': 'Offer', price: svc.schemaPrice, priceCurrency: 'AUD' },
   },
+  faqPageSchema(svc.faqs),
   {
     '@context': 'https://schema.org',
     '@type': 'BreadcrumbList',
     itemListElement: [
-      { '@type': 'ListItem', position: 1, name: 'Repairs', item: canonical('/repairs/') },
-      { '@type': 'ListItem', position: 2, name: svc.label, item: canonical(path) },
+      { '@type': 'ListItem', position: 1, name: 'Home', item: canonical('/') },
+      { '@type': 'ListItem', position: 2, name: 'Repairs', item: canonical('/repairs/') },
+      { '@type': 'ListItem', position: 3, name: svc.label, item: canonical(path) },
     ],
   },
 ];
@@ -61,6 +68,7 @@ const phoneSvg = '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" st
 >
   <SiteNav links={navLinks} ctaHref="#cta" />
 
+  <main id="main-content">
   <section class="hero" style="padding-bottom: 72px;">
     <div class="hero-bg"></div>
     <div class="container-wide" style="position: relative; z-index: 1;">
@@ -82,7 +90,7 @@ const phoneSvg = '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" st
             <a href={SITE.phoneHref} class="btn btn-ghost btn-lg"><Fragment set:html={phoneSvg} /> {SITE.phone}</a>
           </div>
           <div class="hero-infobar">
-            <div><div class="hero-info-label">Today</div><div class="hero-info-value" id="today-hours">9:00 AM – 5:30 PM</div></div>
+            <div><div class="hero-info-label">Today</div><div class="hero-info-value" id="today-hours">{todayHours}</div></div>
             <div><div class="hero-info-label">Turnaround</div><div class="hero-info-value">{svc.turnaround}</div></div>
             <div><div class="hero-info-label">Warranty</div><div class="hero-info-value">6–12 months</div></div>
             <div><div class="hero-info-label">Status</div><div class="hero-info-value" id="open-status">…</div></div>
@@ -90,7 +98,7 @@ const phoneSvg = '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" st
         </div>
         <div>
           <div class="lhero-media">
-            <img src={svc.img} alt={svc.alt} />
+            <img src={svc.img} alt={svc.alt} fetchpriority="high" decoding="async" />
             <div class="lhero-media-overlay"></div>
             <div class="lhero-price-tag">
               <div class="from">{svc.fromCaption}</div>
@@ -148,8 +156,8 @@ const phoneSvg = '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" st
       <div class="faq-list">
         {svc.faqs.map((f, i) => (
           <div class="faq-item" data-open={i === 0 ? 'true' : 'false'}>
-            <button class="faq-q"><span>{f.q}</span><span class="faq-toggle">+</span></button>
-            <div class="faq-a">{f.a}</div>
+            <button type="button" class="faq-q" aria-expanded={i === 0 ? 'true' : 'false'} aria-controls={`faq-a-${i}`}><span>{f.q}</span><span class="faq-toggle" aria-hidden="true">+</span></button>
+            <div class="faq-a" id={`faq-a-${i}`}>{f.a}</div>
           </div>
         ))}
       </div>
@@ -162,7 +170,9 @@ const phoneSvg = '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" st
         <div class="link-chip-label">{svc.label} near you</div>
         <div class="link-chips">
           {SUBURB_CHIPS.slice(0, 9).map((name) => (
-            <a class="link-chip" href={suburbHref(name)}>{name} <span class="chip-arrow">→</span></a>
+            localFor.has(name)
+              ? <a class="link-chip" href={localFor.get(name)}>{name} <span class="chip-arrow">→</span></a>
+              : <span class="link-chip link-chip--static">{name}</span>
           ))}
         </div>
       </div>
@@ -183,6 +193,7 @@ const phoneSvg = '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" st
     secondaryLabel="Visit the Riverwood store"
     secondaryHref="/repairs/screen/riverwood/"
   />
+  </main>
 
   <SiteFooter />
   <MobileCta />

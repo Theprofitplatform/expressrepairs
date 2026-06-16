@@ -15,4 +15,13 @@ export const SITE = siteSchema.parse({
   tagline: 'Same-day phone repairs done right',
   address: { locality: 'Riverwood', region: 'NSW', postalCode: '2210', country: 'AU' },
   geo: { lat: -33.9522, lng: 151.051 },
+  // Structured-data extras (LocalBusiness JSON-LD).
+  image: '/images/screen-repair.jpg',
+  priceRange: '$49–$169',
+  // Add your Google Business / Facebook / Instagram profile URLs here to link
+  // the business entity (emitted as schema.org `sameAs`).
+  sameAs: [],
+  // ⚠️ Star rich-results: set `count` to your REAL Google review count to emit
+  // an aggregateRating. Left null so we never publish a fabricated review count.
+  rating: { value: 4.9, count: null, best: 5 },
 });

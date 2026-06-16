@@ -1,9 +1,15 @@
-# Cloudflare Worker (static assets) for expressrepairs.com.au.
-# Worker "expressrepairs" serves the Astro build (dist/) as static assets.
-# Production branch is "main"; Cloudflare Workers Builds builds + deploys on push.
+# Cloudflare PAGES config for expressrepairs.com.au.
+#
+# The live domain is served by the Cloudflare PAGES project "expressrepairs"
+# (the custom domain is attached there) — NOT a Worker. Production deploys run
+# via .github/workflows/deploy.yml on every push to main, or manually with:
+#
+#   npm run deploy
+#   # = astro build && wrangler pages deploy dist --project-name expressrepairs --branch main
+#
+# `compatibility_date` sets the runtime date for the Pages Function in functions/
+# (POST /api/lead). Do NOT run `wrangler deploy` against this project — that
+# publishes a separate Worker that does not serve the domain and drops the
+# functions/ Pages Function (the lead endpoint).
 name = "expressrepairs"
 compatibility_date = "2026-06-09"
-
-[assets]
-directory = "./dist"
-not_found_handling = "404-page"

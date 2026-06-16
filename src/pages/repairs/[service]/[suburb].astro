@@ -8,7 +8,8 @@ import PriceTable from '../../../components/PriceTable.astro';
 import CtaBand from '../../../components/CtaBand.astro';
 import { SITE } from '../../../data/site.js';
 import { LOCAL_PAGES, SERVICE_BY_SLUG, SUBURB_CHIPS, LOCAL_REVIEWS } from '../../../data/repairs.js';
-import { canonical } from '../../../lib/seo.js';
+import { HOURS } from '../../../data/content.js';
+import { canonical, faqPageSchema, businessRef, localBusinessSchema } from '../../../lib/seo.js';
 
 export function getStaticPaths() {
   return LOCAL_PAGES.map((page) => ({
@@ -21,6 +22,9 @@ const { page } = Astro.props;
 const svc = SERVICE_BY_SLUG[page.service];
 const path = `/repairs/${page.service}/${page.suburb}/`;
 
+// Real weekday hours as the no-JS/server fallback (PageScripts refines per visitor).
+const todayHours = HOURS.find((h) => h.dow === 1)?.hrs || '9:00 AM – 6:00 PM';
+
 const navLinks = [
   { label: 'Repairs', href: '/repairs/' },
   { label: 'Pricing', href: '#pricing' },
@@ -29,43 +33,33 @@ const navLinks = [
   { label: 'FAQ', href: '#faq' },
 ];
 
-const suburbHref = (name) => {
-  const built = LOCAL_PAGES.find((l) => l.suburbName === name);
-  return built ? `/repairs/${built.service}/${built.suburb}/` : '#';
+// Match the CURRENT service when resolving a nearby-suburb chip; only built
+// same-service pages get a link, the rest render as plain (non-link) chips.
+const builtSuburbHref = (name) => {
+  const built = LOCAL_PAGES.find((l) => l.suburbName === name && l.service === page.service);
+  return built ? `/repairs/${built.service}/${built.suburb}/` : null;
 };
 const nearby = SUBURB_CHIPS.filter((n) => n !== page.suburbName);
 
 const schema = [
-  {
-    '@context': 'https://schema.org',
-    '@type': 'LocalBusiness',
-    name: SITE.name,
-    telephone: SITE.phoneHref.replace('tel:', ''),
-    address: {
-      '@type': 'PostalAddress',
-      streetAddress: SITE.addressLines[0],
-      addressLocality: SITE.address.locality,
-      addressRegion: SITE.address.region,
-      postalCode: SITE.address.postalCode,
-      addressCountry: SITE.address.country,
-    },
-    geo: { '@type': 'GeoCoordinates', latitude: SITE.geo.lat, longitude: SITE.geo.lng },
-  },
+  localBusinessSchema(SITE, HOURS),
   {
     '@context': 'https://schema.org',
     '@type': 'Service',
     name: `${svc.schemaName} in ${page.suburbName}`,
-    areaServed: `${page.suburbName} NSW`,
-    provider: { '@type': 'LocalBusiness', name: SITE.name },
+    areaServed: { '@type': 'City', name: page.suburbName, address: { '@type': 'PostalAddress', addressRegion: 'NSW', addressCountry: 'AU' } },
+    provider: businessRef(SITE),
     offers: { '@type': 'Offer', price: svc.schemaPrice, priceCurrency: 'AUD' },
   },
+  faqPageSchema(page.faqs),
   {
     '@context': 'https://schema.org',
     '@type': 'BreadcrumbList',
     itemListElement: [
-      { '@type': 'ListItem', position: 1, name: 'Repairs', item: canonical('/repairs/') },
-      { '@type': 'ListItem', position: 2, name: svc.label, item: canonical(`/repairs/${svc.slug}/`) },
-      { '@type': 'ListItem', position: 3, name: page.suburbName, item: canonical(path) },
+      { '@type': 'ListItem', position: 1, name: 'Home', item: canonical('/') },
+      { '@type': 'ListItem', position: 2, name: 'Repairs', item: canonical('/repairs/') },
+      { '@type': 'ListItem', position: 3, name: svc.label, item: canonical(`/repairs/${svc.slug}/`) },
+      { '@type': 'ListItem', position: 4, name: page.suburbName, item: canonical(path) },
     ],
   },
 ];
@@ -83,10 +77,13 @@ const mapsHref = `https://maps.google.com/?q=${encodeURIComponent(SITE.mapsQuery
 >
   <SiteNav links={navLinks} ctaHref="#cta" />
 
+  <main id="main-content">
   <section class="hero" style="padding-bottom: 72px;">
     <div class="hero-bg"></div>
     <div class="container-wide" style="position: relative; z-index: 1;">
       <nav class="breadcrumb" aria-label="Breadcrumb">
+        <a href="/">Home</a>
+        <span class="crumb-sep">/</span>
         <a href="/repairs/">Repairs</a>
         <span class="crumb-sep">/</span>
         <a href={`/repairs/${svc.slug}/`}>{svc.label}</a>
@@ -112,7 +109,7 @@ const mapsHref = `https://maps.google.com/?q=${encodeURIComponent(SITE.mapsQuery
             </div>
           </div>
           <div class="hero-infobar">
-            <div><div class="hero-info-label">Today</div><div class="hero-info-value" id="today-hours">9:00 AM – 5:30 PM</div></div>
+            <div><div class="hero-info-label">Today</div><div class="hero-info-value" id="today-hours">{todayHours}</div></div>
             <div><div class="hero-info-label">{page.turnaroundLabel}</div><div class="hero-info-value">{svc.turnaround}</div></div>
             <div><div class="hero-info-label">Warranty</div><div class="hero-info-value">6–12 months</div></div>
             <div><div class="hero-info-label">Status</div><div class="hero-info-value" id="open-status">…</div></div>
@@ -120,7 +117,7 @@ const mapsHref = `https://maps.google.com/?q=${encodeURIComponent(SITE.mapsQuery
         </div>
         <div>
           <div class="lhero-media">
-            <img src={svc.img} alt={`${svc.alt} at Express Repairs ${page.suburbName}`} />
+            <img src={svc.img} alt={`${svc.alt} at Express Repairs ${page.suburbName}`} fetchpriority="high" decoding="async" />
             <div class="lhero-media-overlay"></div>
             <div class="lhero-price-tag">
               <div class="from">{svc.fromCaption}</div>
@@ -222,8 +219,8 @@ const mapsHref = `https://maps.google.com/?q=${encodeURIComponent(SITE.mapsQuery
       <div class="faq-list">
         {page.faqs.map((f, i) => (
           <div class="faq-item" data-open={i === 0 ? 'true' : 'false'}>
-            <button class="faq-q"><span>{f.q}</span><span class="faq-toggle">+</span></button>
-            <div class="faq-a">{f.a}</div>
+            <button type="button" class="faq-q" aria-expanded={i === 0 ? 'true' : 'false'} aria-controls={`faq-a-${i}`}><span>{f.q}</span><span class="faq-toggle" aria-hidden="true">+</span></button>
+            <div class="faq-a" id={`faq-a-${i}`}>{f.a}</div>
           </div>
         ))}
       </div>
@@ -236,7 +233,9 @@ const mapsHref = `https://maps.google.com/?q=${encodeURIComponent(SITE.mapsQuery
         <div class="link-chip-label">{svc.label} near {page.suburbName}</div>
         <div class="link-chips">
           {nearby.slice(0, 9).map((name) => (
-            <a class="link-chip" href={suburbHref(name)}>{name} <span class="chip-arrow">→</span></a>
+            builtSuburbHref(name)
+              ? <a class="link-chip" href={builtSuburbHref(name)}>{name} <span class="chip-arrow">→</span></a>
+              : <span class="link-chip link-chip--static">{name}</span>
           ))}
         </div>
       </div>
@@ -254,6 +253,7 @@ const mapsHref = `https://maps.google.com/?q=${encodeURIComponent(SITE.mapsQuery
   </section>
 
   <CtaBand title={page.ctaTitle} secondaryLabel="Get a free quote" secondaryHref="#cta" />
+  </main>
 
   <SiteFooter />
   <MobileCta />

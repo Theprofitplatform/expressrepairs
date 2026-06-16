@@ -3,16 +3,20 @@
   "version": "0.1.0",
   "private": true,
   "type": "module",
-  "description": "Astro site for expressrepairs.com.au on Cloudflare Workers",
+  "description": "Astro site for expressrepairs.com.au on Cloudflare Pages",
+  "engines": {
+    "node": ">=20"
+  },
   "scripts": {
     "dev": "astro dev",
     "build": "astro build",
     "preview": "astro preview",
     "test": "vitest run",
     "test:watch": "vitest",
+    "optimize:images": "node scripts/optimize-images.mjs",
     "whoami": "wrangler whoami",
-    "deployments": "wrangler deployments list",
-    "deploy": "astro build && wrangler deploy"
+    "deployments": "wrangler pages deployment list --project-name expressrepairs",
+    "deploy": "astro build && wrangler pages deploy dist --project-name expressrepairs --branch main"
   },
   "dependencies": {
     "astro": "^5.0.0",

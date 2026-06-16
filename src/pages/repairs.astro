@@ -18,7 +18,6 @@ const navLinks = [
 ];
 
 const builtLocal = new Map(LOCAL_PAGES.map((l) => [l.suburbName, `/repairs/${l.service}/${l.suburb}/`]));
-const suburbHref = (name) => builtLocal.get(name) || '#';
 
 const schema = breadcrumbSchema([
   { name: 'Home', path: '/' },
@@ -36,6 +35,7 @@ const arrow = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" strok
 >
   <SiteNav links={navLinks} ctaHref="#cta" />
 
+  <main id="main-content">
   <section class="hero" style="padding-bottom: 24px;">
     <div class="hero-bg"></div>
     <div class="container-wide" style="position: relative; z-index: 1;">
@@ -157,7 +157,9 @@ const arrow = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" strok
       <div class="link-chip-group">
         <div class="link-chips">
           {SUBURB_CHIPS.map((name) => (
-            <a class="link-chip" href={suburbHref(name)}>{name} <span class="chip-arrow">→</span></a>
+            builtLocal.has(name)
+              ? <a class="link-chip" href={builtLocal.get(name)}>{name} <span class="chip-arrow">→</span></a>
+              : <span class="link-chip link-chip--static">{name}</span>
           ))}
         </div>
       </div>
@@ -170,6 +172,7 @@ const arrow = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" strok
     secondaryLabel="See local pricing"
     secondaryHref="/repairs/screen/riverwood/"
   />
+  </main>
 
   <SiteFooter />
   <MobileCta />
