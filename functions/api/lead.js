@@ -177,6 +177,9 @@ export async function onRequest({ request, env }) {
   // Let the shop reply straight to the customer when they left an email.
   if (email && emailValid(email)) payload.reply_to = email;
 
+  // Send failures return 503, not 502: Cloudflare's edge replaces a 502 from a
+  // Pages Function with its own HTML error page, so the client never sees our
+  // JSON. 503 passes through, so the form shows the proper "call us" fallback.
   try {
     const res = await fetch('https://api.resend.com/emails', {
       method: 'POST',
@@ -189,11 +192,11 @@ export async function onRequest({ request, env }) {
     if (!res.ok) {
       const body = await res.text();
       console.error('Resend send failed', res.status, body);
-      return json(502, { ok: false, error: 'Could not send right now.' });
+      return json(503, { ok: false, error: 'Could not send right now.' });
     }
   } catch (err) {
     console.error('Resend request error', err);
-    return json(502, { ok: false, error: 'Could not send right now.' });
+    return json(503, { ok: false, error: 'Could not send right now.' });
   }
 
   return json(200, { ok: true });

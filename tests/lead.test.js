@@ -100,9 +100,9 @@ describe('POST /api/lead', () => {
     expect(payload.subject.includes(LF)).toBe(false);
   });
 
-  it('maps a Resend failure to 502 (form shows the call-us fallback)', async () => {
+  it('maps a Resend failure to 503 (passes through CF edge; form shows call-us fallback)', async () => {
     vi.spyOn(globalThis, 'fetch').mockResolvedValue(new Response('upstream error', { status: 500 }));
     const res = await onRequest({ request: makeReq({ body: { name: 'Jane', phone: '0400' } }), env: ENV });
-    expect(res.status).toBe(502);
+    expect(res.status).toBe(503);
   });
 });
