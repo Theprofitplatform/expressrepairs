@@ -8,7 +8,7 @@
 > Scope note: this is a strategy + roadmap document. On-site items (new suburb pages, blog posts, schema tweaks) are written so they can be actioned in the repo; off-site items (GBP, reviews, citations) are templated to keep manual effort low.
 
 > **Implementation progress — 2026-06-23 (on-site content shipped):**
-> - ✅ **Suburb pages: 2 → 12.** Built screen pages for Narwee, Beverly Hills, Kingsgrove, Revesby, Peakhurst, Roselands, Punchbowl and Hurstville, plus backfilled battery/Riverwood and screen/Padstow — each with unique, locally-accurate copy (transit, parking, suburb FAQs). All in the sitemap.
+> - ✅ **Suburb pages: 2 → 15.** Built screen pages for Narwee, Beverly Hills, Kingsgrove, Revesby, Peakhurst, Roselands, Punchbowl and Hurstville; backfilled battery/Riverwood and screen/Padstow; and added the **battery** second-service pages for the Tier-1/2 priorities (Hurstville, Beverly Hills, Kingsgrove). Each has unique, locally-accurate copy (transit, parking, suburb FAQs) and is in the sitemap.
 > - ✅ **Blog: 1 → 6 posts.** Wrote the five stub articles (battery-draining fixes, water-damage first aid, OEM vs aftermarket, charging-port lint, repair-vs-upgrade), cross-linked to the relevant service/suburb pages. Build green, all 79 tests pass.
 > - ⛔ **Blocked on real data (not fabricated):** `sameAs` URLs (needs the real GBP/Facebook/Instagram links) and `aggregateRating` (needs the real Google review count) — see §5.3 and §8. Off-site pillars (§4 GBP, §5 reviews, §7 citations) remain manual tasks for the shop.
 
