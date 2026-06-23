@@ -1,0 +1,59 @@
+---
+// Loads GA4 / Google Ads / Meta Pixel and fires conversions on call + lead.
+// Renders NOTHING when no IDs are configured (see src/data/tracking.js).
+// Tags load after first paint to protect Core Web Vitals on paid traffic.
+import { TRACKING as t } from '../data/tracking.js';
+const enabled = Boolean(t.ga4Id || t.googleAdsId || t.metaPixelId);
+---
+{enabled && (
+  <script is:inline define:vars={{ t }}>
+    (function () {
+      function inject(src) {
+        var s = document.createElement('script');
+        s.async = true; s.src = src; document.head.appendChild(s);
+      }
+
+      // Google gtag (GA4 and/or Google Ads).
+      if (t.ga4Id || t.googleAdsId) {
+        window.dataLayer = window.dataLayer || [];
+        window.gtag = window.gtag || function () { window.dataLayer.push(arguments); };
+        inject('https://www.googletagmanager.com/gtag/js?id=' + (t.ga4Id || t.googleAdsId));
+        window.gtag('js', new Date());
+        if (t.ga4Id) window.gtag('config', t.ga4Id);
+        if (t.googleAdsId) window.gtag('config', t.googleAdsId);
+      }
+
+      // Meta Pixel.
+      if (t.metaPixelId) {
+        !function (f, b, e, v, n, s, u) {
+          if (f.fbq) return; n = f.fbq = function () { n.callMethod ? n.callMethod.apply(n, arguments) : n.queue.push(arguments); };
+          if (!f._fbq) f._fbq = n; n.push = n; n.loaded = !0; n.version = '2.0'; n.queue = [];
+          s = b.createElement(e); s.async = !0; s.src = v; u = b.getElementsByTagName(e)[0]; u.parentNode.insertBefore(s, u);
+        }(window, document, 'script', 'https://connect.facebook.net/en_US/fbevents.js');
+        window.fbq('init', t.metaPixelId);
+        window.fbq('track', 'PageView');
+      }
+
+      function fireCall() {
+        if (window.gtag) {
+          if (t.googleAdsId && t.googleAdsCallLabel) window.gtag('event', 'conversion', { send_to: t.googleAdsId + '/' + t.googleAdsCallLabel });
+          if (t.ga4Id) window.gtag('event', 'call');
+        }
+        if (window.fbq) window.fbq('track', 'Contact');
+      }
+      function fireLead() {
+        if (window.gtag) {
+          if (t.googleAdsId && t.googleAdsLeadLabel) window.gtag('event', 'conversion', { send_to: t.googleAdsId + '/' + t.googleAdsLeadLabel });
+          if (t.ga4Id) window.gtag('event', 'generate_lead');
+        }
+        if (window.fbq) window.fbq('track', 'Lead');
+      }
+
+      document.addEventListener('click', function (e) {
+        var a = e.target.closest && e.target.closest('a[href^="tel:"]');
+        if (a) fireCall();
+      });
+      document.addEventListener('lead-success', fireLead);
+    })();
+  </script>
+)}
