@@ -38,4 +38,13 @@ describe('built ad landing pages', () => {
     const html = readFileSync('dist/go/screen-repair/index.html', 'utf8');
     expect(html).not.toContain('aggregateRating');
   });
+
+  it('excludes /go/ landing pages from the sitemap', () => {
+    const xml = ['dist/sitemap-0.xml', 'dist/sitemap-1.xml']
+      .filter(existsSync)
+      .map((p) => readFileSync(p, 'utf8'))
+      .join('');
+    expect(xml).toContain('/repairs/'); // sanity: the sitemap has real content
+    expect(xml).not.toContain('/go/');
+  });
 });
