@@ -39,6 +39,11 @@ describe('built ad landing pages', () => {
     expect(html).not.toContain('aggregateRating');
   });
 
+  it('the catch-all /go/repairs/ page renders the per-service price grid', () => {
+    const html = readFileSync('dist/go/repairs/index.html', 'utf8');
+    expect(html).toContain('lp-price-card');
+  });
+
   it('excludes /go/ landing pages from the sitemap', () => {
     const xml = ['dist/sitemap-0.xml', 'dist/sitemap-1.xml']
       .filter(existsSync)
