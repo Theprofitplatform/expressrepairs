@@ -111,7 +111,7 @@ const phoneSvg = '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" st
     <section class="section-tight">
       <div class="container-wide">
         <span class="eyebrow">How it works</span>
-        <h2 class="section-title" style="margin-top: 14px; font-size: clamp(28px, 3.5vw, 40px);">Three steps, one short visit.</h2>
+        <h2 class="section-title" style="margin-top: 14px;">Three steps, one short visit.</h2>
         <div class="process-strip" style="margin-top: 36px;">
           <div class="process-step"><div class="process-step-num">1</div><div class="process-step-title">Call or drop in</div><div class="process-step-desc">Tell us your device &amp; the problem</div></div>
           <div class="process-step"><div class="process-step-num">2</div><div class="process-step-title">Free diagnostic</div><div class="process-step-desc">Quoted up front — no fix, no fee</div></div>
@@ -173,13 +173,20 @@ const phoneSvg = '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" st
   .lp-header { position: sticky; top: 0; z-index: 50; background: rgba(255, 255, 255, 0.92); backdrop-filter: blur(8px); border-bottom: 1px solid var(--border-soft, #e5e7eb); }
   .lp-header-inner { display: flex; align-items: center; justify-content: space-between; padding-block: 12px; }
   .lp-logo { font-weight: 800; font-size: 18px; color: var(--text, #0f172a); text-decoration: none; }
+  /* Tap-to-call header button: a comfortable thumb target (>= 44px) on the call-first pages. */
+  .lp-header .btn-primary { min-height: 44px; }
+  /* Tighten the type scale on the landing pages only: section H2s sit clearly below the hero H1
+     (which stays ~58px), and headlines balance their line breaks. Scoped — does not touch the
+     58px+/52px headings on the SEO repairs/ pages. */
+  .hero-title { text-wrap: balance; }
+  .section-title { font-size: clamp(28px, 3.4vw, 40px); text-wrap: balance; }
   .lp-price-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 14px; margin-top: 28px; }
   .lp-price-card { display: flex; flex-direction: column; gap: 6px; padding: 18px 20px; border-radius: 14px; background: #fff; border: 1px solid var(--border-soft, #e5e7eb); text-decoration: none; transition: transform 0.15s ease, box-shadow 0.15s ease; }
   .lp-price-card:hover { transform: translateY(-2px); box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08); }
   .lp-price-card-label { font-weight: 600; color: var(--text, #0f172a); }
   .lp-price-card-amount { font-size: 22px; font-weight: 800; color: var(--brand-700, #0a66ff); }
   .lp-callback { display: grid; grid-template-columns: 1fr 1fr; gap: 40px; align-items: center; }
-  .lp-findus { display: grid; grid-template-columns: 1fr; gap: 24px; }
+  .lp-findus { display: grid; grid-template-columns: 1fr; gap: 16px; justify-items: center; text-align: center; }
   .lp-form-card { background: #fff; border: 1px solid var(--border-soft, #e5e7eb); border-radius: 18px; padding: 28px; box-shadow: 0 10px 30px rgba(0, 0, 0, 0.06); }
   @media (max-width: 768px) {
     .lp-callback, .lp-findus { grid-template-columns: 1fr; gap: 24px; }
