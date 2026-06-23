@@ -134,7 +134,12 @@ export async function onRequest({ request, env }) {
   const model = oneLine(data.model);
   // Details may contain newlines (textarea) — keep them, just cap length.
   const details = String(data.details ?? '').trim().slice(0, MAX_DETAILS_LEN);
-  const source = data.source === 'booking' ? 'booking' : 'contact';
+  // Channel + campaign attribution. Landing pages POST source 'landing:<slug>';
+  // surface the slug so the shop sees which ad/page produced the lead.
+  const rawSource = oneLine(data.source, 60);
+  const isLanding = rawSource.startsWith('landing:');
+  const campaign = isLanding ? rawSource.slice('landing:'.length) : '';
+  const source = rawSource === 'booking' ? 'booking' : isLanding ? 'landing' : 'contact';
   const repairType = REPAIR_LABELS[data.type] || (data.type ? oneLine(data.type) : '');
 
   if (!name || !phone) {
@@ -159,6 +164,7 @@ export async function onRequest({ request, env }) {
     ['Device', model],
     ['Repair', repairType],
     ['Quote', data.quote ? oneLine(data.quote, 60) : ''],
+    ['Campaign', campaign],
     ['Details', details],
   ].filter(([, v]) => v);
 
@@ -170,7 +176,7 @@ export async function onRequest({ request, env }) {
   const payload = {
     from: env.LEAD_FROM_EMAIL || DEFAULT_FROM,
     to: [env.LEAD_TO_EMAIL || DEFAULT_TO],
-    subject: `${heading}: ${name}${model ? ` — ${model}` : ''}`,
+    subject: `${heading}: ${name}${model ? ` — ${model}` : ''}${campaign ? ` [${campaign}]` : ''}`,
     text,
     html,
   };
