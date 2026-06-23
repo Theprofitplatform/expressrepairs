@@ -105,4 +105,21 @@ describe('POST /api/lead', () => {
     const res = await onRequest({ request: makeReq({ body: { name: 'Jane', phone: '0400' } }), env: ENV });
     expect(res.status).toBe(503);
   });
+
+  it('surfaces the landing-page campaign slug in the email (attribution)', async () => {
+    const fetchSpy = okResend();
+    await onRequest({ request: makeReq({ body: { name: 'Jane', phone: '0400 000 000', type: 'screen', source: 'landing:screen-repair' } }), env: ENV });
+    const payload = JSON.parse(fetchSpy.mock.calls[0][1].body);
+    expect(payload.text).toContain('screen-repair');      // campaign slug in body
+    expect(payload.text).toContain('Source: landing form');
+    expect(payload.subject).toContain('screen-repair');   // at-a-glance inbox triage
+  });
+
+  it('a plain contact lead carries no campaign row and stays source "contact"', async () => {
+    const fetchSpy = okResend();
+    await onRequest({ request: makeReq({ body: { name: 'Jane', phone: '0400' } }), env: ENV });
+    const payload = JSON.parse(fetchSpy.mock.calls[0][1].body);
+    expect(payload.text).toContain('Source: contact form');
+    expect(payload.text).not.toContain('Campaign:');
+  });
 });

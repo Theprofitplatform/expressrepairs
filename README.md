@@ -50,6 +50,19 @@ to the shop via Resend. Configure these in the Cloudflare **Pages** project
 Until `RESEND_API_KEY` is set the endpoint returns `503` and the form shows a
 "please call us" fallback — it never silently swallows a lead.
 
+## Ad landing pages (`/go/`)
+
+Conversion-first landing pages for paid campaigns, separate from the SEO
+`repairs/` family. They are `noindex` and excluded from the sitemap.
+
+- Pages: `/go/screen-repair/`, `/go/battery/`, `/go/water-damage/`, `/go/repairs/`.
+- Copy lives in `src/data/landing.js` (prices/FAQs are reused from
+  `src/data/repairs.js` — never duplicated).
+- **Conversion tracking:** fill in the tag IDs in `src/data/tracking.js`
+  (GA4, Google Ads conversion ID + call/lead labels, Meta Pixel). Until an ID
+  is set its tag does not load. A tap-to-call fires a call conversion; a
+  successful callback-form submit fires a lead conversion.
+
 ## Deploy
 
 Production is the Cloudflare **Pages** project **`expressrepairs`**; the custom

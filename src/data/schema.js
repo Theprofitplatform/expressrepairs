@@ -49,6 +49,18 @@ export const brandTileSchema = z.object({ id: z.string(), name: z.string(), sub:
 export const testimonialSchema = z.object({ name: z.string(), source: z.string(), initials: z.string(), text: z.string() });
 export const warrantySchema = z.object({ title: z.string(), desc: z.string() });
 export const faqSchema = z.object({ q: z.string(), a: z.string() });
+export const landingPageSchema = z.object({
+  slug: z.string(),
+  service: z.string().nullable(),
+  metaTitle: z.string(),
+  metaDescription: z.string(),
+  h1: z.string(),
+  sub: z.string(),
+  offer: z.string(),
+  fromCaption: z.string().optional(),
+  fromAmount: z.string().optional(),
+  faqs: z.array(faqSchema).optional(),
+});
 export const hoursSchema = z.object({ day: z.string(), hrs: z.string(), dow: z.number().min(0).max(6) });
 
 export const siteSchema = z.object({
