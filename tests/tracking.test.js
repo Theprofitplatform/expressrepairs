@@ -9,9 +9,11 @@ describe('tracking config', () => {
     }
   });
 
-  it('ships empty placeholder IDs by default (nothing fires until configured)', () => {
+  it('has the Meta Pixel configured; GA4 + Google Ads not set yet', () => {
+    // Meta Pixel is live on the ad pages. GA4 and Google Ads are intentionally
+    // still empty — when you set them, update this test to match.
+    expect(TRACKING.metaPixelId).not.toBe('');
     expect(TRACKING.ga4Id).toBe('');
     expect(TRACKING.googleAdsId).toBe('');
-    expect(TRACKING.metaPixelId).toBe('');
   });
 });

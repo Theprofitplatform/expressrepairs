@@ -26,7 +26,7 @@ export const SITE = siteSchema.parse({
   // Add your Google Business / Facebook / Instagram profile URLs here to link
   // the business entity (emitted as schema.org `sameAs`).
   sameAs: [],
-  // ⚠️ Star rich-results: set `count` to your REAL Google review count to emit
-  // an aggregateRating. Left null so we never publish a fabricated review count.
-  rating: { value: 4.9, count: null, best: 5 },
+  // ⚠️ Star rich-results: `count` is the REAL Google review count, verified from
+  // the GBP listing on 2026-06-24 (4.9★, 17 reviews) — emits a genuine aggregateRating.
+  rating: { value: 4.9, count: 17, best: 5 },
 });
