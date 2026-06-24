@@ -98,6 +98,13 @@ export const BrandLogo = ({ id, size = 28 }) => {
           <path d="M4 16 L8 8 L12 14 L16 8 L20 16" strokeLinecap="round" strokeLinejoin="round"/>
         </svg>
       );
+    case 'other':
+      return (
+        <svg width={s} height={s} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-label="Other phone">
+          <rect x="6" y="2" width="12" height="20" rx="2.5"/>
+          <line x1="10" y1="18.5" x2="14" y2="18.5"/>
+        </svg>
+      );
     default:
       return <span style={{fontSize:18, fontWeight:800}}>+</span>;
   }

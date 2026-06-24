@@ -2,7 +2,7 @@ import { z } from 'zod';
 
 // NOTE: these must stay in sync with the brand `id`s in ./brands.js — adding a
 // brand there requires adding its id here, or issue pricing won't be validated.
-const brandIds = ['apple', 'samsung', 'google', 'oppo', 'huawei', 'motorola'];
+const brandIds = ['apple', 'samsung', 'google', 'oppo', 'huawei', 'motorola', 'other'];
 const priceMap = z.object(Object.fromEntries(brandIds.map((id) => [id, z.number()])));
 
 export const brandSchema = z.object({

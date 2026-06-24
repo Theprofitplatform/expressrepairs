@@ -20,7 +20,11 @@ export function BookingWidget() {
 
   const reset = () => { setStep(0); setBrand(null); setModel(null); setIssue(null); setDetails({name:'',phone:'',company:''}); setDetailsErr({}); setSubmitted(false); setSending(false); setSendError(''); };
 
-  const price = (brand && issue) ? issue.basePrice[brand.id] : 0;
+  const isOther = brand?.id === 'other';
+  const price = (brand && issue && !isOther) ? issue.basePrice[brand.id] : 0;
+  // "Other" phones can't be priced from a list — quote on inspection.
+  const quoteLabel = isOther ? 'Custom quote' : (price > 0 ? `$${price}` : 'Free');
+  const deviceLabel = brand ? (isOther ? model : `${brand.name} ${model}`) : '';
   const back = () => setStep(s => Math.max(s - 1, 0));
 
   return (
@@ -56,15 +60,34 @@ export function BookingWidget() {
         {step === 1 && brand && (
           <>
             <div className="booking-steplabel">Step 2 of 5 · {brand.name}</div>
-            <div className="booking-question">Pick your model</div>
-            <div className="model-list">
-              {brand.models.map(m => (
-                <button key={m} className={`model-row ${model === m ? 'selected' : ''}`} onClick={() => { setModel(m); setTimeout(() => setStep(2), 180); }}>
-                  <span>{m}</span>
-                  {model === m && <Icon.Check size={14} />}
+            {isOther ? (
+              <>
+                <div className="booking-question">What phone do you have?</div>
+                <div className="form-field" style={{marginTop:4}}>
+                  <label htmlFor="booking-other-model">Phone make &amp; model</label>
+                  <input id="booking-other-model" type="text" value={model || ''} autoFocus
+                    placeholder="e.g. OnePlus 12, Xiaomi 13, Nokia G42, iPad…"
+                    onChange={e => setModel(e.target.value)}
+                    onKeyDown={e => { if (e.key === 'Enter' && model?.trim()) setStep(2); }} />
+                </div>
+                <button className="btn btn-primary btn-block" style={{marginTop:14}}
+                  disabled={!model?.trim()} onClick={() => model?.trim() && setStep(2)}>
+                  Continue <Icon.ArrowRight />
                 </button>
-              ))}
-            </div>
+              </>
+            ) : (
+              <>
+                <div className="booking-question">Pick your model</div>
+                <div className="model-list">
+                  {brand.models.map(m => (
+                    <button key={m} className={`model-row ${model === m ? 'selected' : ''}`} onClick={() => { setModel(m); setTimeout(() => setStep(2), 180); }}>
+                      <span>{m}</span>
+                      {model === m && <Icon.Check size={14} />}
+                    </button>
+                  ))}
+                </div>
+              </>
+            )}
           </>
         )}
 
@@ -88,16 +111,16 @@ export function BookingWidget() {
             <div className="booking-steplabel">Step 4 of 5 · Your quote</div>
             <div className="booking-question">Here's your estimate</div>
             <div className="quote-summary">
-              <div className="quote-line"><span style={{color:'var(--text-muted)'}}>Device</span><span style={{fontWeight:600}}>{brand.name} {model}</span></div>
+              <div className="quote-line"><span style={{color:'var(--text-muted)'}}>Device</span><span style={{fontWeight:600}}>{deviceLabel}</span></div>
               <div className="quote-line"><span style={{color:'var(--text-muted)'}}>Service</span><span style={{fontWeight:600}}>{issue.label}</span></div>
               <div className="quote-line"><span style={{color:'var(--text-muted)'}}>Turnaround</span><span style={{fontWeight:600}}>{issue.id === 'water' ? '2–4 hours' : '30–90 minutes'}</span></div>
               <div className="quote-line"><span style={{color:'var(--text-muted)'}}>Warranty</span><span style={{fontWeight:600}}>6–12 months</span></div>
             </div>
             <div style={{display:'flex', alignItems:'baseline', gap:8}}>
               <span style={{fontSize:14, color:'var(--text-muted)'}}>Estimate</span>
-              <div className="quote-price">{price > 0 ? `$${price}` : 'Free'}</div>
+              <div className="quote-price">{quoteLabel}</div>
             </div>
-            <div className="quote-note">Final price confirmed on inspection. One last step to book.</div>
+            <div className="quote-note">{isOther ? "We'll confirm the exact price the moment we see your phone. One last step to book." : 'Final price confirmed on inspection. One last step to book.'}</div>
 
             <div style={{display:'flex', gap:10, marginTop:16}}>
               <button className="btn btn-primary btn-block" onClick={() => setStep(4)}>
@@ -123,8 +146,8 @@ export function BookingWidget() {
               <>
                 <div className="quote-summary" style={{padding:'12px 16px'}}>
                   <div className="quote-line" style={{fontSize:13}}>
-                    <span style={{color:'var(--text-muted)'}}>{brand.name} {model} · {issue.label}</span>
-                    <span style={{fontWeight:700, color:'var(--brand-700)'}}>{price > 0 ? `$${price}` : 'Free'}</span>
+                    <span style={{color:'var(--text-muted)'}}>{deviceLabel} · {issue.label}</span>
+                    <span style={{fontWeight:700, color:'var(--brand-700)'}}>{quoteLabel}</span>
                   </div>
                 </div>
 
@@ -167,9 +190,9 @@ export function BookingWidget() {
                       source: 'booking',
                       name: details.name,
                       phone: details.phone,
-                      model: `${brand.name} ${model}`,
+                      model: deviceLabel,
                       type: issue.id,
-                      quote: price > 0 ? `$${price}` : 'Free',
+                      quote: quoteLabel,
                       company: details.company,
                     });
                     setSending(false);
@@ -196,7 +219,7 @@ export function BookingWidget() {
         {step < 3 && (
           <span style={{fontSize:13, color:'var(--text-subtle)'}}>
             {step === 0 && 'Tap a brand to continue'}
-            {step === 1 && 'Tap your model to continue'}
+            {step === 1 && (isOther ? 'Type your phone model to continue' : 'Tap your model to continue')}
             {step === 2 && 'Tap a service to see your quote'}
           </span>
         )}
