@@ -1,0 +1,28 @@
+---
+// Site-wide Google Analytics 4. Included by Layout.astro, so it loads on EVERY
+// page when a GA4 measurement id is set in src/data/tracking.js; renders nothing
+// when ga4Id is empty. The gtag library is async, so it never blocks first paint.
+//
+// Scope split: this owns GA4 (pageviews, everywhere). Google Ads conversions and
+// the Meta Pixel stay in AdTracking.astro (ad landing pages only). To keep the
+// gtag library from loading twice on /go/ pages, this sets window.__gtagSrcLoaded;
+// AdTracking checks that flag before injecting its own copy.
+import { TRACKING as t } from '../data/tracking.js';
+---
+{t.ga4Id && (
+  <script is:inline define:vars={{ ga4Id: t.ga4Id }}>
+    (function () {
+      window.dataLayer = window.dataLayer || [];
+      window.gtag = window.gtag || function () { window.dataLayer.push(arguments); };
+      if (!window.__gtagSrcLoaded) {
+        window.__gtagSrcLoaded = true;
+        var s = document.createElement('script');
+        s.async = true;
+        s.src = 'https://www.googletagmanager.com/gtag/js?id=' + ga4Id;
+        document.head.appendChild(s);
+        window.gtag('js', new Date());
+      }
+      window.gtag('config', ga4Id);
+    })();
+  </script>
+)}

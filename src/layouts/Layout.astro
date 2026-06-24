@@ -4,6 +4,7 @@ import '../styles/local-page.css';
 import '../styles/blog.css';
 import { canonical, absoluteUrl } from '../lib/seo.js';
 import { SITE } from '../data/site.js';
+import SiteAnalytics from '../components/SiteAnalytics.astro';
 
 const {
   title,
@@ -59,6 +60,8 @@ const FONTS_HREF =
     {jsonld.map((obj) => (
       <script type="application/ld+json" set:html={JSON.stringify(obj)} />
     ))}
+
+    <SiteAnalytics />
   </head>
   <body>
     <a href="#main-content" class="skip-link">Skip to content</a>

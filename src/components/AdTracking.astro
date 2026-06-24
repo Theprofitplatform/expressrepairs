@@ -13,13 +13,18 @@ const enabled = Boolean(t.ga4Id || t.googleAdsId || t.metaPixelId);
         s.async = true; s.src = src; document.head.appendChild(s);
       }
 
-      // Google gtag (GA4 and/or Google Ads).
+      // Google gtag. GA4 is loaded + configured site-wide by SiteAnalytics.astro
+      // (window.__gtagSrcLoaded). Here we only ensure the library exists (for an
+      // ads-only page with no GA4) and configure Google Ads. We never re-config
+      // GA4 — that would double-count pageviews on the /go/ pages.
       if (t.ga4Id || t.googleAdsId) {
         window.dataLayer = window.dataLayer || [];
         window.gtag = window.gtag || function () { window.dataLayer.push(arguments); };
-        inject('https://www.googletagmanager.com/gtag/js?id=' + (t.ga4Id || t.googleAdsId));
-        window.gtag('js', new Date());
-        if (t.ga4Id) window.gtag('config', t.ga4Id);
+        if (!window.__gtagSrcLoaded) {
+          window.__gtagSrcLoaded = true;
+          inject('https://www.googletagmanager.com/gtag/js?id=' + (t.ga4Id || t.googleAdsId));
+          window.gtag('js', new Date());
+        }
         if (t.googleAdsId) window.gtag('config', t.googleAdsId);
       }
 

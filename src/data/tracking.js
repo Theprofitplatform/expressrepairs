@@ -8,7 +8,7 @@
 //   googleAdsLeadLabel conversion label for a form lead
 //   metaPixelId        Meta (Facebook) Pixel ID,   e.g. '1234567890'
 export const TRACKING = {
-  ga4Id: '',
+  ga4Id: 'G-RMD7TWKMXE',
   googleAdsId: '',
   googleAdsCallLabel: '',
   googleAdsLeadLabel: '',

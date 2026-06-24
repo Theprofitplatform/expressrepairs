@@ -1,6 +1,7 @@
 import { describe, it, expect, beforeAll } from 'vitest';
 import { execSync } from 'node:child_process';
 import { readFileSync, existsSync } from 'node:fs';
+import { TRACKING } from '../src/data/tracking.js';
 
 let html = '';
 beforeAll(() => {
@@ -52,6 +53,14 @@ describe('built homepage', () => {
   });
   it('no longer pulls avatars from the i.pravatar.cc placeholder service', () => {
     expect(html).not.toContain('pravatar');
+  });
+  it('loads GA4 site-wide (homepage carries the measurement id + gtag loader)', () => {
+    // GA4 must be present on a non-/go/ page — proves SiteAnalytics is site-wide,
+    // not scoped to the ad landing pages. Skips automatically if GA4 is unset.
+    if (TRACKING.ga4Id) {
+      expect(html).toContain('googletagmanager.com/gtag/js');
+      expect(html).toContain(TRACKING.ga4Id);
+    }
   });
 });
 
