@@ -25,7 +25,7 @@ export const SITE = siteSchema.parse({
     'https://www.facebook.com/people/Xpress-Repairs/61590991947576/',
     'https://www.instagram.com/xpressrepairs.riverwood/',
   ],
-  // ⚠️ Star rich-results: set `count` to your REAL Google review count to emit
-  // an aggregateRating. Left null so we never publish a fabricated review count.
-  rating: { value: 4.9, count: null, best: 5 },
+  // Star rich-results: REAL Google rating + review count (owner-confirmed from
+  // the GBP listing, 2026-06-24) — emits aggregateRating in the LocalBusiness JSON-LD.
+  rating: { value: 4.9, count: 17, best: 5 },
 });
