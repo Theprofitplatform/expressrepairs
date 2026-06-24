@@ -2,15 +2,15 @@ import { z } from 'zod';
 import { issueSchema, repairCardSchema } from './schema.js';
 
 export const ISSUES = z.array(issueSchema).parse([
-  { id: 'screen', label: 'Screen Repair', emoji: '📱', basePrice: { apple: 149, samsung: 169, google: 129, oppo: 99, huawei: 119, motorola: 99 } },
-  { id: 'battery', label: 'Battery', emoji: '🔋', basePrice: { apple: 79, samsung: 89, google: 69, oppo: 59, huawei: 69, motorola: 59 } },
-  { id: 'backglass', label: 'Back Glass', emoji: '✨', basePrice: { apple: 89, samsung: 99, google: 79, oppo: 69, huawei: 79, motorola: 69 } },
-  { id: 'port', label: 'Charging Port', emoji: '🔌', basePrice: { apple: 69, samsung: 79, google: 59, oppo: 49, huawei: 59, motorola: 49 } },
-  { id: 'camera', label: 'Camera', emoji: '📸', basePrice: { apple: 99, samsung: 119, google: 89, oppo: 79, huawei: 89, motorola: 79 } },
-  { id: 'water', label: 'Water Damage', emoji: '💧', basePrice: { apple: 129, samsung: 149, google: 119, oppo: 99, huawei: 109, motorola: 99 } },
-  { id: 'speaker', label: 'Speaker', emoji: '🔊', basePrice: { apple: 69, samsung: 79, google: 59, oppo: 49, huawei: 59, motorola: 49 } },
-  { id: 'diagnostic', label: 'Free Diagnostic', emoji: '🔍', basePrice: { apple: 0, samsung: 0, google: 0, oppo: 0, huawei: 0, motorola: 0 } },
-  { id: 'other', label: 'Other', emoji: '🛠️', basePrice: { apple: 0, samsung: 0, google: 0, oppo: 0, huawei: 0, motorola: 0 } },
+  { id: 'screen', label: 'Screen Repair', emoji: '📱', basePrice: { apple: 149, samsung: 169, google: 129, oppo: 99, huawei: 119, motorola: 99, other: 0 } },
+  { id: 'battery', label: 'Battery', emoji: '🔋', basePrice: { apple: 79, samsung: 89, google: 69, oppo: 59, huawei: 69, motorola: 59, other: 0 } },
+  { id: 'backglass', label: 'Back Glass', emoji: '✨', basePrice: { apple: 89, samsung: 99, google: 79, oppo: 69, huawei: 79, motorola: 69, other: 0 } },
+  { id: 'port', label: 'Charging Port', emoji: '🔌', basePrice: { apple: 69, samsung: 79, google: 59, oppo: 49, huawei: 59, motorola: 49, other: 0 } },
+  { id: 'camera', label: 'Camera', emoji: '📸', basePrice: { apple: 99, samsung: 119, google: 89, oppo: 79, huawei: 89, motorola: 79, other: 0 } },
+  { id: 'water', label: 'Water Damage', emoji: '💧', basePrice: { apple: 129, samsung: 149, google: 119, oppo: 99, huawei: 109, motorola: 99, other: 0 } },
+  { id: 'speaker', label: 'Speaker', emoji: '🔊', basePrice: { apple: 69, samsung: 79, google: 59, oppo: 49, huawei: 59, motorola: 49, other: 0 } },
+  { id: 'diagnostic', label: 'Free Diagnostic', emoji: '🔍', basePrice: { apple: 0, samsung: 0, google: 0, oppo: 0, huawei: 0, motorola: 0, other: 0 } },
+  { id: 'other', label: 'Other', emoji: '🛠️', basePrice: { apple: 0, samsung: 0, google: 0, oppo: 0, huawei: 0, motorola: 0, other: 0 } },
 ]);
 
 export const REPAIR_CARDS = z.array(repairCardSchema).parse([
