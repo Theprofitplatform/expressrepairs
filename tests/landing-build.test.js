@@ -1,6 +1,7 @@
 import { describe, it, expect, beforeAll } from 'vitest';
 import { execSync } from 'node:child_process';
 import { readFileSync, existsSync } from 'node:fs';
+import { TRACKING } from '../src/data/tracking.js';
 
 beforeAll(() => {
   // Cold Astro build can take ~60-90s; allow generous headroom.
@@ -28,10 +29,21 @@ describe('built ad landing pages', () => {
     expect(html).toContain('Free diagnostic');
   });
 
-  it('ships no tracking snippet while tag IDs are empty (the default)', () => {
+  it('loads each tracking tag only when its ID is configured', () => {
     const html = readFileSync('dist/go/screen-repair/index.html', 'utf8');
-    expect(html).not.toContain('googletagmanager.com/gtag');
-    expect(html).not.toContain('fbevents.js');
+    // Meta Pixel is configured → its loader and the real id ship to the page.
+    if (TRACKING.metaPixelId) {
+      expect(html).toContain('fbevents.js');
+      expect(html).toContain(`"metaPixelId":"${TRACKING.metaPixelId}"`);
+    }
+    // GA4 / Google Ads unset → the embedded config carries empty ids, so gtag
+    // never initialises (its loader URL is present in the script but inert).
+    if (!TRACKING.ga4Id) expect(html).toContain('"ga4Id":""');
+    if (!TRACKING.googleAdsId) expect(html).toContain('"googleAdsId":""');
+    // Nothing configured at all → AdTracking renders no script.
+    if (!TRACKING.metaPixelId && !TRACKING.ga4Id && !TRACKING.googleAdsId) {
+      expect(html).not.toContain('fbevents.js');
+    }
   });
 
   it('does not fabricate a star rating / review count', () => {
