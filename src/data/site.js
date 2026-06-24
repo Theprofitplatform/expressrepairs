@@ -7,13 +7,13 @@ export const SITE = siteSchema.parse({
   // Store-location display name (Avi's correction) — distinct from the brand name.
   storeName: 'Xpress Phone Repairs Riverwood',
   storeSub: 'Inside Metro Wireless Store',
-  phone: '(02) 9533 3300',
-  phoneHref: 'tel:+61295333300',
-  // Ad landing pages (/go/*) dial the mobile so paid-traffic calls land on the
-  // same line the ads dial — and it's ready for the Twilio call-tracking swap.
-  // The global NAP above stays the (02) landline everywhere else on the site.
-  adPhone: '0415 303 300',
-  adPhoneHref: 'tel:+61415303300',
+  // Primary number site-wide — the mobile, matching the Google Business listing
+  // (used for every call CTA and as the schema NAP telephone). The landline is
+  // shown as a clearly-labelled secondary contact (e.g. in the footer).
+  phone: '0415 303 300',
+  phoneHref: 'tel:+61415303300',
+  landline: '(02) 9533 3300',
+  landlineHref: 'tel:+61295333300',
   addressLines: ['Shop 7C, Riverwood Plaza, 247-267 Belmore Rd', 'Riverwood NSW 2210'],
   addressShort: 'Riverwood Plaza, 247-267 Belmore Rd, Riverwood NSW 2210',
   mapsQuery: 'Riverwood Plaza 247-267 Belmore Rd Riverwood NSW 2210',
