@@ -9,6 +9,11 @@ export const SITE = siteSchema.parse({
   storeSub: 'Inside Metro Wireless Store',
   phone: '(02) 9533 3300',
   phoneHref: 'tel:+61295333300',
+  // Ad landing pages (/go/*) dial the mobile so paid-traffic calls land on the
+  // same line the ads dial — and it's ready for the Twilio call-tracking swap.
+  // The global NAP above stays the (02) landline everywhere else on the site.
+  adPhone: '0415 303 300',
+  adPhoneHref: 'tel:+61415303300',
   addressLines: ['Shop 7C, Riverwood Plaza, 247-267 Belmore Rd', 'Riverwood NSW 2210'],
   addressShort: 'Riverwood Plaza, 247-267 Belmore Rd, Riverwood NSW 2210',
   mapsQuery: 'Riverwood Plaza 247-267 Belmore Rd Riverwood NSW 2210',

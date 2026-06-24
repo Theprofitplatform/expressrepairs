@@ -69,6 +69,8 @@ export const siteSchema = z.object({
   storeSub: z.string(),
   phone: z.string(),
   phoneHref: z.string().startsWith('tel:'),
+  adPhone: z.string(),
+  adPhoneHref: z.string().startsWith('tel:'),
   addressLines: z.array(z.string()).min(1),
   addressShort: z.string(),
   mapsQuery: z.string(),

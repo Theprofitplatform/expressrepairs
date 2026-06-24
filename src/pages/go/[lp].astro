@@ -48,7 +48,7 @@ const phoneSvg = '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" st
   <header class="lp-header">
     <div class="container-wide lp-header-inner">
       <a href="/" class="lp-logo">{SITE.name}</a>
-      <a href={SITE.phoneHref} class="btn btn-primary btn-sm"><Fragment set:html={phoneSvg} /> {SITE.phone}</a>
+      <a href={SITE.adPhoneHref} class="btn btn-primary btn-sm"><Fragment set:html={phoneSvg} /> {SITE.adPhone}</a>
     </div>
   </header>
 
@@ -62,7 +62,7 @@ const phoneSvg = '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" st
             <h1 class="hero-title" style="font-size: clamp(36px, 5vw, 58px);">{lp.h1}</h1>
             <p class="hero-sub">{lp.sub}</p>
             <div class="hero-ctas">
-              <a href={SITE.phoneHref} class="btn btn-primary btn-lg"><Fragment set:html={phoneSvg} /> Call {SITE.phone}</a>
+              <a href={SITE.adPhoneHref} class="btn btn-primary btn-lg"><Fragment set:html={phoneSvg} /> Call {SITE.adPhone}</a>
               <a href="#callback" class="btn btn-ghost btn-lg">Prefer a callback?</a>
             </div>
             <div class="hero-infobar">
@@ -98,7 +98,7 @@ const phoneSvg = '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" st
         ) : (
           <div class="lp-price-grid">
             {SERVICES.map((s) => (
-              <a class="lp-price-card" href={SITE.phoneHref}>
+              <a class="lp-price-card" href={SITE.adPhoneHref}>
                 <span class="lp-price-card-label">{s.label}</span>
                 <span class="lp-price-card-amount">{s.fromAmount}</span>
               </a>
@@ -125,7 +125,7 @@ const phoneSvg = '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" st
         <div>
           <span class="eyebrow">Prefer a callback?</span>
           <h2 class="section-title" style="margin-top: 14px;">We'll call you back — fast.</h2>
-          <p class="section-lede">Leave your number and we'll ring you to confirm your price and book a time. Or just call <a href={SITE.phoneHref}>{SITE.phone}</a> now.</p>
+          <p class="section-lede">Leave your number and we'll ring you to confirm your price and book a time. Or just call <a href={SITE.adPhoneHref}>{SITE.adPhone}</a> now.</p>
         </div>
         <div class="lp-form-card">
           <LandingForm client:visible slug={lp.slug} service={lp.service} />
@@ -156,7 +156,7 @@ const phoneSvg = '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" st
           <h2 class="section-title" style="margin-top: 14px;">{SITE.storeName}</h2>
           <p class="section-lede">{SITE.addressShort}</p>
           <div class="hero-ctas" style="margin-top: 20px;">
-            <a href={SITE.phoneHref} class="btn btn-primary btn-lg"><Fragment set:html={phoneSvg} /> Call {SITE.phone}</a>
+            <a href={SITE.adPhoneHref} class="btn btn-primary btn-lg"><Fragment set:html={phoneSvg} /> Call {SITE.adPhone}</a>
             <a href={mapsHref} class="btn btn-ghost btn-lg" target="_blank" rel="noopener">Get directions</a>
           </div>
         </div>
@@ -165,7 +165,7 @@ const phoneSvg = '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" st
   </main>
 
   <SiteFooter />
-  <MobileCta />
+  <MobileCta phoneHref={SITE.adPhoneHref} phone={SITE.adPhone} />
   <PageScripts />
 </Layout>
 

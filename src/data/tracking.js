@@ -12,5 +12,5 @@ export const TRACKING = {
   googleAdsId: '',
   googleAdsCallLabel: '',
   googleAdsLeadLabel: '',
-  metaPixelId: '',
+  metaPixelId: '28525940300327696',
 };
