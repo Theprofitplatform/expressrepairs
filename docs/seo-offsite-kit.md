@@ -6,9 +6,10 @@ Turnkey, copy-paste assets for the off-site pillars of the [SEO plan](./seo-plan
 
 > **The one rule that makes all of this work: keep the NAP identical everywhere.**
 > Business name **Xpress Phone Repairs**, address **Shop 7C, Riverwood Plaza,
-> 247-267 Belmore Rd, Riverwood NSW 2210**, phone **(02) 9533 3300**. Use the
-> **(02) landline** on the GBP and every directory — the `0415 303 300` mobile is
-> **only** for the paid `/go/` ad landing pages, never for the public NAP.
+> 247-267 Belmore Rd, Riverwood NSW 2210**, phone **0415 303 300**. The site now
+> leads with the **mobile (0415 303 300)** as its primary number, so use that as the
+> **primary phone on the GBP and every citation** to keep the NAP consistent — you
+> can list the **(02) 9533 3300** landline as an optional *secondary* number.
 
 ---
 
@@ -19,7 +20,8 @@ Turnkey, copy-paste assets for the off-site pillars of the [SEO plan](./seo-plan
 | **Business name** | `Xpress Phone Repairs` (match the shopfront signage exactly — do **not** add keywords like "Riverwood iPhone Repair", it risks suspension) |
 | **Primary category** | `Mobile phone repair shop` |
 | **Additional categories** | `Phone repair service`, `Electronics repair shop` (add `Cell phone store` only if you also sell phones/accessories) |
-| **Phone** | `(02) 9533 3300` |
+| **Phone (primary)** | `0415 303 300` — must match the site's NAP |
+| **Additional phone** | `(02) 9533 3300` (landline — optional secondary) |
 | **Address** | `Shop 7C, Riverwood Plaza, 247-267 Belmore Rd, Riverwood NSW 2210` |
 | **Hours** | Mon 9am–6pm · Tue 9am–6pm · Wed 9am–6pm · **Thu 9am–7pm** · Fri 9am–6pm · Sat 9am–5pm · **Sun Closed** |
 | **Website** | `https://expressrepairs.com.au/?utm_source=gbp&utm_medium=organic&utm_campaign=profile` |
@@ -41,7 +43,7 @@ Huawei and Motorola. Most screens and batteries are done in 30–60 minutes whil
 you shop. Every repair uses original-quality parts, is tested before it leaves
 the store, and is backed by a 6–12 month warranty. Diagnostics are free and
 there's no fix, no fee. Walk in Monday to Saturday (late night Thursdays to 7pm)
-or call (02) 9533 3300 for a quick quote.
+or call 0415 303 300 for a quick quote.
 ```
 
 ---
@@ -84,7 +86,7 @@ or call (02) 9533 3300 for a quick quote.
 
 ## 5. GBP Q&A — seed these yourself (post the question, then answer it)
 
-1. **Do I need to book, or can I just walk in?** — Walk-ins are welcome Monday to Saturday. Booking ahead only guarantees we have your exact part in stock for the newest models. Call (02) 9533 3300.
+1. **Do I need to book, or can I just walk in?** — Walk-ins are welcome Monday to Saturday. Booking ahead only guarantees we have your exact part in stock for the newest models. Call 0415 303 300.
 2. **How long does a screen repair take?** — Most screens are replaced in 30–60 minutes while you wait or shop in the Plaza. We confirm the time when we see your model.
 3. **Do you offer a warranty?** — Yes — every repair is covered by a 6–12 month warranty on parts and workmanship.
 4. **Where do I park?** — Riverwood Plaza has free customer parking with entrances off Belmore Rd. We're at Shop 7C near the Woolworths end.
@@ -133,7 +135,7 @@ Thanks for trusting us with your [device] — we hope it's working like new.
 If you've got 30 seconds, a Google review helps other locals find us and means a
 lot to a small Riverwood business: [review link]
 
-Any issues at all, just reply or call (02) 9533 3300 — every repair is covered by
+Any issues at all, just reply or call 0415 303 300 — every repair is covered by
 our 6–12 month warranty.
 
 Cheers,
@@ -146,8 +148,8 @@ The Xpress Phone Repairs team · Shop 7C, Riverwood Plaza
 **Response templates — reply to every review:**
 
 - **5-star:** `Thanks [name]! So glad we could get your [device] sorted same-day. We appreciate you taking the time — see you next time, and tell your Riverwood mates! 🙌`
-- **3-star:** `Thanks for the honest feedback, [name]. We'd love to lift that to 5 — could you call us on (02) 9533 3300 or pop into Shop 7C so we can make it right? Every repair's covered by our warranty.`
-- **1-star:** `Hi [name], we're sorry this fell short. That's not the experience we want — please call (02) 9533 3300 or ask for the manager in store and we'll put it right. We stand behind every repair with our 6–12 month warranty.`
+- **3-star:** `Thanks for the honest feedback, [name]. We'd love to lift that to 5 — could you call us on 0415 303 300 or pop into Shop 7C so we can make it right? Every repair's covered by our warranty.`
+- **1-star:** `Hi [name], we're sorry this fell short. That's not the experience we want — please call 0415 303 300 or ask for the manager in store and we'll put it right. We stand behind every repair with our 6–12 month warranty.`
 
 ---
 
@@ -157,7 +159,7 @@ The Xpress Phone Repairs team · Shop 7C, Riverwood Plaza
 ```
 Business name: Xpress Phone Repairs
 Address:       Shop 7C, Riverwood Plaza, 247-267 Belmore Rd, Riverwood NSW 2210
-Phone:         (02) 9533 3300
+Phone:         0415 303 300  (primary; secondary (02) 9533 3300)
 Website:       https://expressrepairs.com.au
 Category:      Mobile phone repair shop
 Hours:         Mon–Fri 9am–6pm (Thu to 7pm), Sat 9am–5pm, Sun closed
