@@ -22,9 +22,11 @@ describe('built ad landing pages', () => {
     }
   });
 
-  it('leads with a tap-to-call link to the shop phone and shows the offer', () => {
+  it('leads with a tap-to-call to the mobile, with the landline also listed', () => {
     const html = readFileSync('dist/go/screen-repair/index.html', 'utf8');
-    expect(html).toContain('href="tel:+61295333300"');
+    expect(html).toContain('href="tel:+61415303300"'); // mobile = primary call CTA
+    expect(html).toContain('0415 303 300');
+    expect(html).toContain('href="tel:+61295333300"'); // landline still available (footer)
     expect(html).toContain('(02) 9533 3300');
     expect(html).toContain('Free diagnostic');
   });

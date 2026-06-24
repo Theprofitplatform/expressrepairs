@@ -425,6 +425,7 @@ export function Footer() {
             <h4>Contact</h4>
             <ul>
               <li><a href={SITE.phoneHref}>{SITE.phone}</a></li>
+              <li><a href={SITE.landlineHref}>{SITE.landline}</a> (landline)</li>
               <li><a href="#visit">{SITE.addressShort}</a></li>
               <li><a href="#contact">Get a quote</a></li>
             </ul>
