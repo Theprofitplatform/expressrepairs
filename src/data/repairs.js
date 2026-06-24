@@ -806,8 +806,14 @@ export const LOCAL_PAGES = [
 ];
 
 // Shared local reviews (initials avatars — pravatar fakes flagged for replacement).
+// Real Google reviews of the Riverwood store (transcribed near-verbatim from the
+// Google Business Profile; light punctuation/capitalisation cleanup only). Every
+// card renders five stars in the template, so only genuine 5-star reviews go here.
 export const LOCAL_REVIEWS = [
-  { initials: 'LB', name: 'Livio Bruno', source: 'Google Review', text: 'Excellent — the best service. Got my iPhone screen fixed in under an hour. Quality is amazing and the price was very reasonable. Highly recommend!' },
-  { initials: 'RT', name: 'Rikki Thomson', source: 'Google Review', text: 'Today I had the most wonderful customer service experience. The team went above and beyond on my repair. Explained everything clearly and the repair was perfect.' },
-  { initials: 'SM', name: 'Sarah M.', source: 'Verified Customer', text: "Best repair shop I've been to. Cracked screen + battery issue sorted quickly. Staff are knowledgeable and prices are fair. My phone works like new again!" },
+  { initials: 'MD', name: 'Margaret Dasivla', source: 'Google Review', text: "I fixed my iPhone 7 Plus screen and battery here. It was done within 20 mins and works perfect now. I'm very happy." },
+  { initials: 'MT', name: 'Margad T.', source: 'Google Review', text: 'Avi helped me with my phone when I needed help. This store has really good customer service — they do iPhone repairs very time efficiently and to the best quality.' },
+  { initials: 'NB', name: 'Natasa Bejatovic', source: 'Google Review', text: 'All staff is very professional, friendly, always ready for help. I am with them almost 20 years and I will always stay with them.' },
+  { initials: 'SA', name: 'Sagar Acharya', source: 'Google Review', text: 'They are the best in Australia. Love the customer service. You have to wait a bit longer but totally worth it.' },
+  { initials: 'KK', name: 'Kathleen Kennedy', source: 'Google Review', text: "Fabulous service, with a smile. Shop locally — you'll be glad you did." },
+  { initials: 'JD', name: 'Jennifer Dungo', source: 'Google Review', text: 'Very good service and staff. They are very friendly and approachable. Nice transaction.' },
 ];
