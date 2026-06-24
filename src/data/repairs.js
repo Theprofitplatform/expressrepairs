@@ -324,7 +324,7 @@ export const LOCAL_PAGES = [
       { label: 'Open', value: 'Mon–Sat (Sun closed)' },
     ],
     reviewsTitle: 'What locals say.',
-    reviewsLede: 'Real reviews from customers across Narwee and the St George area.',
+    reviewsLede: 'Real reviews from customers across the St George area.',
     faqTitle: 'Screen repairs near Narwee — common questions.',
     faqs: [
       { q: 'How do I get to you from Narwee?', a: "We're one stop up the T8 at Riverwood — about two minutes on the train, and the Plaza is right across from Riverwood station. By car it's a five-minute drive up Broadarrow Rd, with free parking at the Plaza." },
@@ -363,7 +363,7 @@ export const LOCAL_PAGES = [
       { label: 'Late night', value: 'Thursdays to 7 PM' },
     ],
     reviewsTitle: 'What locals say.',
-    reviewsLede: 'Real reviews from customers across Beverly Hills and the St George area.',
+    reviewsLede: 'Real reviews from customers across the St George area.',
     faqTitle: 'Screen repairs near Beverly Hills — common questions.',
     faqs: [
       { q: 'How do I get to you from Beverly Hills?', a: "Two stops down the T8 via Narwee — under five minutes — and Riverwood Plaza is right by the station. Driving is just as quick; there's free parking at the Plaza off Belmore Rd." },
@@ -480,7 +480,7 @@ export const LOCAL_PAGES = [
       { label: 'Open', value: 'Mon–Sat (Sun closed)' },
     ],
     reviewsTitle: 'What locals say.',
-    reviewsLede: 'Real reviews from customers across Peakhurst and the St George area.',
+    reviewsLede: 'Real reviews from customers across the St George area.',
     faqTitle: 'Screen repairs near Peakhurst — common questions.',
     faqs: [
       { q: 'How do I get to you from Peakhurst?', a: "It's about a five-minute drive up Forest Rd to Belmore Rd, with free parking at Riverwood Plaza. Buses also run along Forest Rd toward Riverwood if you'd rather not drive." },
@@ -597,7 +597,7 @@ export const LOCAL_PAGES = [
       { label: 'Late night', value: 'Thursdays to 7 PM' },
     ],
     reviewsTitle: 'What locals say.',
-    reviewsLede: 'Real reviews from customers across Hurstville and the St George area.',
+    reviewsLede: 'Real reviews from customers across the St George area.',
     faqTitle: 'Screen repairs near Hurstville — common questions.',
     faqs: [
       { q: 'How do I get to you from Hurstville?', a: "It's about a ten-minute drive via Stoney Creek Rd and King Georges Rd to Belmore Rd — and unlike the Westfield, Riverwood Plaza has free customer parking." },
@@ -675,7 +675,7 @@ export const LOCAL_PAGES = [
       { label: 'Late night', value: 'Thursdays to 7 PM' },
     ],
     reviewsTitle: 'What locals say.',
-    reviewsLede: 'Real reviews from customers across Padstow and the St George area.',
+    reviewsLede: 'Real reviews from customers across the St George area.',
     faqTitle: 'Screen repairs near Padstow — common questions.',
     faqs: [
       { q: 'How do I get to you from Padstow?', a: "Riverwood is one stop on the T8 — about two minutes — or roughly a five-minute drive up Victoria Rd to Belmore Rd. Free parking at Riverwood Plaza, and we're at Shop 7C." },
@@ -714,7 +714,7 @@ export const LOCAL_PAGES = [
       { label: 'Late night', value: 'Thursdays to 7 PM' },
     ],
     reviewsTitle: 'What locals say.',
-    reviewsLede: 'Real reviews from customers across Hurstville and the St George area.',
+    reviewsLede: 'Real reviews from customers across the St George area.',
     faqTitle: 'Battery replacement near Hurstville — common questions.',
     faqs: [
       { q: 'How do I know my battery needs replacing?', a: "If your phone drains much faster than it used to, shuts down while it still shows charge, or reports battery health under 80%, it's due. We run a free battery health check before you decide." },
@@ -753,7 +753,7 @@ export const LOCAL_PAGES = [
       { label: 'Late night', value: 'Thursdays to 7 PM' },
     ],
     reviewsTitle: 'What locals say.',
-    reviewsLede: 'Real reviews from customers across Beverly Hills and the St George area.',
+    reviewsLede: 'Real reviews from customers across the St George area.',
     faqTitle: 'Battery replacement near Beverly Hills — common questions.',
     faqs: [
       { q: 'How do I get to you from Beverly Hills?', a: "Two stops down the T8 via Narwee — under five minutes — and Riverwood Plaza is right by the station. Driving is just as quick, with free parking at the Plaza." },
@@ -806,8 +806,14 @@ export const LOCAL_PAGES = [
 ];
 
 // Shared local reviews (initials avatars — pravatar fakes flagged for replacement).
+// Real Google reviews of the Riverwood store (transcribed near-verbatim from the
+// Google Business Profile; light punctuation/capitalisation cleanup only). Every
+// card renders five stars in the template, so only genuine 5-star reviews go here.
 export const LOCAL_REVIEWS = [
-  { initials: 'LB', name: 'Livio Bruno', source: 'Google Review', text: 'Excellent — the best service. Got my iPhone screen fixed in under an hour. Quality is amazing and the price was very reasonable. Highly recommend!' },
-  { initials: 'RT', name: 'Rikki Thomson', source: 'Google Review', text: 'Today I had the most wonderful customer service experience. The team went above and beyond on my repair. Explained everything clearly and the repair was perfect.' },
-  { initials: 'SM', name: 'Sarah M.', source: 'Verified Customer', text: "Best repair shop I've been to. Cracked screen + battery issue sorted quickly. Staff are knowledgeable and prices are fair. My phone works like new again!" },
+  { initials: 'MD', name: 'Margaret Dasivla', source: 'Google Review', text: "I fixed my iPhone 7 Plus screen and battery here. It was done within 20 mins and works perfect now. I'm very happy." },
+  { initials: 'MT', name: 'Margad T.', source: 'Google Review', text: 'Avi helped me with my phone when I needed help. This store has really good customer service — they do iPhone repairs very time efficiently and to the best quality.' },
+  { initials: 'NB', name: 'Natasa Bejatovic', source: 'Google Review', text: 'All staff is very professional, friendly, always ready for help. I am with them almost 20 years and I will always stay with them.' },
+  { initials: 'SA', name: 'Sagar Acharya', source: 'Google Review', text: 'They are the best in Australia. Love the customer service. You have to wait a bit longer but totally worth it.' },
+  { initials: 'KK', name: 'Kathleen Kennedy', source: 'Google Review', text: "Fabulous service, with a smile. Shop locally — you'll be glad you did." },
+  { initials: 'JD', name: 'Jennifer Dungo', source: 'Google Review', text: 'Very good service and staff. They are very friendly and approachable. Nice transaction.' },
 ];
