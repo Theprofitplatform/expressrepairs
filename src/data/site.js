@@ -18,9 +18,13 @@ export const SITE = siteSchema.parse({
   // Structured-data extras (LocalBusiness JSON-LD).
   image: '/images/screen-repair.jpg',
   priceRange: '$49–$169',
-  // Add your Google Business / Facebook / Instagram profile URLs here to link
-  // the business entity (emitted as schema.org `sameAs`).
-  sameAs: [],
+  // Official business profiles — emitted as schema.org `sameAs` so Google can
+  // reconcile this site with the same entity on Maps/Facebook/Instagram.
+  sameAs: [
+    'https://share.google/8M0VDZRfbNvnQiwbD', // Google Business Profile (Xpress Phone Repairs Riverwood)
+    'https://www.facebook.com/people/Xpress-Repairs/61590991947576/',
+    'https://www.instagram.com/xpressrepairs.riverwood/',
+  ],
   // ⚠️ Star rich-results: set `count` to your REAL Google review count to emit
   // an aggregateRating. Left null so we never publish a fabricated review count.
   rating: { value: 4.9, count: null, best: 5 },
