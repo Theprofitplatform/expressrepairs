@@ -6,7 +6,7 @@ Turnkey, copy-paste assets for the off-site pillars of the [SEO plan](./seo-plan
 
 > **The one rule that makes all of this work: keep the NAP identical everywhere.**
 > Business name **Xpress Phone Repairs**, address **Shop 7C, Riverwood Plaza,
-> 247-267 Belmore Rd, Riverwood NSW 2210**, phone **0415 303 300**. The site now
+> 257 Belmore Rd, Riverwood NSW 2210**, phone **0415 303 300**. The site now
 > leads with the **mobile (0415 303 300)** as its primary number, so use that as the
 > **primary phone on the GBP and every citation** to keep the NAP consistent — you
 > can list the **(02) 9533 3300** landline as an optional *secondary* number.
@@ -22,7 +22,7 @@ Turnkey, copy-paste assets for the off-site pillars of the [SEO plan](./seo-plan
 | **Additional categories** | `Phone repair service`, `Electronics repair shop` (add `Cell phone store` only if you also sell phones/accessories) |
 | **Phone (primary)** | `0415 303 300` — must match the site's NAP |
 | **Additional phone** | `(02) 9533 3300` (landline — optional secondary) |
-| **Address** | `Shop 7C, Riverwood Plaza, 247-267 Belmore Rd, Riverwood NSW 2210` |
+| **Address** | `Shop 7C, Riverwood Plaza, 257 Belmore Rd, Riverwood NSW 2210` |
 | **Hours** | Mon 9am–6pm · Tue 9am–6pm · Wed 9am–6pm · **Thu 9am–7pm** · Fri 9am–6pm · Sat 9am–5pm · **Sun Closed** |
 | **Website** | `https://expressrepairs.com.au/?utm_source=gbp&utm_medium=organic&utm_campaign=profile` |
 | **Appointment link** | `https://expressrepairs.com.au/#cta` |
@@ -158,7 +158,7 @@ The Xpress Phone Repairs team · Shop 7C, Riverwood Plaza
 **Paste this identical block into every directory:**
 ```
 Business name: Xpress Phone Repairs
-Address:       Shop 7C, Riverwood Plaza, 247-267 Belmore Rd, Riverwood NSW 2210
+Address:       Shop 7C, Riverwood Plaza, 257 Belmore Rd, Riverwood NSW 2210
 Phone:         0415 303 300  (primary; secondary (02) 9533 3300)
 Website:       https://expressrepairs.com.au
 Category:      Mobile phone repair shop

@@ -1,6 +1,6 @@
 # SEO Plan — expressrepairs.com.au
 
-**Business:** Xpress Phone Repairs, Riverwood (Express Repairs) — Shop 7C, Riverwood Plaza, 247–267 Belmore Rd, Riverwood NSW 2210 · (02) 9533 3300
+**Business:** Xpress Phone Repairs, Riverwood (Express Repairs) — Shop 7C, Riverwood Plaza, 257 Belmore Rd, Riverwood NSW 2210 · (02) 9533 3300
 **Prepared:** 2026-06-23
 **Primary goal:** More **local leads** — phone calls, booking-form submissions, and walk-ins from Riverwood and the surrounding St George / Canterbury-Bankstown suburbs.
 **Strategy in one line:** Build a *local moat* — dominate the Google map pack and "near me" results for one shop's catchment, sequenced by leverage: **GBP → reviews → on-site content depth → citations**.
@@ -95,7 +95,7 @@ GBP is the single biggest lever for local leads and the fastest to move. "Claime
 ### 4.1 One-time profile completion (do once, ~1–2 hrs)
 - **Primary category:** `Mobile phone repair shop`. **Secondary:** `Phone repair service`, `Electronics repair shop`, `Cell phone store` (only those that genuinely apply).
 - **Name:** exactly the real-world signage — `Xpress Phone Repairs` (do **not** keyword-stuff, e.g. "…Riverwood Cheap iPhone Repair" — violates Google guidelines and risks suspension).
-- **NAP:** must match the site **byte-for-byte**: `Shop 7C, Riverwood Plaza, 247-267 Belmore Rd, Riverwood NSW 2210` · `(02) 9533 3300`. (Source of truth: `src/data/site.js`.)
+- **NAP:** must match the site **byte-for-byte**: `Shop 7C, Riverwood Plaza, 257 Belmore Rd, Riverwood NSW 2210` · `(02) 9533 3300`. (Source of truth: `src/data/site.js`.)
 - **Hours:** mirror `src/data/hours.js` exactly, including the **Thursday late-night to 7 PM** and **Sunday closed**. Set special hours for public holidays.
 - **Services:** add each repair as a GBP service with the price-from values: Screen from $99, Battery from $59, Back Glass from $69, Charging Port from $49, Camera, Water Damage, plus **Free Diagnostic**.
 - **Products:** add a few hero items with photos (screen repair, battery, accessories) — products show in the profile and are an extra surface.
@@ -192,7 +192,7 @@ NAP-consistent citations reinforce the map-pack signal. One-time batch, then lea
 - **True Local**, **Yellow Pages AU (yellowpages.com.au)**, **Yelp AU**, **StartLocal**, **Hotfrog AU**, **Localsearch**, **Aussie Web**.
 - **Facebook** + **Instagram** business pages (even if lightly used) — and add **every** profile URL to `sameAs` in `src/data/site.js` (currently empty). GBP URL goes in `sameAs` too.
 
-> **Consistency is the whole point:** use the identical business name, `Shop 7C, Riverwood Plaza, 247-267 Belmore Rd, Riverwood NSW 2210`, and `(02) 9533 3300` everywhere. Inconsistent NAP across directories dilutes the signal.
+> **Consistency is the whole point:** use the identical business name, `Shop 7C, Riverwood Plaza, 257 Belmore Rd, Riverwood NSW 2210`, and `(02) 9533 3300` everywhere. Inconsistent NAP across directories dilutes the signal.
 
 ### 7.2 Light link opportunities (opportunistic, low effort)
 - **Brand/supplier pages:** if any parts supplier or brand lists authorised/partner repairers, get listed.
@@ -303,4 +303,4 @@ Build order: **Hurstville · Beverly Hills · Narwee · Peakhurst** (Tier 1) →
 ## Appendix D — Citation checklist
 
 Apple Maps Connect · Bing Places · Google Business Profile (link in `sameAs`) · Facebook · Instagram · True Local · Yellow Pages AU · Yelp AU · StartLocal · Hotfrog AU · Localsearch · Aussie Web · Riverwood Plaza store directory.
-NAP everywhere, identical: **Xpress Phone Repairs** · Shop 7C, Riverwood Plaza, 247-267 Belmore Rd, Riverwood NSW 2210 · (02) 9533 3300.
+NAP everywhere, identical: **Xpress Phone Repairs** · Shop 7C, Riverwood Plaza, 257 Belmore Rd, Riverwood NSW 2210 · (02) 9533 3300.
