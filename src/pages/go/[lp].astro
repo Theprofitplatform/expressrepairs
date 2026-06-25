@@ -4,7 +4,6 @@ import SiteFooter from '../../components/SiteFooter.astro';
 import MobileCta from '../../components/MobileCta.astro';
 import PageScripts from '../../components/PageScripts.astro';
 import PriceTable from '../../components/PriceTable.astro';
-import AdTracking from '../../components/AdTracking.astro';
 import { LandingForm } from '../../components/LandingForm.jsx';
 import { SITE } from '../../data/site.js';
 import { LANDING_PAGES } from '../../data/landing.js';
@@ -43,8 +42,6 @@ const phoneSvg = '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" st
   noindex={true}
   htmlAttrs={{ 'data-palette': 'electric-blue', 'data-fontpair': 'jakarta', 'data-dark': 'false' }}
 >
-  <AdTracking />
-
   <header class="lp-header">
     <div class="container-wide lp-header-inner">
       <a href="/" class="lp-logo">{SITE.name}</a>

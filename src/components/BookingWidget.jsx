@@ -196,8 +196,13 @@ export function BookingWidget() {
                       company: details.company,
                     });
                     setSending(false);
-                    if (res.ok) setSubmitted(true);
-                    else setSendError(`Couldn't send your booking — please call us on ${SITE.phone}.`);
+                    if (res.ok) {
+                      setSubmitted(true);
+                      // AdTracking listens for this and fires the lead conversion.
+                      document.dispatchEvent(new CustomEvent('lead-success'));
+                    } else {
+                      setSendError(`Couldn't send your booking — please call us on ${SITE.phone}.`);
+                    }
                   }}>
                     {sending ? 'Sending…' : <>Confirm booking <Icon.ArrowRight /></>}
                   </button>

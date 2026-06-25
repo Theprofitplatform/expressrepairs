@@ -5,6 +5,7 @@ import '../styles/blog.css';
 import { canonical, absoluteUrl } from '../lib/seo.js';
 import { SITE } from '../data/site.js';
 import SiteAnalytics from '../components/SiteAnalytics.astro';
+import AdTracking from '../components/AdTracking.astro';
 
 const {
   title,
@@ -62,6 +63,7 @@ const FONTS_HREF =
     ))}
 
     <SiteAnalytics />
+    <AdTracking />
   </head>
   <body>
     <a href="#main-content" class="skip-link">Skip to content</a>

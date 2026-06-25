@@ -274,8 +274,13 @@ export function Contact() {
     setSendError('');
     const res = await sendLead({ source: 'contact', ...form });
     setSending(false);
-    if (res.ok) setSent(true);
-    else setSendError(`Sorry — that didn't send. Please call us on ${SITE.phone} and we'll sort it out.`);
+    if (res.ok) {
+      setSent(true);
+      // AdTracking listens for this and fires the lead conversion.
+      document.dispatchEvent(new CustomEvent('lead-success'));
+    } else {
+      setSendError(`Sorry — that didn't send. Please call us on ${SITE.phone} and we'll sort it out.`);
+    }
   };
 
   return (

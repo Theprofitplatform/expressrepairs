@@ -3,10 +3,11 @@
 // page when a GA4 measurement id is set in src/data/tracking.js; renders nothing
 // when ga4Id is empty. The gtag library is async, so it never blocks first paint.
 //
-// Scope split: this owns GA4 (pageviews, everywhere). Google Ads conversions and
-// the Meta Pixel stay in AdTracking.astro (ad landing pages only). To keep the
-// gtag library from loading twice on /go/ pages, this sets window.__gtagSrcLoaded;
-// AdTracking checks that flag before injecting its own copy.
+// Scope split: this owns GA4 pageview config. AdTracking.astro — also loaded
+// site-wide by Layout.astro — owns the Google Ads config, the Meta Pixel, and
+// the call/lead conversion listeners (so conversions fire on every page, not
+// just /go/). To keep the gtag library from loading twice, this sets
+// window.__gtagSrcLoaded; AdTracking checks that flag before injecting its own copy.
 import { TRACKING as t } from '../data/tracking.js';
 ---
 {t.ga4Id && (
