@@ -9,8 +9,8 @@
 //   metaPixelId        Meta (Facebook) Pixel ID,   e.g. '1234567890'
 export const TRACKING = {
   ga4Id: 'G-RMD7TWKMXE',
-  googleAdsId: '',
-  googleAdsCallLabel: '',
-  googleAdsLeadLabel: '',
+  googleAdsId: 'AW-18232604052',
+  googleAdsCallLabel: 'Prl8CPTdksUcEJTr_fVD',
+  googleAdsLeadLabel: 'h2e9CPfdksUcEJTr_fVD',
   metaPixelId: '28525940300327696',
 };
