@@ -9,12 +9,13 @@ describe('tracking config', () => {
     }
   });
 
-  it('has the Meta Pixel + GA4 configured; Google Ads not set yet', () => {
-    // Meta Pixel is live on the ad pages. GA4 (G-RMD7TWKMXE) is now live
-    // site-wide via SiteAnalytics. Google Ads is still empty — when you set it,
-    // update this test to match.
+  it('has Meta Pixel, GA4, and Google Ads all configured', () => {
+    // All tags are live: Meta Pixel + GA4 (G-RMD7TWKMXE) site-wide, and Google
+    // Ads (AW-18232604052) with call + lead conversion labels on the /go/ pages.
     expect(TRACKING.metaPixelId).not.toBe('');
     expect(TRACKING.ga4Id).toBe('G-RMD7TWKMXE');
-    expect(TRACKING.googleAdsId).toBe('');
+    expect(TRACKING.googleAdsId).toBe('AW-18232604052');
+    expect(TRACKING.googleAdsCallLabel).not.toBe('');
+    expect(TRACKING.googleAdsLeadLabel).not.toBe('');
   });
 });
