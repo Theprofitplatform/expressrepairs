@@ -196,3 +196,49 @@ Facebook `/people/Xpress-Repairs/61590991947576/`, Instagram `xpressrepairs.rive
 - **Ask for a review at every pickup** — QR card + the SMS in §7.
 - **2–3 fresh photos / month** to the GBP.
 - **Monthly 10-minute glance** at GBP Insights (calls, direction requests, website clicks) and Search Console (which suburb terms are gaining) — let that decide any new suburb pages.
+
+---
+
+## 10. First-week launch runsheet (start here)
+
+Everything above is a library; this is the order to roll it out. ~15 min/day for four
+days, then it runs on the §9 cadence.
+
+- **Day 1 (15 min) — GBP core.** Confirm primary + additional categories (§1), paste the
+  description (§2), and check hours incl. **Thursday to 7pm**. Send the §7 pickup SMS to
+  your last 10 happy customers.
+- **Day 2 (20 min) — Photos + first post.** Upload 12–15 real photos from the §4
+  shot-list. Publish §6 Post #1.
+- **Day 3 (15 min) — Q&A + services.** Seed the 8 §5 Q&As (post the question, then answer
+  it). Add the §3 services with prices.
+- **Day 4 (10 min) — Review card.** Print `docs/print/review-card.html`, stand it at the
+  till, and add the QR to receipts.
+- **Then ongoing:** the §9 recurring tasks (1 post/week from your banked 6, 2–3
+  photos/month, reply to every review).
+
+**Review velocity — make it a number.** Target **5+ reviews/month** (past 50 by
+year-end). Ask *every* customer at pickup — never gate to only the happy ones (breaches
+Google + ACCC rules). Track asks vs received on the printable till sheet
+(`docs/print/till-tally.html`), and reply to every review within 48h using the §7
+templates.
+
+---
+
+## 11. Holiday special-hours — set these in GBP
+
+A wrong holiday listing costs a walk-in and risks a "they were closed" 1-star, and Google
+shows a "hours may differ" warning until you set them. In **GBP → Edit hours → Special
+hours**, add each upcoming NSW public holiday (set your real open/closed — easiest is to
+mirror whatever Riverwood Plaza trades that day):
+
+| Date | NSW public holiday | Your hours |
+|---|---|---|
+| Mon 5 Oct 2026 | Labour Day | ☐ open ____–____  ☐ closed |
+| Fri 25 Dec 2026 | Christmas Day | ☐ open ____–____  ☐ closed |
+| Sat 26 Dec 2026 | Boxing Day | ☐ open ____–____  ☐ closed |
+| Mon 28 Dec 2026 | Additional holiday (Boxing Day fell on a Saturday) | ☐ open ____–____  ☐ closed |
+| Fri 1 Jan 2027 | New Year's Day | ☐ open ____–____  ☐ closed |
+| Tue 26 Jan 2027 | Australia Day | ☐ open ____–____  ☐ closed |
+
+> Dates are firm, but worth a 10-second check at nsw.gov.au/about-nsw/public-holidays.
+> Set each one as soon as it's ~2 weeks out so Google surfaces it in time.
