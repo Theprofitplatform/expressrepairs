@@ -35,18 +35,25 @@ describe('buildReviewMessage', () => {
 });
 
 const ORIGIN = 'https://expressrepairs.com.au';
+const PIN = 'test-pin-abc123'; // >= MIN_PIN_LENGTH (10)
 const FULL_ENV = {
   CLICKSEND_USERNAME: 'u',
   CLICKSEND_API_KEY: 'k',
-  REVIEW_SMS_PIN: '1234',
+  REVIEW_SMS_PIN: PIN,
   REVIEW_LINK: 'https://g.page/r/abc/review',
 };
 
-function makeReq({ method = 'POST', body = {}, origin = ORIGIN, contentLength } = {}) {
+function makeReq({ method = 'POST', body = {}, rawBody, origin = ORIGIN } = {}) {
   const headers = new Headers();
   if (origin) headers.set('Origin', origin);
-  if (contentLength != null) headers.set('content-length', String(contentLength));
-  return { method, headers, json: async () => body };
+  const text = rawBody != null ? rawBody : JSON.stringify(body);
+  const bytes = new TextEncoder().encode(text);
+  return {
+    method,
+    headers,
+    arrayBuffer: async () => bytes.buffer,
+    json: async () => JSON.parse(text),
+  };
 }
 
 const clickSendOk = () =>
@@ -65,22 +72,44 @@ describe('POST /api/review-sms', () => {
   it('rejects cross-origin with 403 and sends nothing', async () => {
     const spy = clickSendOk();
     const res = await onRequest({
-      request: makeReq({ origin: 'https://evil.example', body: { pin: '1234', mobile: '0412345678' } }),
+      request: makeReq({ origin: 'https://evil.example', body: { pin: PIN, mobile: '0412345678' } }),
       env: FULL_ENV,
     });
     expect(res.status).toBe(403);
     expect(spy).not.toHaveBeenCalled();
   });
 
-  it('rejects oversized bodies with 413', async () => {
-    const res = await onRequest({ request: makeReq({ contentLength: 20000 }), env: FULL_ENV });
+  it('rejects a body over the size cap with 413 (real bytes, not Content-Length)', async () => {
+    const res = await onRequest({ request: makeReq({ rawBody: 'x'.repeat(17 * 1024) }), env: FULL_ENV });
     expect(res.status).toBe(413);
+  });
+
+  it('rejects a non-object JSON body (null / scalar) with 400 and sends nothing', async () => {
+    const spy = clickSendOk();
+    expect((await onRequest({ request: makeReq({ rawBody: 'null' }), env: FULL_ENV })).status).toBe(400);
+    expect((await onRequest({ request: makeReq({ rawBody: '"hi"' }), env: FULL_ENV })).status).toBe(400);
+    expect(spy).not.toHaveBeenCalled();
+  });
+
+  it('rejects malformed JSON with 400', async () => {
+    const res = await onRequest({ request: makeReq({ rawBody: '{not json' }), env: FULL_ENV });
+    expect(res.status).toBe(400);
   });
 
   it('returns 503 when REVIEW_SMS_PIN is unset (never an open endpoint)', async () => {
     const spy = clickSendOk();
     const { REVIEW_SMS_PIN, ...noPin } = FULL_ENV;
-    const res = await onRequest({ request: makeReq({ body: { pin: '1234', mobile: '0412345678' } }), env: noPin });
+    const res = await onRequest({ request: makeReq({ body: { pin: PIN, mobile: '0412345678' } }), env: noPin });
+    expect(res.status).toBe(503);
+    expect(spy).not.toHaveBeenCalled();
+  });
+
+  it('returns 503 when REVIEW_SMS_PIN is too short (weak-secret guard) and sends nothing', async () => {
+    const spy = clickSendOk();
+    const res = await onRequest({
+      request: makeReq({ body: { pin: 'short', mobile: '0412345678' } }),
+      env: { ...FULL_ENV, REVIEW_SMS_PIN: 'short' },
+    });
     expect(res.status).toBe(503);
     expect(spy).not.toHaveBeenCalled();
   });
@@ -88,7 +117,7 @@ describe('POST /api/review-sms', () => {
   it('rejects a wrong PIN with 401 and sends nothing', async () => {
     const spy = clickSendOk();
     const res = await onRequest({
-      request: makeReq({ body: { pin: 'oops', mobile: '0412345678', name: 'Sam' } }),
+      request: makeReq({ body: { pin: 'wrong-pin-000000', mobile: '0412345678', name: 'Sam' } }),
       env: FULL_ENV,
     });
     expect(res.status).toBe(401);
@@ -98,25 +127,27 @@ describe('POST /api/review-sms', () => {
   it('rejects an invalid mobile with 400 and sends nothing', async () => {
     const spy = clickSendOk();
     const res = await onRequest({
-      request: makeReq({ body: { pin: '1234', mobile: '0298765432', name: 'Sam' } }),
+      request: makeReq({ body: { pin: PIN, mobile: '0298765432', name: 'Sam' } }),
       env: FULL_ENV,
     });
     expect(res.status).toBe(400);
     expect(spy).not.toHaveBeenCalled();
   });
 
-  it('returns 503 when ClickSend creds are unset', async () => {
+  it('returns 503 when ClickSend creds are unset and sends nothing', async () => {
+    const spy = clickSendOk();
     const res = await onRequest({
-      request: makeReq({ body: { pin: '1234', mobile: '0412345678', name: 'Sam' } }),
-      env: { REVIEW_SMS_PIN: '1234', REVIEW_LINK: 'https://g.page/r/abc/review' },
+      request: makeReq({ body: { pin: PIN, mobile: '0412345678', name: 'Sam' } }),
+      env: { REVIEW_SMS_PIN: PIN, REVIEW_LINK: 'https://g.page/r/abc/review' },
     });
     expect(res.status).toBe(503);
+    expect(spy).not.toHaveBeenCalled();
   });
 
   it('sends on the happy path and returns the normalised number', async () => {
     const spy = clickSendOk();
     const res = await onRequest({
-      request: makeReq({ body: { pin: '1234', mobile: '0412 345 678', name: 'Sam', device: 'iPhone 13' } }),
+      request: makeReq({ body: { pin: PIN, mobile: '0412 345 678', name: 'Sam', device: 'iPhone 13' } }),
       env: FULL_ENV,
     });
     expect(res.status).toBe(200);
@@ -132,12 +163,23 @@ describe('POST /api/review-sms', () => {
     expect(opts.headers.Authorization).toMatch(/^Basic /);
   });
 
+  it('clamps a long CLICKSEND_SENDER to 11 chars', async () => {
+    const spy = clickSendOk();
+    await onRequest({
+      request: makeReq({ body: { pin: PIN, mobile: '0412345678', name: 'Sam' } }),
+      env: { ...FULL_ENV, CLICKSEND_SENDER: 'SuperLongSenderName' },
+    });
+    const sent = JSON.parse(spy.mock.calls[0][1].body);
+    expect(sent.messages[0].from).toBe('SuperLongSe');
+    expect(sent.messages[0].from.length).toBe(11);
+  });
+
   it('returns 503 when ClickSend reports a per-message failure (HTTP 200)', async () => {
     vi.spyOn(globalThis, 'fetch').mockResolvedValue(
       new Response(JSON.stringify({ data: { messages: [{ status: 'INVALID_RECIPIENT' }] } }), { status: 200 })
     );
     const res = await onRequest({
-      request: makeReq({ body: { pin: '1234', mobile: '0412345678', name: 'Sam' } }),
+      request: makeReq({ body: { pin: PIN, mobile: '0412345678', name: 'Sam' } }),
       env: FULL_ENV,
     });
     expect(res.status).toBe(503);
@@ -146,7 +188,7 @@ describe('POST /api/review-sms', () => {
   it('returns 503 on a network error', async () => {
     vi.spyOn(globalThis, 'fetch').mockRejectedValue(new Error('boom'));
     const res = await onRequest({
-      request: makeReq({ body: { pin: '1234', mobile: '0412345678', name: 'Sam' } }),
+      request: makeReq({ body: { pin: PIN, mobile: '0412345678', name: 'Sam' } }),
       env: FULL_ENV,
     });
     expect(res.status).toBe(503);

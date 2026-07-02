@@ -61,7 +61,6 @@ const hostAllowed = (host, env) => {
     host === 'www.expressrepairs.com.au' ||
     host === 'localhost' ||
     host === '127.0.0.1' ||
-    host.endsWith('.pages.dev') ||
     extra.includes(host)
   );
 };
@@ -86,23 +85,46 @@ const pinEqual = (a, b) => {
   return diff === 0;
 };
 
+// The PIN is the sole barrier for a scripted client (Origin/Referer are
+// forgeable off-browser) to a paid outbound SMS. Reject a too-short configured
+// PIN as misconfiguration so a weak secret can't ship and be brute-forced.
+const MIN_PIN_LENGTH = 10;
+
 export async function onRequest({ request, env }) {
   if (request.method !== 'POST') return json(405, { ok: false, error: 'Method not allowed.' });
   if (!sameSite(request, env)) return json(403, { ok: false, error: 'Forbidden.' });
 
-  const declaredLen = Number(request.headers.get('content-length') || 0);
-  if (declaredLen > MAX_BODY_BYTES) return json(413, { ok: false, error: 'Request too large.' });
-
-  let data;
+  // Enforce the size cap on real received bytes — Content-Length can be spoofed
+  // or omitted, so it is not trustworthy on its own.
+  let raw;
   try {
-    data = await request.json();
+    raw = await request.arrayBuffer();
   } catch {
     return json(400, { ok: false, error: 'Invalid request body.' });
   }
+  if (raw.byteLength > MAX_BODY_BYTES) {
+    return json(413, { ok: false, error: 'Request too large.' });
+  }
 
-  // PIN gate. If the secret is unset the endpoint is unconfigured — never open.
+  let data;
+  try {
+    data = JSON.parse(new TextDecoder().decode(raw));
+  } catch {
+    return json(400, { ok: false, error: 'Invalid request body.' });
+  }
+  // A bare JSON scalar (null, a string, a number) parses fine but has no
+  // fields; reject it so the field reads below can't throw an uncaught
+  // TypeError (which would surface as an opaque 5xx, not our JSON).
+  if (typeof data !== 'object' || data === null) {
+    return json(400, { ok: false, error: 'Invalid request body.' });
+  }
+
+  // PIN gate. Unset OR too short → unconfigured (never an open endpoint).
   const pinSecret = env.REVIEW_SMS_PIN;
-  if (!pinSecret) return json(503, { ok: false, error: 'SMS sending not configured.' });
+  if (!pinSecret || pinSecret.length < MIN_PIN_LENGTH) {
+    if (pinSecret) console.error('REVIEW_SMS_PIN is too short — set a long (16+ char) random PIN');
+    return json(503, { ok: false, error: 'SMS sending not configured.' });
+  }
   if (!pinEqual(String(data.pin ?? ''), pinSecret)) {
     return json(401, { ok: false, error: 'Wrong PIN.' });
   }
@@ -135,7 +157,8 @@ export async function onRequest({ request, env }) {
     const result = await res.json().catch(() => null);
     const status = result?.data?.messages?.[0]?.status;
     if (!res.ok || status !== 'SUCCESS') {
-      console.error('ClickSend send failed', res.status, JSON.stringify(result));
+      // Log status only — the ClickSend body echoes the customer's number/message.
+      console.error('ClickSend send failed', res.status, status || 'no-status');
       return json(503, { ok: false, error: 'Could not send right now.' });
     }
   } catch (err) {
