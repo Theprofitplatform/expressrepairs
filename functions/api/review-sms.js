@@ -94,8 +94,14 @@ export async function onRequest({ request, env }) {
   if (request.method !== 'POST') return json(405, { ok: false, error: 'Method not allowed.' });
   if (!sameSite(request, env)) return json(403, { ok: false, error: 'Forbidden.' });
 
-  // Enforce the size cap on real received bytes — Content-Length can be spoofed
-  // or omitted, so it is not trustworthy on its own.
+  // Cheap early-reject on the declared length so we don't buffer a huge body;
+  // the real received-byte count is still checked below (Content-Length can be
+  // spoofed or omitted, so it is not trustworthy on its own).
+  if (Number(request.headers.get('content-length') || 0) > MAX_BODY_BYTES) {
+    return json(413, { ok: false, error: 'Request too large.' });
+  }
+
+  // Enforce the size cap on real received bytes.
   let raw;
   try {
     raw = await request.arrayBuffer();
@@ -118,11 +124,13 @@ export async function onRequest({ request, env }) {
   if (typeof data !== 'object' || data === null) {
     return json(400, { ok: false, error: 'Invalid request body.' });
   }
+  // (A JSON array passes the check above, but its field reads are undefined and
+  // degrade to a 401 — no crash, so this is still safe.)
 
   // PIN gate. Unset OR too short → unconfigured (never an open endpoint).
   const pinSecret = env.REVIEW_SMS_PIN;
   if (!pinSecret || pinSecret.length < MIN_PIN_LENGTH) {
-    if (pinSecret) console.error('REVIEW_SMS_PIN is too short — set a long (16+ char) random PIN');
+    if (pinSecret) console.error('REVIEW_SMS_PIN is too short (min 10) — use a 16+ char random PIN');
     return json(503, { ok: false, error: 'SMS sending not configured.' });
   }
   if (!pinEqual(String(data.pin ?? ''), pinSecret)) {

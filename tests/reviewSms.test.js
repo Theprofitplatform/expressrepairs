@@ -52,7 +52,6 @@ function makeReq({ method = 'POST', body = {}, rawBody, origin = ORIGIN } = {}) 
     method,
     headers,
     arrayBuffer: async () => bytes.buffer,
-    json: async () => JSON.parse(text),
   };
 }
 
