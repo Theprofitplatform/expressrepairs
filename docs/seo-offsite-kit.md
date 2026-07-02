@@ -121,7 +121,7 @@ generator) for a counter card and the receipt.
 ```
 Hi [name], thanks for choosing Xpress Phone Repairs at Riverwood Plaza! If you're
 happy with the repair, a quick Google review would mean a lot to us: [review link]
-— The team
+- The team
 ```
 
 **Email (after pickup):**
