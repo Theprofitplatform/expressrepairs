@@ -92,3 +92,16 @@ describe('built local-SEO pages', () => {
     expect(sm).toContain('/repairs/screen/riverwood/');
   });
 });
+
+describe('staff review-request page', () => {
+  it('builds as a noindex page', () => {
+    const staff = readFileSync('dist/staff/review-request/index.html', 'utf8');
+    expect(staff).toContain('name="robots" content="noindex, nofollow"');
+    expect(staff).toContain('id="rr-form"');
+  });
+
+  it('is excluded from the sitemap', () => {
+    const sm = readFileSync('dist/sitemap-0.xml', 'utf8');
+    expect(sm).not.toContain('/staff/');
+  });
+});

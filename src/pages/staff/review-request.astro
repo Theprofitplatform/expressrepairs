@@ -1,0 +1,73 @@
+---
+import Layout from '../../layouts/Layout.astro';
+---
+<Layout title="Send review request" path="/staff/review-request/" noindex={true}>
+  <main id="main-content" style="max-width:28rem;margin:0 auto;padding:2rem 1.25rem;font-family:system-ui,sans-serif">
+    <h1 style="font-size:1.4rem;margin:0 0 .25rem">Review request SMS</h1>
+    <p style="color:#555;margin:.25rem 0 1.5rem;font-size:.95rem">Send a just-repaired customer a Google review link. Ask every customer, not just the happy ones.</p>
+    <form id="rr-form" style="display:grid;gap:1rem">
+      <label style="display:grid;gap:.35rem;font-weight:600">First name
+        <input id="rr-name" type="text" autocomplete="off" required
+          style="padding:.7rem;font-size:1rem;border:1px solid #ccc;border-radius:8px" />
+      </label>
+      <label style="display:grid;gap:.35rem;font-weight:600">Mobile
+        <input id="rr-mobile" type="tel" inputmode="tel" autocomplete="off" required placeholder="0412 345 678"
+          style="padding:.7rem;font-size:1rem;border:1px solid #ccc;border-radius:8px" />
+      </label>
+      <label style="display:grid;gap:.35rem;font-weight:600">Device <span style="font-weight:400;color:#888">(optional, your notes only)</span>
+        <input id="rr-device" type="text" autocomplete="off"
+          style="padding:.7rem;font-size:1rem;border:1px solid #ccc;border-radius:8px" />
+      </label>
+      <label style="display:grid;gap:.35rem;font-weight:600">Shop PIN
+        <input id="rr-pin" type="password" autocomplete="off" required
+          style="padding:.7rem;font-size:1rem;border:1px solid #ccc;border-radius:8px" />
+      </label>
+      <button id="rr-send" type="submit"
+        style="padding:.85rem;font-size:1.05rem;font-weight:700;color:#fff;background:#0a66ff;border:0;border-radius:10px;cursor:pointer">
+        Send review request
+      </button>
+      <p id="rr-status" role="status" aria-live="polite" style="margin:0;min-height:1.4rem;font-size:.95rem"></p>
+    </form>
+  </main>
+  <script is:inline>
+    (function () {
+      var form = document.getElementById('rr-form');
+      var status = document.getElementById('rr-status');
+      var pin = document.getElementById('rr-pin');
+      var name = document.getElementById('rr-name');
+      var mobile = document.getElementById('rr-mobile');
+      var device = document.getElementById('rr-device');
+      var btn = document.getElementById('rr-send');
+      try { var saved = localStorage.getItem('rr-pin'); if (saved) pin.value = saved; } catch (e) {}
+      form.addEventListener('submit', async function (e) {
+        e.preventDefault();
+        status.style.color = '#555';
+        status.textContent = 'Sending…';
+        btn.disabled = true;
+        try {
+          var res = await fetch('/api/review-sms', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ name: name.value, mobile: mobile.value, device: device.value, pin: pin.value })
+          });
+          var data = await res.json().catch(function () { return {}; });
+          if (res.ok && data.ok) {
+            try { localStorage.setItem('rr-pin', pin.value); } catch (e) {}
+            status.style.color = '#0a7d28';
+            status.textContent = 'Sent to ' + (data.to || mobile.value) + ' ✓';
+            name.value = ''; mobile.value = ''; device.value = '';
+            name.focus();
+          } else {
+            status.style.color = '#c0261f';
+            status.textContent = (data.error || 'Could not send.') + ' (HTTP ' + res.status + ')';
+          }
+        } catch (err) {
+          status.style.color = '#c0261f';
+          status.textContent = 'Network error — check connection and try again.';
+        } finally {
+          btn.disabled = false;
+        }
+      });
+    })();
+  </script>
+</Layout>

@@ -4,6 +4,6 @@ import sitemap from '@astrojs/sitemap';
 
 export default defineConfig({
   site: 'https://expressrepairs.com.au',
-  integrations: [react(), sitemap({ filter: (page) => !page.includes('/go/') })],
+  integrations: [react(), sitemap({ filter: (page) => !page.includes('/go/') && !page.includes('/staff/') })],
   build: { format: 'directory' },
 });
