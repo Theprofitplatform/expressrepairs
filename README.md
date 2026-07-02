@@ -50,6 +50,42 @@ to the shop via Resend. Configure these in the Cloudflare **Pages** project
 Until `RESEND_API_KEY` is set the endpoint returns `503` and the form shows a
 "please call us" fallback — it never silently swallows a lead.
 
+## Review-request SMS (staff tool)
+
+Staff open **`/staff/review-request`** (PIN-gated, `noindex`, unlinked), enter a
+customer's first name + mobile, and send a Google-review SMS via ClickSend.
+Endpoint: `functions/api/review-sms.js`.
+
+Set these in **Cloudflare Pages → Settings → Environment variables** (mark the
+first three as **Secret**), then redeploy:
+
+| Key | Secret | Purpose |
+| --- | --- | --- |
+| `CLICKSEND_USERNAME` | yes | ClickSend account username |
+| `CLICKSEND_API_KEY` | yes | ClickSend API key |
+| `REVIEW_SMS_PIN` | yes | staff PIN (min 10 chars — use a 16+ char random string) |
+| `REVIEW_LINK` | no | `https://g.page/r/…/review` (GBP → Ask for reviews) |
+| `CLICKSEND_SENDER` | no | sender ID, default `Xpress` (≤11 chars, alphanumeric) |
+| `ALLOWED_ORIGINS` | no | extra comma-separated hosts allowed to call the API (e.g. a preview domain) |
+
+Notes:
+- **The PIN is the only real barrier** to sending paid SMS to arbitrary numbers
+  (the same-site check does not stop scripted, non-browser clients), so use a
+  long, random PIN. A `REVIEW_SMS_PIN` shorter than 10 characters is rejected
+  server-side as misconfigured (the endpoint returns "not configured").
+- **No rate-limiting in the MVP** — protection relies on the strong PIN plus the
+  page being unlinked and `noindex`. If abuse ever appears, add Cloudflare
+  Turnstile or a KV-backed rate limit in front of the PIN check.
+- **Preview deployments:** the API accepts only the production apex + `www` by
+  default (the blanket `*.pages.dev` allow was removed for safety). To test on a
+  `*.pages.dev` preview, add that exact host to `ALLOWED_ORIGINS`.
+- Branded sender IDs are **send-only** — customers can't reply STOP. This relies
+  on inferred consent (existing customer, right after their repair). To add a hard
+  opt-out later, rent a ClickSend virtual number and set it as `CLICKSEND_SENDER`.
+- Confirm the `Xpress` sender ID is permitted on your ClickSend account (some
+  accounts require sender-ID registration).
+- No incentives, and ask **every** customer — not only happy ones (Google/ACCC).
+
 ## Ad landing pages (`/go/`)
 
 Conversion-first landing pages for paid campaigns, separate from the SEO
