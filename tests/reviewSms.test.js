@@ -25,7 +25,9 @@ describe('buildReviewMessage', () => {
     expect(msg).toContain('Hi Sam,');
     expect(msg).toContain('Xpress Phone Repairs at Riverwood Plaza');
     expect(msg).toContain('https://g.page/r/abc/review');
-    expect(msg).toContain('— The team');
+    // Plain-hyphen sign-off (GSM-7, not an em-dash) and it must be the very end
+    // of the message — trailing content would push the SMS to another segment.
+    expect(msg).toMatch(/ - The team$/);
   });
 
   it('falls back to "there" for a blank name and strips control chars', () => {
