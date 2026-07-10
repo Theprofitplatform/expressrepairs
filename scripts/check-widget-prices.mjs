@@ -21,12 +21,22 @@ const cases = [
   ['screen', 'apple', 'iPhone 17 Pro Max', 'from $199'],
   // Samsung screens = official Samsung AU genuine pricing
   ['screen', 'samsung', 'Galaxy S24 Ultra', 'from $432'],
+  ['screen', 'samsung', 'Galaxy S20', 'from $381'],
   ['screen', 'samsung', 'Galaxy A54', 'from $313'],
   ['screen', 'samsung', 'Galaxy Note 20', 'Custom quote'],
+  ['screen', 'samsung', 'Galaxy S9', 'Custom quote'],
+  ['screen', 'samsung', 'Galaxy A04s', 'Custom quote'],
+  // Legacy iPhones fall to the brand floors
+  ['screen', 'apple', 'iPhone 6', 'from $99'],
+  ['battery', 'apple', 'iPhone 6', 'from $59'],
+  ['battery', 'apple', 'iPhone XS Max', 'from $59'],
   // Batteries: owner pricing — Samsung $99, A series / Note 20 era $79
   ['battery', 'samsung', 'Galaxy S25 Ultra', 'from $99'],
   ['battery', 'samsung', 'Galaxy Z Fold7', 'from $99'],
   ['battery', 'samsung', 'Galaxy S21', 'from $99'],
+  ['battery', 'samsung', 'Galaxy S20 FE', 'from $99'],
+  ['battery', 'samsung', 'Galaxy S9', 'from $79'],
+  ['battery', 'samsung', 'Galaxy A04s', 'from $79'],
   ['battery', 'samsung', 'Galaxy A54', 'from $79'],
   ['battery', 'samsung', 'Galaxy Note 20', 'from $79'],
   // Apple batteries: iPhone 11+ from $119, older stay on the $59 floor

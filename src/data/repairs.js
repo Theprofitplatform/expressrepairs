@@ -6,8 +6,8 @@
 
 // Brand rows shared by every service price table (order matters).
 export const BRAND_ROWS = [
-  { id: 'apple', logo: '', name: 'Apple iPhone', models: 'iPhone 15 Pro Max · 15 · 14 Pro · 13 · 12 · 11 · SE' },
-  { id: 'samsung', logo: 'S', name: 'Samsung Galaxy', models: 'S24 Ultra · S23 · S22 · Z Fold5 · Z Flip5 · A54' },
+  { id: 'apple', logo: '', name: 'Apple iPhone', models: 'iPhone 17 · 15 · 13 · 11 · X · 8 · 7 · 6 · SE' },
+  { id: 'samsung', logo: 'S', name: 'Samsung Galaxy', models: 'S25 Ultra · S23 · S20 · S9 · Z Fold7 · A54 · A11' },
   { id: 'google', logo: 'G', name: 'Google Pixel', models: 'Pixel 8 Pro · 8 · 7 · 7a · 6' },
   { id: 'oppo', logo: 'O', name: 'Oppo', models: 'Find X6 Pro · Reno 10 · A78 · A58' },
   { id: 'huawei', logo: 'H', name: 'Huawei', models: 'P60 Pro · P50 · Mate 50 · Nova 11' },
@@ -55,7 +55,7 @@ export const SERVICES = [
     priceEyebrow: 'Screen repair pricing',
     priceColLabel: 'Screen repair',
     priceNote: "Prices use original-quality parts and include fitting, testing and warranty. Samsung screens are genuine Samsung parts at Samsung's official Australian pricing; foldable main displays are quoted on inspection. Free diagnostic if you're not sure the screen is the problem.",
-    rows: rows([99, 244, 129, 99, 99, 99], [549, 525, 399, 349, 349, 349], ['30–60 min', '45–90 min', '30–60 min', '30–60 min', '30–60 min', '30–60 min']),
+    rows: rows([99, 211, 129, 99, 99, 99], [549, 525, 399, 349, 349, 349], ['30–60 min', '45–90 min', '30–60 min', '30–60 min', '30–60 min', '30–60 min']),
     warranties: STD_WARRANTIES('Most screens replaced in 30–60 minutes.'),
     ctaTitle: 'Cracked screen? Fixed by this afternoon.',
     faqs: [
