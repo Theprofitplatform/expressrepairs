@@ -6,7 +6,8 @@ import MobileCta from '../../components/MobileCta.astro';
 import CtaBand from '../../components/CtaBand.astro';
 import { POSTS } from '../../data/posts.js';
 import { SITE } from '../../data/site.js';
-import { canonical } from '../../lib/seo.js';
+import { canonical, faqPageSchema, absoluteUrl } from '../../lib/seo.js';
+import { Image } from 'astro:assets';
 
 export function getStaticPaths() {
   return POSTS.filter((p) => p.slug).map((post) => ({ params: { slug: post.slug }, props: { post } }));
@@ -14,6 +15,13 @@ export function getStaticPaths() {
 
 const { post } = Astro.props;
 const path = `/blog/${post.slug}/`;
+
+// Optimised hero image: astro:assets can only transform images imported from
+// src/, so post.img (a /images/ public path, used for OG + schema URLs) is
+// matched by filename against the copies in src/assets/blog/. Falls back to the
+// raw public path if an image hasn't been added there yet.
+const heroModules = import.meta.glob('../../assets/blog/*.{jpg,jpeg,png,webp}', { eager: true, import: 'default' });
+const heroImg = heroModules[`../../assets/blog/${post.img.split('/').pop()}`];
 
 const navLinks = [
   { label: 'Repairs', href: '/repairs/' },
@@ -26,10 +34,16 @@ const schema = [
     '@context': 'https://schema.org',
     '@type': 'BlogPosting',
     headline: post.title,
+    description: post.excerpt,
     datePublished: post.dateISO,
+    dateModified: post.dateModified || post.dateISO,
     image: `${canonical('/').replace(/\/$/, '')}${post.img}`,
-    author: { '@type': 'Organization', name: SITE.name },
-    publisher: { '@type': 'Organization', name: SITE.name },
+    author: { '@type': 'Organization', name: SITE.name, url: canonical('/') },
+    publisher: {
+      '@type': 'Organization',
+      name: SITE.name,
+      ...(SITE.logo && { logo: { '@type': 'ImageObject', url: absoluteUrl(SITE.logo), width: 512, height: 512 } }),
+    },
     mainEntityOfPage: canonical(path),
   },
   {
@@ -42,6 +56,8 @@ const schema = [
     ],
   },
 ];
+
+if (post.faqs?.length) schema.push(faqPageSchema(post.faqs));
 ---
 <Layout
   title={`${post.title} | Express Repairs`}
@@ -74,7 +90,11 @@ const schema = [
           <h1 class="article-title">{post.title}</h1>
           <p class="article-lede">{post.lede}</p>
         </div>
-        <div class="article-hero-img" style={`background-image: url('${post.img}');`}></div>
+        <div class="article-hero-img">
+          {heroImg
+            ? <Image src={heroImg} alt={post.imgAlt ?? post.title} widths={[600, 980, 1400]} sizes="(min-width: 1020px) 980px, 100vw" loading="eager" fetchpriority="high" />
+            : <img src={post.img} alt={post.imgAlt ?? post.title} loading="eager" />}
+        </div>
       </div>
     </div>
 

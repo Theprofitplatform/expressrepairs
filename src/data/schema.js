@@ -84,6 +84,7 @@ export const siteSchema = z.object({
   geo: z.object({ lat: z.number(), lng: z.number() }),
   // Optional structured-data extras.
   image: z.string().optional(),
+  logo: z.string().optional(),
   priceRange: z.string().optional(),
   sameAs: z.array(z.string()).optional(),
   // aggregateRating: only emitted in JSON-LD when `count` is a real number > 0.

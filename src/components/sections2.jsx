@@ -351,8 +351,8 @@ export function Contact() {
                   <option value="">Select repair type</option>
                   <option value="screen">Screen Repair — from $99</option>
                   <option value="battery">Battery Replacement — from $59</option>
-                  <option value="port">Charging Port — from $49</option>
-                  <option value="backglass">Back Glass — from $69</option>
+                  <option value="port">Charging Port — from $39</option>
+                  <option value="backglass">Back Glass — from $99</option>
                   <option value="diagnostic">Free Diagnostic</option>
                   <option value="other">Other (describe below)</option>
                 </select>

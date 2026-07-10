@@ -19,7 +19,9 @@ const { colLabel, note, rows = [], compact = false } = Astro.props;
         <tr>
           <td><span class="pt-brand"><span class="pt-brand-logo">{r.logo}</span>{r.name}</span></td>
           {!compact && <td class="pt-models-col"><span class="pt-models">{r.models}</span></td>}
-          <td><span class="pt-price"><span class="pt-from">from</span>${r.price}</span></td>
+          <td>{r.priceTo && r.priceTo > r.price
+            ? <span class="pt-price">${r.price}–${r.priceTo}</span>
+            : <span class="pt-price"><span class="pt-from">from</span>${r.price}</span>}</td>
           <td class="pt-time-col"><span class="pt-time">{r.time}</span></td>
           {!compact && <td class="pt-cta"><a href="#cta" class="btn btn-ghost btn-sm">Quote</a></td>}
         </tr>

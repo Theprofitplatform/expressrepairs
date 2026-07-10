@@ -27,10 +27,10 @@ export const POSTS = [
             <tr><th>Brand</th><th>Screen repair</th><th class="pt-time-col">Turnaround</th></tr>
           </thead>
           <tbody>
-            <tr><td><span class="pt-brand"><span class="pt-brand-logo"></span>Apple iPhone</span></td><td><span class="pt-price"><span class="pt-from">from</span>$149</span></td><td class="pt-time-col"><span class="pt-time">30–60 min</span></td></tr>
-            <tr><td><span class="pt-brand"><span class="pt-brand-logo">S</span>Samsung Galaxy</span></td><td><span class="pt-price"><span class="pt-from">from</span>$169</span></td><td class="pt-time-col"><span class="pt-time">45–90 min</span></td></tr>
-            <tr><td><span class="pt-brand"><span class="pt-brand-logo">G</span>Google Pixel</span></td><td><span class="pt-price"><span class="pt-from">from</span>$129</span></td><td class="pt-time-col"><span class="pt-time">30–60 min</span></td></tr>
-            <tr><td><span class="pt-brand"><span class="pt-brand-logo">O</span>Oppo / Motorola</span></td><td><span class="pt-price"><span class="pt-from">from</span>$99</span></td><td class="pt-time-col"><span class="pt-time">30–60 min</span></td></tr>
+            <tr><td><span class="pt-brand"><span class="pt-brand-logo"></span>Apple iPhone</span></td><td><span class="pt-price">$99–$549</span></td><td class="pt-time-col"><span class="pt-time">30–60 min</span></td></tr>
+            <tr><td><span class="pt-brand"><span class="pt-brand-logo">S</span>Samsung Galaxy</span></td><td><span class="pt-price">$99–$519</span></td><td class="pt-time-col"><span class="pt-time">45–90 min</span></td></tr>
+            <tr><td><span class="pt-brand"><span class="pt-brand-logo">G</span>Google Pixel</span></td><td><span class="pt-price">$129–$399</span></td><td class="pt-time-col"><span class="pt-time">30–60 min</span></td></tr>
+            <tr><td><span class="pt-brand"><span class="pt-brand-logo">O</span>Oppo / Motorola</span></td><td><span class="pt-price">$99–$349</span></td><td class="pt-time-col"><span class="pt-time">30–60 min</span></td></tr>
           </tbody>
         </table>
       </div>
@@ -64,6 +64,182 @@ export const POSTS = [
       <h2>The bottom line</h2>
       <p>Expect to pay <strong>$99–$169 to start</strong> for a quality same-day screen repair in Sydney, more for new flagships and foldables. Be suspicious of quotes far below that — the saving usually comes out of the panel — and of any shop that won't put a warranty in writing.</p>
       <p>Got a cracked screen right now? <a href="/repairs/screen/riverwood/">Drop into Riverwood Plaza</a> or call <a href="tel:+61295333300">(02) 9533 3300</a> — most screens are done in under an hour.</p>
+    `,
+  },
+  {
+    slug: 'cracked-back-glass-repair',
+    tag: 'Guides',
+    date: '10 July 2026',
+    dateISO: '2026-07-10',
+    read: '7 min read',
+    img: '/images/glass-repair.jpg',
+    imgAlt: 'Technician replacing the cracked back glass on a phone at the repair bench',
+    title: 'Cracked the back of your phone? The complete guide to back glass repair',
+    excerpt: 'A cracked back doesn\'t mean a new phone. What back glass repair involves, what it costs (from $99), why the DIY hairdryer trick goes wrong — and how to keep it from happening again.',
+    lede: 'The phone slips off the couch arm, lands face up, and you breathe a sigh of relief because the screen is fine. Then you flip it over.',
+    faqs: [
+      { q: 'Will fixing the back glass wipe my data?', a: 'No. Back glass repair is a physical, external job. Your photos, apps, and messages are untouched. It\'s always smart to keep a backup in general, but this repair doesn\'t put your data at risk.' },
+      { q: 'Is it worth fixing an older phone?', a: 'Often, yes. If the phone still does what you need, a back glass fix from $99 is a fraction of the cost of replacing it, and it keeps a working phone out of a drawer. If you\'re not sure, the free diagnostic will help you weigh it up honestly.' },
+      { q: 'My camera looks cracked too. Is that the same repair?', a: 'Sometimes. On several models the rear camera glass is part of the back assembly, so it can be sorted together. On others the camera lens is separate. We\'ll check during the diagnostic and tell you which it is.' },
+      { q: 'Can I still use the phone until my appointment?', a: 'Usually, carefully. If glass is actively flaking or the crack is spreading, pop a piece of clear tape over it to hold things together and protect your fingers, and try to bring it in soon before dust gets inside.' },
+    ],
+    body: `
+      <p>You know the moment. The phone slips off the couch arm, lands face up, and you breathe a sigh of relief because the screen is fine. Then you flip it over. The whole back is a spiderweb of cracked glass. It still works, so you tell yourself you'll deal with it later, and "later" turns into weeks of glass catching on your pocket and the odd tiny splinter in your finger.</p>
+
+      <p>Here's the good news we give people every week at the shop: a cracked back doesn't mean a new phone. It's one of the more straightforward repairs we do, and we can usually have it looking like new again while you get on with your day. This guide walks through everything worth knowing — why it happens, why it's worth fixing, what the repair involves, what it costs, and how to keep it from happening again.</p>
+
+      <h2>Why do phone backs crack in the first place?</h2>
+      <p>Modern phones are basically two sheets of glass wrapped around a metal frame. Manufacturers moved to glass backs for a couple of reasons: it looks and feels premium, and it lets the phone charge wirelessly, which metal blocks. The trade-off is obvious the first time you drop one. Glass is glass.</p>
+      <p>A few things make the back especially prone to cracking. A face-up drop puts all the force on the back panel. Slim cases with no raised lip leave the back exposed. Cold weather can make glass and adhesive a touch more brittle, which is worth remembering through a Sydney winter. And pressure in a tight pocket or bag, or a phone wedged under something heavy, can be enough to start a crack even without a dramatic drop.</p>
+      <p>None of that is your fault. Phones are built thin and pretty, not indestructible.</p>
+
+      <h2>Signs it's time to get the back glass sorted</h2>
+      <p>Some cracks are obvious. Others creep up. It's worth booking a fix if you notice any of these:</p>
+      <ul>
+        <li>A visible spiderweb, chip, or hairline crack across the back panel.</li>
+        <li>Sharp edges you can feel when you run a finger over it, or tiny glass flakes coming loose.</li>
+        <li>A camera area that looks cracked or cloudy — on many phones the rear <a href="/repairs/camera/">camera glass</a> is part of that same back assembly.</li>
+        <li>Wireless charging that's suddenly patchy or won't hold a connection.</li>
+        <li>Dust and grit starting to gather under the glass, which tells you the seal is broken.</li>
+      </ul>
+      <p>If you're seeing any of those, the phone is telling you it needs attention.</p>
+
+      <h2>Why bother fixing it at all?</h2>
+      <p>Plenty of people live with a shattered back for ages, and we get it — the phone still turns on. But there are real reasons to sort it sooner rather than later.</p>
+      <p>Those little glass shards are genuinely sharp, and they love to nick your fingers or snag a jumper. A cracked back also breaks the phone's seal, which lets dust and moisture creep inside toward the delicate electronics — and that's how a cheap cosmetic problem quietly becomes an expensive <a href="/repairs/water-damage/">internal one</a>. If your phone charges wirelessly, a badly cracked back can interfere with that. The camera can suffer too if the crack sits over the lens, giving you blurry or hazy photos. And if you ever plan to sell or trade the phone in, a clean back is worth real money at resale, often far more than the repair costs — we run through that maths in <a href="/blog/repair-or-upgrade-phone/">repair or upgrade?</a></p>
+      <p>In short, it's a small problem that quietly turns into bigger ones. Fixing it early keeps it simple and cheap.</p>
+
+      <h2>Please don't try the DIY hairdryer trick</h2>
+      <p>We say this with love, because we see the results. There are plenty of videos showing someone lifting a back panel with a hairdryer and a guitar pick in ten minutes. What those videos leave out is everything that goes wrong when you don't do it every day.</p>
+      <p>The back panel is bonded on with strong adhesive that needs even, controlled heat to release. Too little and you crack the new glass trying to pry it. Too much and you can cook the battery sitting right underneath, which is a real safety risk. On the way you can slice through the wireless charging coil, the NFC antenna, or the flash cable, all of which live on or just under that back panel. And even if you get the old glass off, reseating a new panel so it sits flush and properly sealed is its own skill. Get it wrong and you're left with a lifting edge, trapped dust, or a fresh crack within a week.</p>
+      <p>This is one of those jobs where the tools, the patience, and the practice genuinely matter. It's worth handing to someone who does it all day.</p>
+
+      <h2>What the repair actually involves when we do it</h2>
+      <p>Here's roughly what happens when you bring it in. First, the free diagnostic: we look the phone over, check the crack isn't hiding anything more serious, and confirm the exact model so we quote you the right price. Then the old panel comes off — we use a laser machine to break down the adhesive cleanly, which protects the battery and the cables underneath and is what makes same-day turnaround possible. We clean off the old adhesive and any glass fragments, seat the new colour-matched panel, and bond it down so it sits flush and sealed like the day it left the factory. Finally we test everything — wireless charging, cameras, the lot — before we hand it back.</p>
+      <p>Done right, you'd never know it happened. That's the whole point.</p>
+
+      <figure class="article-figure">
+        <img src="/images/diagnostic.jpg" width="1400" height="934" loading="lazy" decoding="async" alt="A phone on the bench getting a free diagnostic check at Express Repairs in Riverwood" />
+        <figcaption>Every back glass job starts with a free diagnostic — we confirm the model and the exact price before any work starts.</figcaption>
+      </figure>
+
+      <h2>Which phones can you fix?</h2>
+      <p>Most of them. We work on all the major brands, including Apple iPhone, Samsung Galaxy, Google Pixel, Oppo, Huawei, Motorola and more. Newer flagship models with bigger, curved, or dual-toned glass backs can take a little more care and sit slightly higher in price, but they're all fair game. If you're not sure whether your model can be done, just call or drop in and we'll tell you straight away.</p>
+
+      <h2>How much does it cost, and how long does it take?</h2>
+      <p><a href="/repairs/back-glass/">Back glass repair</a> starts from $99. We always say "from" because the exact price depends on the model, and bigger or newer phones can sit a little higher. That's the honest answer, and it's exactly why we start with a free diagnostic. We'll look over the phone, tell you precisely what's involved, and give you a firm price before you commit to anything. No obligation, no pressure, and no surprise charges at the counter.</p>
+      <p>Most jobs are done in 60–90 minutes — quick enough that you can drop the phone in, duck off to do your shopping or grab a coffee, and come back to a phone that looks like new. If your model needs a part we don't have on the shelf that day, we'll tell you upfront how long it'll take rather than leaving you guessing.</p>
+
+      <div class="article-callout">
+        <span class="callout-icon">✓</span>
+        <span><strong>Free diagnostic, firm price first.</strong> Bring the phone in, we'll check the crack isn't hiding anything more serious and confirm the exact price before any work starts — no charge, no obligation. <a href="/repairs/back-glass/">See back glass pricing →</a></span>
+      </div>
+
+      <h2>Keeping the back safe from here on</h2>
+      <p>Once your phone's looking sharp again, a few small habits keep it that way. A case with a raised lip around the back and camera makes a real difference, because it keeps the glass off the ground when the phone lands face up. A slim skin or wrap adds a bit of grip and protection without the bulk if you don't like big cases. Try not to stack the phone under keys, coins, or other hard bits in the same pocket or bag. And in winter, give a very cold phone a minute to warm up before you put any pressure on it.</p>
+      <p>None of this is fussy. It's just enough to get your money's worth out of the repair.</p>
+
+      <h2>Frequently asked questions</h2>
+
+      <h3>Will fixing the back glass wipe my data?</h3>
+      <p>No. Back glass repair is a physical, external job. Your photos, apps, and messages are untouched. It's always smart to keep a backup in general, but this repair doesn't put your data at risk.</p>
+
+      <h3>Is it worth fixing an older phone?</h3>
+      <p>Often, yes. If the phone still does what you need, a back glass fix from $99 is a fraction of the cost of replacing it, and it keeps a working phone out of a drawer. If you're not sure, the free diagnostic will help you weigh it up honestly.</p>
+
+      <h3>My camera looks cracked too. Is that the same repair?</h3>
+      <p>Sometimes. On several models the rear camera glass is part of the back assembly, so it can be sorted together. On others the camera lens is separate. We'll check during the diagnostic and tell you which it is — and if it's the lens, <a href="/repairs/camera/">camera repair</a> is its own quick job.</p>
+
+      <h3>Can I still use the phone until my appointment?</h3>
+      <p>Usually, carefully. If glass is actively flaking or the crack is spreading, pop a piece of clear tape over it to hold things together and protect your fingers, and try to bring it in soon before dust gets inside.</p>
+
+      <h2>Pop in while you're at Riverwood Plaza</h2>
+      <p>You'll find us at Shop 7C, Riverwood Plaza, 257 Belmore Rd, Riverwood, inside the Metro Wireless Store. We're a local fix-it shop, not a big faceless chain, and we look after people from right across the area: Padstow, Peakhurst, Narwee, Beverly Hills, Mortdale, Kingsgrove, Lugarno and Punchbowl.</p>
+      <p>If you've been putting off that cracked back, this weekend is a good time to knock it over. Bring the phone in while you're already at the plaza, grab the <a href="/repairs/back-glass/">free diagnostic</a>, and let us take care of the rest.</p>
+      <p>Give us a call on <a href="tel:+61295333300">(02) 9533 3300</a> or just drop in. Same-day phone repairs, done right.</p>
+    `,
+  },
+  {
+    slug: 'cracked-screen-fix-or-replace',
+    tag: 'Screens',
+    date: '7 July 2026',
+    dateISO: '2026-07-07',
+    read: '5 min read',
+    img: '/images/broken-vs-fixed.jpg',
+    imgAlt: 'A cracked iPhone beside a freshly repaired phone on the repair bench',
+    title: 'Cracked screen: should you fix it or replace the phone?',
+    excerpt: 'Cracked your screen? Here\'s how to decide whether to repair it or replace the phone, what a repair costs, and how to get it sorted the same day in Riverwood.',
+    lede: 'The phone slips out of your hand, hits the tiles, and there it is — a web of cracks. Your first thought is usually "great, now I need a whole new phone." Most of the time, you don\'t.',
+    faqs: [
+      { q: 'How much does a cracked screen repair cost?', a: 'Screen repairs start from $99 for most popular models. The exact "from" price depends on your phone, which we can confirm with a quick look or a call.' },
+      { q: 'Will I lose my photos and data?', a: 'No. A screen repair doesn\'t wipe your phone — your photos, messages and apps stay exactly where they are. It\'s still smart to back up regularly, but a repair on its own doesn\'t touch your data.' },
+      { q: 'How long does a screen repair take?', a: 'Most screen repairs are done the same day, and often in under an hour. Drop it off, run your errands, and pick it up sorted.' },
+      { q: 'Is it worth fixing an older phone?', a: 'Often yes, especially if the only problem is the screen. If a few things are failing at once, we\'ll give you an honest view on whether repair or replacement is the better value.' },
+      { q: 'Do you fix my brand of phone?', a: 'We repair Apple, Samsung, Google, Oppo, Motorola and plenty of others. If you\'re not sure, just ask.' },
+    ],
+    body: `
+      <p>We've all had that stomach-drop moment. The phone slips out of your hand, hits the tiles, and there it is: a web of cracks across the screen. Your first thought is usually "great, now I need a whole new phone." Most of the time, you don't.</p>
+
+      <p>A cracked screen looks worse than it is. In a lot of cases it's a quick fix that costs a fraction of a new phone, and you can be back up and running the same day. Here's how to work out whether to repair or replace, and what to expect either way.</p>
+
+      <h2>First, how bad is it really?</h2>
+      <p>Not all cracks are equal. Three things to check before you decide anything:</p>
+      <ul>
+        <li><strong>Is the screen still responding to touch?</strong> If you can swipe, type and unlock, the damage is likely mostly cosmetic — a straightforward fix.</li>
+        <li><strong>Are there lines, black patches or dead spots?</strong> That points to damage under the glass. A bigger job, but still often repairable.</li>
+        <li><strong>Is the glass lifting or are there sharp edges?</strong> Stop using it and keep it in a case or a sandwich bag so you don't cut a finger or push shards further in.</li>
+      </ul>
+      <p>Even if the phone still works, it's worth acting sooner rather than later. A small crack lets in dust and moisture, and touchscreens can slowly get worse over the following weeks. A quick repair now usually saves a bigger one later.</p>
+
+      <h2>When repairing makes sense</h2>
+      <p>For most people, repairing is the smart choice — cheaper, faster, and you keep the phone you already know.</p>
+      <p>Repair is usually the way to go when your phone is only a couple of years old, the crack is limited to the screen, and everything else (battery, camera, charging) is still doing its job. <a href="/repairs/screen/">Screen repairs</a> start from $99 for most popular models, and the majority are done in under an hour. Drop your phone in at Riverwood Plaza, do a lap of the shops or grab a coffee, and pick it up looking like new.</p>
+      <p>A good repair uses quality parts and restores the phone to how it felt before the drop. You keep all your photos, apps and settings — and you're not signing up for a new two-year plan just because of one bad landing. Curious what drives the price? We break it down in <a href="/blog/screen-repair-cost-sydney/">how much screen repair costs in Sydney</a>.</p>
+
+      <h2>When replacing might be the better call</h2>
+      <p>Sometimes a new phone is the more sensible option, and we'll tell you straight if that's the case.</p>
+      <p>Replacing tends to make more sense when the phone is already quite old and struggling in other ways, when the damage goes well beyond the screen (a bent frame, major water damage, or several failing parts at once), or when the cost of fixing everything creeps close to the value of the phone itself. If the battery is also shot, the charging port is loose, and the back glass is cracked too, those small jobs add up — and at some point a newer phone is the better spend. We walk through that maths in <a href="/blog/repair-or-upgrade-phone/">repair or upgrade?</a></p>
+      <p>The honest answer is that it depends on your specific phone, and you shouldn't have to guess. That's exactly what a free diagnostic is for.</p>
+
+      <figure class="article-figure">
+        <img src="/images/diagnostic.jpg" width="1400" height="934" loading="lazy" decoding="async" alt="A phone on the bench getting a free diagnostic check at Express Repairs in Riverwood" />
+        <figcaption>Every phone gets a free diagnostic first — we confirm the fault and the exact price before any work starts.</figcaption>
+      </figure>
+
+      <div class="article-callout">
+        <span class="callout-icon">✓</span>
+        <span><strong>Not sure which way to go?</strong> Bring the phone in for a free diagnostic — no charge, no obligation. We'll test the screen and touch response, check the rest of the phone, and give you a clear "from" price with an honest recommendation. <a href="/repairs/screen/">See screen repair pricing →</a></span>
+      </div>
+
+      <h2>What a screen repair actually involves</h2>
+      <p>People often picture a big, risky operation. In practice it's a tidy job for a technician who does it every day: the cracked screen assembly comes off, the inside gets a quick check for any other damage, a fresh screen goes on, and the phone is tested to make sure the display, touch and front camera all behave. For most popular models the whole thing wraps up in under an hour.</p>
+      <p>We repair screens across Apple, Samsung, Google, Oppo, Motorola and more, so it doesn't matter which brand landed on the floor.</p>
+
+      <figure class="article-figure">
+        <img src="/images/screen-repair.jpg" width="1400" height="2100" loading="lazy" decoding="async" alt="A technician fitting a replacement screen to a cracked phone" />
+        <figcaption>Most screen replacements take under an hour — the old assembly comes off, the inside gets checked, and the new display is fitted and tested.</figcaption>
+      </figure>
+
+      <h2>Frequently asked questions</h2>
+
+      <h3>How much does a cracked screen repair cost?</h3>
+      <p>Screen repairs start from $99 for most popular models. The exact "from" price depends on your phone, which we can confirm with a quick look or a call.</p>
+
+      <h3>Will I lose my photos and data?</h3>
+      <p>No. A screen repair doesn't wipe your phone — your photos, messages and apps stay exactly where they are. It's still smart to back up regularly, but a repair on its own doesn't touch your data.</p>
+
+      <h3>How long does it take?</h3>
+      <p>Most screen repairs are done the same day, and often in under an hour. Drop it off, run your errands, and pick it up sorted.</p>
+
+      <h3>Is it worth fixing an older phone?</h3>
+      <p>Often yes, especially if the only problem is the screen. If a few things are failing at once, we'll give you an honest view on whether repair or replacement is the better value.</p>
+
+      <h3>Do you fix my brand of phone?</h3>
+      <p>We repair Apple, Samsung, Google, Oppo, Motorola and plenty of others. If you're not sure, just ask.</p>
+
+      <h2>Cracked screen? Let's take a look</h2>
+      <p>A cracked screen doesn't have to mean a new phone. More often than not, it's a quick, affordable fix that gets your phone back to mint the same day.</p>
+      <p>Pop in and see us at <a href="/repairs/screen/riverwood/">Riverwood Plaza</a> (Shop 7C, 257 Belmore Rd, Riverwood), or call <a href="tel:+61295333300">(02) 9533 3300</a>. We look after Riverwood and the nearby suburbs — Padstow, Peakhurst, Narwee, Beverly Hills, Mortdale, Kingsgrove, Lugarno and Punchbowl. Screen repairs start from $99, and the free diagnostic is always on the house.</p>
     `,
   },
   {

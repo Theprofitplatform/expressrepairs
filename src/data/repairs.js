@@ -1,7 +1,8 @@
 // Content for the repair service-page family and local (service×suburb) pages.
-// Prices/turnarounds are transcribed verbatim from the approved Claude Design
-// prototypes (they intentionally differ from the booking-widget basePrice in
-// ./services.js — these are the published service-page price tables).
+// Price bands (low/high per brand) are derived from 12 months of real POS repair
+// sales (Lightspeed), so the table shows an honest "$from–$to" range per brand
+// rather than one flat number. The "from" floors align with the booking-widget
+// basePrice in ./services.js.
 
 // Brand rows shared by every service price table (order matters).
 export const BRAND_ROWS = [
@@ -13,9 +14,12 @@ export const BRAND_ROWS = [
   { id: 'motorola', logo: 'M', name: 'Motorola', models: 'Edge 40 Pro · Razr 40 Ultra · Moto G84' },
 ];
 
-// Build [{...brandRow, price, time}] from parallel price/time arrays.
-function rows(prices, times) {
-  return BRAND_ROWS.map((b, i) => ({ ...b, price: prices[i], time: times[i] }));
+// Build [{...brandRow, price, priceTo, time}] from parallel low/high/time arrays.
+// `price` is the numeric "from" (cheapest model in the brand) — the JSON-LD Offer
+// and prices.test.js pin to it; `priceTo` is the realistic top of the band so the
+// table can render an honest "$from–$to" range.
+function rows(lows, highs, times) {
+  return BRAND_ROWS.map((b, i) => ({ ...b, price: lows[i], priceTo: highs[i], time: times[i] }));
 }
 
 const STD_WARRANTIES = (lastDesc) => [
@@ -50,8 +54,8 @@ export const SERVICES = [
     fromAmount: '$99',
     priceEyebrow: 'Screen repair pricing',
     priceColLabel: 'Screen repair',
-    priceNote: "Prices use original-quality parts and include fitting, testing and warranty. Free diagnostic if you're not sure the screen is the problem.",
-    rows: rows([149, 169, 129, 99, 119, 99], ['30–60 min', '45–90 min', '30–60 min', '30–60 min', '30–60 min', '30–60 min']),
+    priceNote: "Prices use original-quality parts and include fitting, testing and warranty. Samsung screens are genuine Samsung parts at Samsung's official Australian pricing; foldable main displays are quoted on inspection. Free diagnostic if you're not sure the screen is the problem.",
+    rows: rows([99, 244, 129, 99, 99, 99], [549, 525, 399, 349, 349, 349], ['30–60 min', '45–90 min', '30–60 min', '30–60 min', '30–60 min', '30–60 min']),
     warranties: STD_WARRANTIES('Most screens replaced in 30–60 minutes.'),
     ctaTitle: 'Cracked screen? Fixed by this afternoon.',
     faqs: [
@@ -81,7 +85,7 @@ export const SERVICES = [
     priceEyebrow: 'Battery replacement pricing',
     priceColLabel: 'Battery replacement',
     priceNote: "Prices use original-quality cells and include fitting, testing and warranty. Free battery health check if you're not sure the battery is the problem.",
-    rows: rows([79, 89, 69, 59, 69, 59], ['30–45 min', '30–60 min', '30–45 min', '30–45 min', '30–45 min', '30–45 min']),
+    rows: rows([59, 79, 59, 59, 59, 59], [119, 99, 149, 149, 149, 149], ['30–45 min', '30–60 min', '30–45 min', '30–45 min', '30–45 min', '30–45 min']),
     warranties: STD_WARRANTIES('Most batteries replaced in 30–60 minutes.'),
     ctaTitle: 'Battery fading? Fresh power by this afternoon.',
     faqs: [
@@ -95,10 +99,10 @@ export const SERVICES = [
   {
     slug: 'back-glass',
     label: 'Back Glass Repair',
-    title: 'Phone Back Glass Replacement Sydney — Same-Day, From $69 | Express Repairs',
-    description: 'Cracked back glass? Same-day laser-assisted back glass replacement from $69 — colour-matched, resealed and warrantied at Riverwood Plaza.',
+    title: 'Phone Back Glass Replacement Sydney — Same-Day, From $99 | Express Repairs',
+    description: 'Cracked back glass? Same-day laser-assisted back glass replacement from $99 — colour-matched, resealed and warrantied at Riverwood Plaza.',
     schemaName: 'Phone Back Glass Replacement',
-    schemaPrice: '69',
+    schemaPrice: '99',
     badgePill: 'Laser removal',
     badgeNote: '60–90 min turnaround · 6–12 month warranty',
     h1Html: 'Back glass replacement, <em>flawless again</em>.',
@@ -107,11 +111,11 @@ export const SERVICES = [
     alt: 'Technician replacing cracked phone back glass',
     turnaround: '60–90 min',
     fromCaption: 'Back glass from',
-    fromAmount: '$69',
+    fromAmount: '$99',
     priceEyebrow: 'Back glass pricing',
     priceColLabel: 'Back glass',
     priceNote: 'Prices use colour-matched original-quality panels and include laser removal, fitting, resealing and warranty.',
-    rows: rows([99, 89, 79, 69, 69, 69], ['60–90 min', '60–90 min', '60–90 min', '60–90 min', '60–90 min', '60–90 min']),
+    rows: rows([149, 99, 99, 99, 99, 99], [450, 299, 299, 299, 299, 299], ['60–90 min', '60–90 min', '60–90 min', '60–90 min', '60–90 min', '60–90 min']),
     warranties: STD_WARRANTIES('Most back glass replaced in 60–90 minutes.'),
     ctaTitle: 'Shattered back? Looking factory-fresh by this afternoon.',
     faqs: [
@@ -125,10 +129,10 @@ export const SERVICES = [
   {
     slug: 'charging-port',
     label: 'Charging Port Repair',
-    title: 'Phone Charging Port Repair Sydney — Same-Day, From $49 | Express Repairs',
-    description: 'Phone not charging or cable feeling loose? Same-day charging port cleaning and replacement from $49 — fitted, tested and warrantied at Riverwood Plaza.',
+    title: 'Phone Charging Port Repair Sydney — Same-Day, From $39 | Express Repairs',
+    description: 'Phone not charging or cable feeling loose? Same-day charging port cleaning and replacement from $39 — fitted, tested and warrantied at Riverwood Plaza.',
     schemaName: 'Phone Charging Port Repair',
-    schemaPrice: '49',
+    schemaPrice: '39',
     badgePill: 'Often a quick fix',
     badgeNote: 'Free port clean with diagnostic · 6–12 month warranty',
     h1Html: 'Charging port repair, <em>plugged in and charging</em>.',
@@ -137,11 +141,11 @@ export const SERVICES = [
     alt: 'Technician repairing a phone charging port',
     turnaround: '45–90 min',
     fromCaption: 'Ports from',
-    fromAmount: '$49',
+    fromAmount: '$39',
     priceEyebrow: 'Charging port pricing',
     priceColLabel: 'Port replacement',
     priceNote: "Prices include fitting, testing and warranty. If it's just debris in the port, we'll clean it on the spot for a fraction of the price.",
-    rows: rows([89, 99, 79, 49, 69, 49], ['45–90 min', '45–90 min', '45–90 min', '45–60 min', '45–90 min', '45–60 min']),
+    rows: rows([49, 59, 49, 39, 39, 49], [99, 179, 129, 99, 99, 99], ['45–90 min', '45–90 min', '45–90 min', '45–60 min', '45–90 min', '45–60 min']),
     warranties: STD_WARRANTIES('Most ports cleaned or replaced in 45–90 minutes.'),
     ctaTitle: "Phone won't charge? Sorted same day.",
     faqs: [
@@ -155,10 +159,10 @@ export const SERVICES = [
   {
     slug: 'camera',
     label: 'Camera Repair',
-    title: 'Phone Camera Repair Sydney — Same-Day, From $79 | Express Repairs',
-    description: 'Blurry photos, black viewfinder or shattered lens glass? Same-day phone camera and lens repair from $79 — fitted, tested and warrantied at Riverwood Plaza.',
+    title: 'Phone Camera Repair Sydney — Same-Day, From $49 | Express Repairs',
+    description: 'Blurry photos, black viewfinder or shattered lens glass? Same-day phone camera and lens repair from $49 — fitted, tested and warrantied at Riverwood Plaza.',
     schemaName: 'Phone Camera Repair',
-    schemaPrice: '79',
+    schemaPrice: '49',
     badgePill: 'Lens & module',
     badgeNote: '45–90 min turnaround · 6–12 month warranty',
     h1Html: 'Camera repair, <em>sharp shots again</em>.',
@@ -167,11 +171,11 @@ export const SERVICES = [
     alt: 'Technician repairing a phone camera module',
     turnaround: '45–90 min',
     fromCaption: 'Cameras from',
-    fromAmount: '$79',
+    fromAmount: '$49',
     priceEyebrow: 'Camera repair pricing',
     priceColLabel: 'Camera repair',
     priceNote: 'Prices use original-quality modules and include fitting, focus calibration, testing and warranty. Cracked lens glass alone is usually cheaper.',
-    rows: rows([129, 119, 99, 79, 89, 79], ['45–90 min', '45–90 min', '45–90 min', '45–60 min', '45–90 min', '45–60 min']),
+    rows: rows([49, 79, 49, 49, 49, 49], [199, 262, 149, 149, 149, 149], ['45–90 min', '45–90 min', '45–90 min', '45–60 min', '45–90 min', '45–60 min']),
     warranties: STD_WARRANTIES('Most cameras repaired in 45–90 minutes.'),
     ctaTitle: 'Blurry camera? Sharp shots by this afternoon.',
     faqs: [
@@ -186,9 +190,9 @@ export const SERVICES = [
     slug: 'water-damage',
     label: 'Water Damage Repair',
     title: 'Water Damage Phone Repair Sydney — Free Same-Day Assessment | Express Repairs',
-    description: 'Dropped your phone in water? Free same-day assessment, ultrasonic cleaning and corrosion treatment from $89 at Riverwood Plaza. No fix, no fee.',
+    description: 'Dropped your phone in water? Free same-day assessment, ultrasonic cleaning and corrosion treatment from $149 at Riverwood Plaza. No fix, no fee.',
     schemaName: 'Phone Water Damage Repair',
-    schemaPrice: '89',
+    schemaPrice: '149',
     badgePill: 'Act fast',
     badgeNote: 'Free assessment · No fix, no fee',
     h1Html: 'Water damage rescue, <em>every hour counts</em>.',
@@ -197,11 +201,11 @@ export const SERVICES = [
     alt: 'Technician treating a water-damaged phone board',
     turnaround: '2–4 hours',
     fromCaption: 'Treatment from',
-    fromAmount: '$89',
+    fromAmount: '$149',
     priceEyebrow: 'Water damage pricing',
     priceColLabel: 'Clean & treat',
     priceNote: "No fix, no fee — if we can't bring your phone back, the attempt costs you nothing and we'll talk you through data recovery options.",
-    rows: rows([99, 109, 99, 89, 99, 89], ['2–4 hours', '2–4 hours', '2–4 hours', '2–4 hours', '2–4 hours', '2–4 hours']),
+    rows: rows([149, 149, 149, 149, 149, 149], [250, 250, 230, 230, 230, 230], ['2–4 hours', '2–4 hours', '2–4 hours', '2–4 hours', '2–4 hours', '2–4 hours']),
     warranties: STD_WARRANTIES('Most water-damaged phones assessed within the hour.'),
     ctaTitle: 'Phone got wet? Bring it straight in — assessment is free.',
     faqs: [
@@ -209,7 +213,7 @@ export const SERVICES = [
       { q: 'Does putting it in rice work?', a: "No — that's a myth. Rice can't reach the moisture inside, and the delay lets corrosion set in. Proper treatment means opening the phone and ultrasonic-cleaning the board." },
       { q: 'What are the odds my phone survives?', a: "It depends on the liquid, how long it was wet, and how quickly you get it to us. Phones brought in the same day, powered off, have the best outcomes by far — we'll give you an honest read after the free assessment." },
       { q: 'Can you recover my photos and data?', a: "Often, yes — even when the phone itself isn't worth saving, we can frequently revive it long enough for a full backup. Tell us up front if data is the priority." },
-      { q: 'What does it cost?', a: "The assessment is free. Cleaning and corrosion treatment starts from $89, and any parts that need replacing are quoted before we proceed. If we can't fix it, you pay nothing." },
+      { q: 'What does it cost?', a: "The assessment is free. Cleaning and corrosion treatment starts from $149, and any parts that need replacing are quoted before we proceed. If we can't fix it, you pay nothing." },
     ],
   },
 ];
@@ -289,7 +293,7 @@ export const LOCAL_PAGES = [
     faqTitle: 'Battery replacement near Padstow — common questions.',
     faqs: [
       { q: 'How do I know my battery needs replacing?', a: "If your phone drains much faster than it used to, shuts down unexpectedly, or shows battery health under 80%, it's due. We'll run a free battery health check before you decide." },
-      { q: "Is it worth replacing the battery, or should I upgrade?", a: "For most phones under three years old, a $59–$89 battery buys you another year or two — far cheaper than a new handset. We'll give you an honest read on whether your phone is worth keeping." },
+      { q: "Is it worth replacing the battery, or should I upgrade?", a: "For most phones under three years old, a $59–$119 battery buys you another year or two — far cheaper than a new handset. We'll give you an honest read on whether your phone is worth keeping." },
       { q: 'How do I get to you from Padstow?', a: "Riverwood is one stop on the T8, or about a five-minute drive up Victoria Rd to Belmore Rd. Free parking at Riverwood Plaza, and we're at Shop 7C." },
       { q: 'How long does a battery replacement take?', a: "Most batteries are fitted in 30–45 minutes. Sealed or waterproofed models can take a little longer — we'll confirm when you arrive." },
       { q: 'Do you use genuine batteries?', a: "We use genuine OEM or premium-grade cells matched to your phone's original capacity, tested after fitting and covered by warranty." },
@@ -642,7 +646,7 @@ export const LOCAL_PAGES = [
       { q: 'How do I know my battery needs replacing?', a: "If your phone drains much faster than it used to, shuts down unexpectedly, or shows battery health under 80%, it's due. We'll run a free battery health check before you decide." },
       { q: 'How long does a battery replacement take?', a: "Most batteries are fitted in 30–45 minutes. Drop your phone at Shop 7C, do your shopping in the Plaza, and it'll be ready when you're done. Sealed or waterproofed models can take a little longer." },
       { q: 'Do I need to book, or can I just walk in?', a: 'Walk-ins are welcome Monday to Saturday. Booking ahead just guarantees we have your battery in stock — worth it for older or less common models. Call (02) 9533 3300 or use the quote form.' },
-      { q: 'Is it worth replacing the battery, or should I upgrade?', a: "For most phones under three years old, a $59–$89 battery buys you another year or two — far cheaper than a new handset. We'll give you an honest read on whether your phone is worth keeping." },
+      { q: 'Is it worth replacing the battery, or should I upgrade?', a: "For most phones under three years old, a $59–$119 battery buys you another year or two — far cheaper than a new handset. We'll give you an honest read on whether your phone is worth keeping." },
       { q: 'Do you use genuine batteries?', a: "We use genuine OEM or premium-grade cells matched to your phone's original capacity, tested after fitting and covered by a 6–12 month warranty." },
     ],
     ctaTitle: 'Battery dying in Riverwood? Fresh power by this afternoon.',
@@ -720,7 +724,7 @@ export const LOCAL_PAGES = [
       { q: 'How do I know my battery needs replacing?', a: "If your phone drains much faster than it used to, shuts down while it still shows charge, or reports battery health under 80%, it's due. We run a free battery health check before you decide." },
       { q: 'How do I get to you from Hurstville?', a: "It's about a ten-minute drive via Stoney Creek Rd and King Georges Rd to Belmore Rd — and unlike the Westfield, Riverwood Plaza has free customer parking." },
       { q: 'How long does a battery replacement take?', a: 'Most batteries are fitted in 30–45 minutes. Drop it at Shop 7C, do your errands, and it’ll be ready when you’re back. Sealed or waterproofed models can take a little longer.' },
-      { q: 'Is it worth replacing the battery, or should I upgrade?', a: "For most phones under three years old, a $59–$89 battery buys you another year or two — far cheaper than a new handset. We'll give you an honest read on whether your phone is worth keeping." },
+      { q: 'Is it worth replacing the battery, or should I upgrade?', a: "For most phones under three years old, a $59–$119 battery buys you another year or two — far cheaper than a new handset. We'll give you an honest read on whether your phone is worth keeping." },
       { q: 'Do you use genuine batteries?', a: "We use genuine OEM or premium-grade cells matched to your phone's original capacity, tested after fitting and covered by a 6–12 month warranty." },
     ],
     ctaTitle: 'Battery dying near Hurstville? Skip the queue — fresh power today.',
@@ -759,7 +763,7 @@ export const LOCAL_PAGES = [
       { q: 'How do I get to you from Beverly Hills?', a: "Two stops down the T8 via Narwee — under five minutes — and Riverwood Plaza is right by the station. Driving is just as quick, with free parking at the Plaza." },
       { q: 'How do I know it’s the battery?', a: "Fast drain, shutdowns while there’s still charge showing, or battery health under 80% all point to a worn cell. We’ll confirm it with a free health check before you commit." },
       { q: 'How long does it take?', a: 'Most batteries are fitted in 30–45 minutes. Drop it at Shop 7C and do your shopping — it’ll be ready when you’re back.' },
-      { q: 'Replace the battery or upgrade the phone?', a: "For most phones under three years old a fresh $59–$89 cell is far cheaper than a new handset and buys another year or two. We'll give you an honest read either way." },
+      { q: 'Replace the battery or upgrade the phone?', a: "For most phones under three years old a fresh $59–$119 cell is far cheaper than a new handset and buys another year or two. We'll give you an honest read either way." },
       { q: 'Do you use genuine batteries?', a: "Genuine OEM or premium-grade cells matched to your phone's original capacity — tested after fitting and warrantied for 6–12 months." },
     ],
     ctaTitle: 'Battery dying in Beverly Hills? Fresh power by this afternoon.',
@@ -798,7 +802,7 @@ export const LOCAL_PAGES = [
       { q: 'How do I get to you from Kingsgrove?', a: "It's three stops down the T8 — Kingsgrove, Beverly Hills, Narwee, then Riverwood — and the Plaza is right by the station. By car it's about ten minutes, with free parking on arrival." },
       { q: 'How do I know my battery needs replacing?', a: "If it drains fast, shuts down with charge still showing, or reports health under 80%, it's likely worn. We run a free battery health check before you decide." },
       { q: 'How long does a battery replacement take?', a: 'Most batteries are fitted in 30–45 minutes. Drop it at Shop 7C, do your errands, and it’ll be ready when you’re back.' },
-      { q: 'Is it worth it, or should I upgrade?', a: "For most phones under three years old a $59–$89 battery is far cheaper than a new handset and adds a year or two. We'll tell you honestly if the phone is worth keeping." },
+      { q: 'Is it worth it, or should I upgrade?', a: "For most phones under three years old a $59–$119 battery is far cheaper than a new handset and adds a year or two. We'll tell you honestly if the phone is worth keeping." },
       { q: 'Do you use genuine batteries?', a: "Genuine OEM or premium-grade cells matched to your phone's original capacity, tested after fitting and covered by a 6–12 month warranty." },
     ],
     ctaTitle: 'Battery dying in Kingsgrove? Fresh power today.',

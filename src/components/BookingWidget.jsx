@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Icon, BrandLogo } from './icons.jsx';
 import { BRANDS } from '../data/brands.js';
-import { ISSUES } from '../data/services.js';
+import { ISSUES, MODEL_PRICES } from '../data/services.js';
 import { SITE } from '../data/site.js';
 import { sendLead } from '../lib/sendLead.js';
 
@@ -21,9 +21,17 @@ export function BookingWidget() {
   const reset = () => { setStep(0); setBrand(null); setModel(null); setIssue(null); setDetails({name:'',phone:'',company:''}); setDetailsErr({}); setSubmitted(false); setSending(false); setSendError(''); };
 
   const isOther = brand?.id === 'other';
-  const price = (brand && issue && !isOther) ? issue.basePrice[brand.id] : 0;
-  // "Other" phones can't be priced from a list — quote on inspection.
-  const quoteLabel = isOther ? 'Custom quote' : (price > 0 ? `$${price}` : 'Free');
+  const modelPrice = issue && MODEL_PRICES[issue.id] ? MODEL_PRICES[issue.id][model] : undefined;
+  const price = (brand && issue && !isOther)
+    ? (modelPrice != null ? modelPrice : issue.basePrice[brand.id])
+    : 0;
+  // MODEL_PRICES gives a per-model "from" price for some issues; everything
+  // else uses the per-brand starting price (cheapest model). Both are
+  // confirmed on inspection. Samsung parts are genuine-only, so a Samsung
+  // model without an official Samsung price for a priced issue (e.g. Note 20)
+  // is quoted on inspection — same as "Other" phones.
+  const needsQuote = isOther || (brand?.id === 'samsung' && issue && MODEL_PRICES[issue.id] && modelPrice == null);
+  const quoteLabel = needsQuote ? 'Custom quote' : (price > 0 ? `from $${price}` : 'Free');
   const deviceLabel = brand ? (isOther ? model : `${brand.name} ${model}`) : '';
   const back = () => setStep(s => Math.max(s - 1, 0));
 

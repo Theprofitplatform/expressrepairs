@@ -6,6 +6,12 @@ import MobileCta from '../components/MobileCta.astro';
 import CtaBand from '../components/CtaBand.astro';
 import { POSTS, BLOG_TAGS } from '../data/posts.js';
 import { breadcrumbSchema } from '../lib/seo.js';
+import { Image } from 'astro:assets';
+
+// Optimised card images from src/assets/blog/, matched by filename against the
+// post's public /images/ path (see the article template for the full rationale).
+const heroModules = import.meta.glob('../assets/blog/*.{jpg,jpeg,png,webp}', { eager: true, import: 'default' });
+const heroFor = (p) => heroModules[`../assets/blog/${p.img.split('/').pop()}`];
 
 const navLinks = [
   { label: 'Repairs', href: '/repairs/' },
@@ -57,7 +63,11 @@ const schema = breadcrumbSchema([
     <div class="container-wide">
       {featured && (
         <a href={postHref(featured)} class="post-featured">
-          <div class="post-featured-img" style={`background-image: url('${featured.img}');`}></div>
+          <div class="post-featured-img">
+            {heroFor(featured)
+              ? <Image src={heroFor(featured)} alt={featured.imgAlt ?? featured.title} widths={[400, 700, 1000, 1400]} sizes="(max-width: 860px) 100vw, 640px" loading="eager" />
+              : <img src={featured.img} alt={featured.imgAlt ?? featured.title} loading="eager" />}
+          </div>
           <div class="post-featured-body">
             <div class="post-meta">
               <span class="post-tag">{featured.tag}</span>
@@ -75,7 +85,11 @@ const schema = breadcrumbSchema([
       <div class="post-grid">
         {rest.map((p) => (
           <a href={postHref(p)} class="post-card">
-            <div class="post-card-img" style={`background-image: url('${p.img}');`}></div>
+            <div class="post-card-img">
+              {heroFor(p)
+                ? <Image src={heroFor(p)} alt={p.imgAlt ?? p.title} widths={[300, 500, 760]} sizes="(max-width: 600px) 100vw, (max-width: 960px) 50vw, 33vw" loading="lazy" />
+                : <img src={p.img} alt={p.imgAlt ?? p.title} loading="lazy" />}
+            </div>
             <div class="post-card-body">
               <h3 class="post-card-title">{p.title}</h3>
               <p class="post-card-excerpt">{p.excerpt}</p>

@@ -56,6 +56,7 @@ export function localBusinessSchema(site, hours) {
     }),
   };
   if (site.image) schema.image = absoluteUrl(site.image);
+  if (site.logo) schema.logo = absoluteUrl(site.logo);
   if (site.priceRange) schema.priceRange = site.priceRange;
   if (Array.isArray(site.sameAs) && site.sameAs.length) schema.sameAs = site.sameAs;
   // Only emit aggregateRating when a REAL review count is configured — never

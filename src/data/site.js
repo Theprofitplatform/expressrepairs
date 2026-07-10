@@ -22,7 +22,8 @@ export const SITE = siteSchema.parse({
   geo: { lat: -33.9522, lng: 151.051 },
   // Structured-data extras (LocalBusiness JSON-LD).
   image: '/images/screen-repair.jpg',
-  priceRange: '$49–$169',
+  logo: '/images/logo.png',
+  priceRange: '$39–$549',
   // Official business profiles — emitted as schema.org `sameAs` so Google can
   // reconcile this site with the same entity on Maps/Facebook/Instagram.
   sameAs: [
