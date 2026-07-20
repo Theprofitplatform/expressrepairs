@@ -81,8 +81,7 @@ async function main() {
     const body = await res.json();
     const data = body.data ?? body;
     rows.push(...data);
-    const total = body.total ?? data.length;
-    if (rows.length >= total || data.length === 0 || data.length < 200) break;
+    if (data.length === 0 || data.length < 200 || (body.total != null && rows.length >= body.total)) break;
   }
 
   const products = transformCatalog(rows);
