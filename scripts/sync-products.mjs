@@ -7,6 +7,7 @@
 // Env: POS_GATE_USER POS_GATE_PASS (Worker Basic gate), POS_EMAIL POS_PASSWORD
 // (DXPOS login), optional POS_BASE.
 import { writeFileSync, mkdirSync } from 'node:fs';
+import { join } from 'node:path';
 import { fileURLToPath, pathToFileURL } from 'node:url';
 
 const BASE = process.env.POS_BASE || 'https://pos.expressrepairs.com.au';
@@ -74,13 +75,14 @@ async function main() {
   // 3. Page through the catalog (hard-capped at 200/page server-side).
   const rows = [];
   for (let page = 1; ; page++) {
-    const res = await fetch(`${BASE}/api/catalog?type=PRODUCT&pageSize=200&page=${page}`, { headers: auth });
+    const res = await fetch(`${BASE}/api/catalog?type=PRODUCT&pageSize=200&page=${page}`, { headers: auth }).catch(() => null);
+    if (!res) { console.log('POS connection lost mid-sync — keeping last synced data.'); process.exit(0); }
     if (!res.ok) { console.error('Catalog fetch failed', res.status); process.exit(1); }
     const body = await res.json();
     const data = body.data ?? body;
     rows.push(...data);
     const total = body.total ?? data.length;
-    if (rows.length >= total || data.length === 0) break;
+    if (rows.length >= total || data.length === 0 || data.length < 200) break;
   }
 
   const products = transformCatalog(rows);
@@ -91,10 +93,11 @@ async function main() {
   const imgDir = fileURLToPath(new URL('../public/images/products/', import.meta.url));
   mkdirSync(imgDir, { recursive: true });
   for (const p of products) {
-    const src = p._sourceImage.startsWith('http') ? p._sourceImage : BASE + p._sourceImage;
-    const res = await fetch(src, { headers: { Cookie: cookie } });
-    if (!res.ok) { console.warn(`image failed for ${p.id} (${res.status}) — keeping previous file if any`); }
-    else writeFileSync(imgDir + p.image.split('/').pop(), Buffer.from(await res.arrayBuffer()));
+    const external = p._sourceImage.startsWith('http');
+    const src = external ? p._sourceImage : BASE + p._sourceImage;
+    const res = await fetch(src, external ? {} : { headers: { Cookie: cookie, Authorization: `Bearer ${token}` } }).catch(() => null);
+    if (!res || !res.ok) { console.warn(`image failed for ${p.id} (${res ? res.status : 'network error'}) — keeping previous file if any`); }
+    else writeFileSync(join(imgDir, p.image.split('/').pop()), Buffer.from(await res.arrayBuffer()));
     delete p._sourceImage;
   }
 
