@@ -6,9 +6,10 @@ const ORIGIN = 'https://expressrepairs.com.au';
 const ENV = { STRIPE_SECRET_KEY: 'sk_test_x' };
 const inStock = PRODUCTS.find((p) => p.inStock);
 
-function makeReq({ method = 'POST', body = {}, origin = ORIGIN } = {}) {
+function makeReq({ method = 'POST', body = {}, origin = ORIGIN, contentLength } = {}) {
   const headers = new Headers();
   if (origin) headers.set('Origin', origin);
+  if (contentLength != null) headers.set('content-length', String(contentLength));
   return { method, headers, json: async () => body };
 }
 
@@ -37,6 +38,30 @@ describe('POST /api/checkout', () => {
     if (!oos) return; // seed data may be all in stock after a real sync
     const res = await onRequest({ request: makeReq({ body: { items: [{ id: oos.id, qty: 1 }] } }), env: ENV });
     expect(res.status).toBe(400);
+  });
+
+  it('400s on malformed body (null or non-object)', async () => {
+    const res = await onRequest({ request: makeReq({ body: null }), env: ENV });
+    expect(res.status).toBe(400);
+    expect((await res.json()).error).toBe('Invalid request body.');
+  });
+
+  it('400s on items array containing null', async () => {
+    const res = await onRequest({ request: makeReq({ body: { items: [null] } }), env: ENV });
+    expect(res.status).toBe(400);
+    expect((await res.json()).error).toBe('An item in your cart is no longer available.');
+  });
+
+  it('400s when items is not an array', async () => {
+    const res = await onRequest({ request: makeReq({ body: { items: 'notanarray' } }), env: ENV });
+    expect(res.status).toBe(400);
+    expect((await res.json()).error).toBe('Cart is empty.');
+  });
+
+  it('413s on oversized content-length', async () => {
+    const res = await onRequest({ request: makeReq({ body: { items: [{ id: inStock.id, qty: 1 }] }, contentLength: 20000 }), env: ENV });
+    expect(res.status).toBe(413);
+    expect((await res.json()).error).toBe('Request too large.');
   });
 
   it('503s when Stripe key not configured', async () => {

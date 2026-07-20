@@ -13,6 +13,7 @@
 import { PRODUCTS, SHOP } from '../../src/data/products.js';
 
 const MAX_QTY = 20; // per line — matches the cart UI cap
+const MAX_BODY_BYTES = 16 * 1024;
 const SITE = 'https://www.expressrepairs.com.au';
 
 const byId = Object.fromEntries(PRODUCTS.map((p) => [p.id, p]));
@@ -46,14 +47,30 @@ export async function onRequest({ request, env }) {
   if (request.method !== 'POST') return json(405, { ok: false, error: 'Method not allowed.' });
   if (!sameSite(request, env)) return json(403, { ok: false, error: 'Forbidden.' });
 
+  // Reject oversized bodies before reading them.
+  const declaredLen = Number(request.headers.get('content-length') || 0);
+  if (declaredLen > MAX_BODY_BYTES) {
+    return json(413, { ok: false, error: 'Request too large.' });
+  }
+
   let data;
   try { data = await request.json(); } catch { return json(400, { ok: false, error: 'Invalid request body.' }); }
+
+  // Guard against null, non-objects, or arrays in the request body.
+  if (!data || typeof data !== 'object' || Array.isArray(data)) {
+    return json(400, { ok: false, error: 'Invalid request body.' });
+  }
 
   const items = Array.isArray(data.items) ? data.items : [];
   if (!items.length || items.length > 50) return json(400, { ok: false, error: 'Cart is empty.' });
 
   const lines = [];
-  for (const { id, qty } of items) {
+  for (const item of items) {
+    // Guard against null or non-object items before destructuring.
+    if (item === null || typeof item !== 'object' || Array.isArray(item)) {
+      return json(400, { ok: false, error: 'An item in your cart is no longer available.' });
+    }
+    const { id, qty } = item;
     const p = byId[id];
     const n = Number(qty);
     if (!p) return json(400, { ok: false, error: 'An item in your cart is no longer available.' });
