@@ -1,0 +1,36 @@
+---
+import Layout from '../../layouts/Layout.astro';
+import SiteNav from '../../components/SiteNav.astro';
+import SiteFooter from '../../components/SiteFooter.astro';
+
+const navLinks = [
+  { label: 'Repairs', href: '/repairs/' },
+  { label: 'Shop', href: '/shop/' },
+];
+---
+<Layout
+  title="Order Received | Express Repairs"
+  description="Thanks for your order — we'll pack it and let you know when it ships or is ready for pickup."
+  path="/shop/thanks/"
+  noindex
+  htmlAttrs={{ 'data-palette': 'electric-blue', 'data-fontpair': 'jakarta', 'data-dark': 'false' }}
+>
+  <SiteNav links={navLinks} ctaHref="/shop/" />
+
+  <main id="main-content" class="section">
+    <div class="container">
+      <div class="form-success" role="status" style="max-width: 560px; font-size: 16px; padding: 20px 24px;">
+        Order received — thank you! You'll get a Stripe receipt by email; we'll pack your order and
+        email/text when it ships (or when it's ready for pickup).
+      </div>
+      <p style="margin-top: 24px;"><a href="/shop/">← Back to shop</a></p>
+    </div>
+  </main>
+
+  <SiteFooter />
+
+  <script>
+    import { clearCart } from '../../shop/cart-store.js';
+    clearCart();
+  </script>
+</Layout>

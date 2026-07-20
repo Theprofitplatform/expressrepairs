@@ -92,3 +92,15 @@ export const siteSchema = z.object({
     .object({ value: z.number(), count: z.number().nullable(), best: z.number().default(5) })
     .optional(),
 });
+
+// One synced DXPOS product shown in /shop. Written by scripts/sync-products.mjs
+// — never hand-edit products.json; change the product in DXPOS instead.
+export const productSchema = z.object({
+  id: z.string().min(1),
+  name: z.string().min(1),
+  category: z.string().min(1),
+  priceCents: z.number().int().positive(),
+  image: z.string().startsWith('/images/products/'),
+  inStock: z.boolean(),
+  sku: z.string(),
+});

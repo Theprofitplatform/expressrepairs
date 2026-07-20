@@ -1,682 +1,802 @@
 {
   "astro.config.mjs": {
-    "mtime": 1783644538.216284,
-    "ast_hash": "0b0441186d1c8dcbcff08c4be75ed10a",
+    "mtime": 1784528301.4455028,
+    "ast_hash": "5ef90cfe2cf0e2f4fec01bab254a9af6",
     "semantic_hash": ""
   },
   "functions/api/lead.js": {
-    "mtime": 1782197563.7665818,
+    "mtime": 1784526240.0252533,
     "ast_hash": "ef023f8fada73769a6811a91de462004",
     "semantic_hash": ""
   },
   "package.json": {
-    "mtime": 1781593367.259464,
-    "ast_hash": "9303d6a98cf5ad7b6568f01d0b9405ca",
+    "mtime": 1784526619.1754584,
+    "ast_hash": "5e06e2eee3736e91a546a3eb8716360d",
     "semantic_hash": ""
   },
   "scripts/optimize-images.mjs": {
-    "mtime": 1781593367.2711089,
+    "mtime": 1784526240.1941302,
     "ast_hash": "675335cd780bb3e338b389b637708963",
     "semantic_hash": ""
   },
   "src/components/AdTracking.astro": {
-    "mtime": 1782343827.552984,
+    "mtime": 1784526240.2751908,
     "ast_hash": "2a2a3a30d6c473db7d5329d89f40ea39",
     "semantic_hash": ""
   },
   "src/components/BookingWidget.jsx": {
-    "mtime": 1783642348.0100067,
+    "mtime": 1784526240.2761867,
     "ast_hash": "d3578ea7b23647fe54d26e3cff12f6cf",
     "semantic_hash": ""
   },
   "src/components/CtaBand.astro": {
-    "mtime": 1781310619.5525744,
+    "mtime": 1784526240.2771873,
     "ast_hash": "c3fceedfeec5ebdd7dfff9d7f9292903",
     "semantic_hash": ""
   },
   "src/components/LandingForm.jsx": {
-    "mtime": 1782197563.7675812,
+    "mtime": 1784526240.2791913,
     "ast_hash": "c2423f0e6906e4e38ab1b73f8e63cc9c",
     "semantic_hash": ""
   },
   "src/components/MobileCta.astro": {
-    "mtime": 1782262926.3676498,
+    "mtime": 1784526240.2791913,
     "ast_hash": "ff8570b0219611384ffe21efc9a844f0",
     "semantic_hash": ""
   },
   "src/components/PageScripts.astro": {
-    "mtime": 1781593367.2711089,
+    "mtime": 1784526240.2801921,
     "ast_hash": "ea744c74a4c084744f725183c14d6293",
     "semantic_hash": ""
   },
   "src/components/PriceTable.astro": {
-    "mtime": 1782443974.1982927,
+    "mtime": 1784526240.282713,
     "ast_hash": "f0c0d093e59a9c9fe0e2b4d7903c2b26",
     "semantic_hash": ""
   },
   "src/components/SiteAnalytics.astro": {
-    "mtime": 1782356389.6579602,
-    "ast_hash": "043ad39250881b81b9621cb18c47eff9",
+    "mtime": 1784526240.2837117,
+    "ast_hash": "fc3a46007d1e959319622d1d4905b1c8",
     "semantic_hash": ""
   },
   "src/components/SiteFooter.astro": {
-    "mtime": 1782273781.8159328,
-    "ast_hash": "67d350cfc646310fdc5727e69fb25b18",
+    "mtime": 1784527706.9757144,
+    "ast_hash": "cb68210d712f19ba9fb4687ad48607e9",
     "semantic_hash": ""
   },
   "src/components/SiteNav.astro": {
-    "mtime": 1781310619.563996,
+    "mtime": 1784526240.2852314,
     "ast_hash": "be068788118de0c6853f598f43bb9884",
     "semantic_hash": ""
   },
   "src/components/icons.jsx": {
-    "mtime": 1782273782.5253408,
+    "mtime": 1784526240.286234,
     "ast_hash": "1719f94c2c316119bc4730fefca5d871",
     "semantic_hash": ""
   },
   "src/components/sections.jsx": {
-    "mtime": 1781593367.2711089,
-    "ast_hash": "6e573936772031d2475909c93a507b04",
+    "mtime": 1784527686.4031801,
+    "ast_hash": "6a49924a0d6e2e1afc0ac0316cf63f3e",
     "semantic_hash": ""
   },
   "src/components/sections2.jsx": {
-    "mtime": 1782444158.6305969,
-    "ast_hash": "b10fec35e84095d32555dae07d1bd9cc",
+    "mtime": 1784527700.2307675,
+    "ast_hash": "a5830b6a97ee99ab9922923ce5c340ae",
     "semantic_hash": ""
   },
   "src/data/accessories.js": {
-    "mtime": 1781310619.5657544,
+    "mtime": 1784526240.289232,
     "ast_hash": "189b91cca683802a695d03274b8e4c00",
     "semantic_hash": ""
   },
   "src/data/brands.js": {
-    "mtime": 1783665082.6032152,
+    "mtime": 1784526240.2902327,
     "ast_hash": "23df8e8fe10fd5e60598ebe72b00da5d",
     "semantic_hash": ""
   },
   "src/data/content.js": {
-    "mtime": 1781593367.2711089,
+    "mtime": 1784526240.2912319,
     "ast_hash": "30206be690d6b310513e88663c550d51",
     "semantic_hash": ""
   },
   "src/data/landing.js": {
-    "mtime": 1782262926.3686507,
+    "mtime": 1784526240.2932298,
     "ast_hash": "3306854bbc87b4d0acc1f1bb8a8bc456",
     "semantic_hash": ""
   },
   "src/data/plans.js": {
-    "mtime": 1781310619.5663438,
+    "mtime": 1784526240.2932298,
     "ast_hash": "485408ac1bb42d3d585c008ba0354196",
     "semantic_hash": ""
   },
   "src/data/posts.js": {
-    "mtime": 1783644747.064158,
+    "mtime": 1784526240.2952273,
     "ast_hash": "4fbf0e13ae95e3cc16beeb880fb41b87",
     "semantic_hash": ""
   },
   "src/data/repairs.js": {
-    "mtime": 1783665200.2785325,
+    "mtime": 1784526240.296735,
     "ast_hash": "a26cf6f4539cca3d971596dd82920a23",
     "semantic_hash": ""
   },
   "src/data/schema.js": {
-    "mtime": 1783473927.3743386,
-    "ast_hash": "748841763e64f7878274be40b1631b81",
+    "mtime": 1784526385.0281246,
+    "ast_hash": "94d7b7adf105c9999c7230fe14bd75a4",
     "semantic_hash": ""
   },
   "src/data/services.js": {
-    "mtime": 1783665120.1874337,
+    "mtime": 1784526240.2987494,
     "ast_hash": "cd967753f9214d59d1b829319018b2c3",
     "semantic_hash": ""
   },
   "src/data/site.js": {
-    "mtime": 1783473742.279752,
+    "mtime": 1784526240.2987494,
     "ast_hash": "d92cfcc7d801dba4ed61170f7f259313",
     "semantic_hash": ""
   },
   "src/data/tracking.js": {
-    "mtime": 1782345162.254839,
-    "ast_hash": "59ae68fd4f3d1b53b4ef032b0bd1ce37",
+    "mtime": 1784526240.3002627,
+    "ast_hash": "94ac8f18c07fcd269dededf3dfccb4e1",
     "semantic_hash": ""
   },
   "src/layouts/Layout.astro": {
-    "mtime": 1782356361.6436098,
+    "mtime": 1784526240.3022747,
     "ast_hash": "f23e7d7a5eed4de09512edbd9064ee0e",
     "semantic_hash": ""
   },
   "src/lib/hours.js": {
-    "mtime": 1781310619.5663438,
+    "mtime": 1784526240.3027823,
     "ast_hash": "a1cc3baed2ec6b4fa71290d386509336",
     "semantic_hash": ""
   },
   "src/lib/landingLead.js": {
-    "mtime": 1782197563.7695558,
+    "mtime": 1784526240.303793,
     "ast_hash": "ac8263a76afff8f7496b9c11fd06a32e",
     "semantic_hash": ""
   },
   "src/lib/sendLead.js": {
-    "mtime": 1781593367.2711089,
+    "mtime": 1784526240.3047915,
     "ast_hash": "b82b4ac0f5d15efef25ae82dfc122ecf",
     "semantic_hash": ""
   },
   "src/lib/seo.js": {
-    "mtime": 1783473731.5885513,
+    "mtime": 1784526240.306791,
     "ast_hash": "256b14130a320521eef2368452087542",
     "semantic_hash": ""
   },
   "src/pages/404.astro": {
-    "mtime": 1781593367.2801256,
+    "mtime": 1784526240.3083532,
     "ast_hash": "12013ed57265b37f9bc594896b56dfb7",
     "semantic_hash": ""
   },
   "src/pages/blog.astro": {
-    "mtime": 1783473676.6744597,
+    "mtime": 1784526240.3098629,
     "ast_hash": "aca6e68f1d222439e04e03ea34482af0",
     "semantic_hash": ""
   },
   "src/pages/blog/[slug].astro": {
-    "mtime": 1783638504.4580007,
+    "mtime": 1784526240.3108737,
     "ast_hash": "b0d771ad4b309ec469b31841e11c60b5",
     "semantic_hash": ""
   },
   "src/pages/go/[lp].astro": {
-    "mtime": 1782440467.0679543,
+    "mtime": 1784526240.3128736,
     "ast_hash": "3a19beebfc5a37bee9d585e47e107c67",
     "semantic_hash": ""
   },
   "src/pages/index.astro": {
-    "mtime": 1781593367.2801256,
+    "mtime": 1784526240.3138745,
     "ast_hash": "621de275213f2ea3ad8a6319406bd7ac",
     "semantic_hash": ""
   },
   "src/pages/repairs.astro": {
-    "mtime": 1782444141.2657137,
+    "mtime": 1784526240.3148744,
     "ast_hash": "3b96e9c47924032b633fe8ca4370223d",
     "semantic_hash": ""
   },
   "src/pages/repairs/[service].astro": {
-    "mtime": 1781593367.2801256,
+    "mtime": 1784526240.3168728,
     "ast_hash": "a3b8932940b242933c1c2f27b7156a72",
     "semantic_hash": ""
   },
   "src/pages/repairs/[service]/[suburb].astro": {
-    "mtime": 1781593367.2801256,
+    "mtime": 1784526240.317876,
     "ast_hash": "0035539ca309823670d483ac738e7969",
     "semantic_hash": ""
   },
   "tests/build-output.test.js": {
-    "mtime": 1783644538.2214797,
-    "ast_hash": "f2d5c11bd075cef2a6cbb758b3556412",
+    "mtime": 1784543503.6475494,
+    "ast_hash": "7b83136e358eb49ccf6a3c93f706b8b7",
     "semantic_hash": ""
   },
   "tests/data.test.js": {
-    "mtime": 1781310619.5663438,
+    "mtime": 1784526240.326923,
     "ast_hash": "746f9c0f123edc219c55bb7b99006e9b",
     "semantic_hash": ""
   },
   "tests/hours.test.js": {
-    "mtime": 1781310619.5663438,
+    "mtime": 1784526240.327433,
     "ast_hash": "59624e070e306f9d1500dc6ff01c0a0b",
     "semantic_hash": ""
   },
   "tests/landing-build.test.js": {
-    "mtime": 1782273781.8229322,
+    "mtime": 1784526240.3284438,
     "ast_hash": "1c04fb21287a9031ba1185667b8c571c",
     "semantic_hash": ""
   },
   "tests/landing.test.js": {
-    "mtime": 1782197563.772555,
+    "mtime": 1784526240.3294463,
     "ast_hash": "5f304df74066eee3e326d28b9d353098",
     "semantic_hash": ""
   },
   "tests/landingLead.test.js": {
-    "mtime": 1782197563.772555,
+    "mtime": 1784526240.3304458,
     "ast_hash": "7049e0d44099565bf4623857808c908f",
     "semantic_hash": ""
   },
   "tests/lead.test.js": {
-    "mtime": 1782197563.773556,
+    "mtime": 1784526240.3314443,
     "ast_hash": "2a62de5d23bf502456b5a33f16af5352",
     "semantic_hash": ""
   },
   "tests/prices.test.js": {
-    "mtime": 1781593367.2801256,
+    "mtime": 1784526240.3324459,
     "ast_hash": "87ec627ae96a358887b053f812e52089",
     "semantic_hash": ""
   },
   "tests/routing.test.js": {
-    "mtime": 1781593367.2801256,
+    "mtime": 1784526240.334445,
     "ast_hash": "d699970dec968b5e5de3ef285d396357",
     "semantic_hash": ""
   },
   "tests/sendLead.test.js": {
-    "mtime": 1781593367.2801256,
+    "mtime": 1784526240.3354437,
     "ast_hash": "263cdb2b9e02ff55df7ae1bdf4bcb15e",
     "semantic_hash": ""
   },
   "tests/seo.test.js": {
-    "mtime": 1781310619.5663438,
+    "mtime": 1784526240.3354437,
     "ast_hash": "74394d8fe60bfa36b05a26438b848b61",
     "semantic_hash": ""
   },
   "tests/tracking.test.js": {
-    "mtime": 1782350490.6445682,
+    "mtime": 1784526240.337479,
     "ast_hash": "4fc0c8fa74f359ffe8cfb9f669c8d0eb",
     "semantic_hash": ""
   },
   "vitest.config.js": {
-    "mtime": 1782197563.7755563,
+    "mtime": 1784526240.337479,
     "ast_hash": "f12e82f2a798b40cb7cd1b2b572c4f9a",
     "semantic_hash": ""
   },
   ".github/workflows/deploy.yml": {
-    "mtime": 1781324659.9629674,
+    "mtime": 1784526239.985442,
     "ast_hash": "710551785ca5e72627ca48836bdc4e70",
     "semantic_hash": ""
   },
-  ".superpowers/sdd/final-fixes-report.md": {
-    "mtime": 1782193160.476952,
-    "ast_hash": "192ad4803a49775a378cfebee3325e38",
-    "semantic_hash": ""
-  },
   ".superpowers/sdd/progress.md": {
-    "mtime": 1782193220.7947078,
-    "ast_hash": "1870ca32f2f0a27abcea538fdd7f68c9",
+    "mtime": 1784543044.2998462,
+    "ast_hash": "318dd872c6c78a0e59ebec916f3fdfa0",
     "semantic_hash": ""
   },
   ".superpowers/sdd/task-1-brief.md": {
-    "mtime": 1782190925.4506073,
-    "ast_hash": "8da9e1fe5070ff4a648aad8919279581",
+    "mtime": 1784526331.0802183,
+    "ast_hash": "f36f72d9532b47597fe6af18524c820c",
     "semantic_hash": ""
   },
   ".superpowers/sdd/task-1-report.md": {
-    "mtime": 1782191310.9033804,
-    "ast_hash": "fc3bcb1fd40e46410ab93f81b8fb49a2",
+    "mtime": 1784526447.6469944,
+    "ast_hash": "7273775c0eb5fce5321b924e847ef661",
     "semantic_hash": ""
   },
   ".superpowers/sdd/task-2-brief.md": {
-    "mtime": 1782190925.8013322,
-    "ast_hash": "db0d2d5900c156cb570ba7b424ef2fbe",
+    "mtime": 1784526525.6237843,
+    "ast_hash": "451e96ae7e02cfae5c0a1c16bd5bc644",
     "semantic_hash": ""
   },
   ".superpowers/sdd/task-2-report.md": {
-    "mtime": 1782191601.8078885,
-    "ast_hash": "df0637f9e449ec489231228596cdbdb1",
+    "mtime": 1784527123.5359976,
+    "ast_hash": "7b78ac0c68afd02c2ced91af874bb9f0",
     "semantic_hash": ""
   },
   ".superpowers/sdd/task-3-brief.md": {
-    "mtime": 1782190926.0741746,
-    "ast_hash": "e1a9ca7e14bc1ffd0de337298e5b6804",
+    "mtime": 1784527146.5122583,
+    "ast_hash": "a229ded961bc8bf7733fbcf37716dfc6",
     "semantic_hash": ""
   },
   ".superpowers/sdd/task-3-report.md": {
-    "mtime": 1782191751.2420788,
-    "ast_hash": "40249a6e2198003eea747c07f5bcae29",
+    "mtime": 1784527237.6146796,
+    "ast_hash": "e7a40fe91ee1094e40ada4b4866b23d7",
     "semantic_hash": ""
   },
   ".superpowers/sdd/task-4-brief.md": {
-    "mtime": 1782190926.3229177,
-    "ast_hash": "d7059c1f3c4c3ccbd37ea03728deb159",
+    "mtime": 1784527423.7704065,
+    "ast_hash": "2fd94bbc3e901287d684af3dfc08cc82",
     "semantic_hash": ""
   },
   ".superpowers/sdd/task-4-report.md": {
-    "mtime": 1782192489.5250967,
-    "ast_hash": "1f1d3ae368aa6c1e3bff77973d4d220a",
+    "mtime": 1784527810.0411313,
+    "ast_hash": "5e62c3e08ce45060f926a332ab62fdc3",
     "semantic_hash": ""
   },
   ".superpowers/sdd/task-5-brief.md": {
-    "mtime": 1782190926.5686069,
-    "ast_hash": "27c529f70068ac4ca3628f0dd7e04bad",
+    "mtime": 1784528049.7844198,
+    "ast_hash": "325e1fc898b90da35af5309aec6eca46",
     "semantic_hash": ""
   },
   ".superpowers/sdd/task-5-report.md": {
-    "mtime": 1782192618.7076113,
-    "ast_hash": "e7ac4219416cc96b446468cc07662ef7",
+    "mtime": 1784528340.741134,
+    "ast_hash": "411123f9dde934e269661ac5f12326da",
     "semantic_hash": ""
   },
   ".superpowers/sdd/task-6-brief.md": {
-    "mtime": 1782190926.8184273,
-    "ast_hash": "df33254125f901de5225bde122a02b39",
+    "mtime": 1784541615.8307445,
+    "ast_hash": "86be4f0720f9dcbff0cfae3800c1c288",
     "semantic_hash": ""
   },
   ".superpowers/sdd/task-6-report.md": {
-    "mtime": 1782192723.3067105,
-    "ast_hash": "d063a598896d8767da443caa38320f48",
+    "mtime": 1784542281.900137,
+    "ast_hash": "e00134a20f00a065fb612191ba6b3d91",
     "semantic_hash": ""
   },
   "README.md": {
-    "mtime": 1783644538.2152853,
+    "mtime": 1784526239.9864404,
     "ast_hash": "844d47ab803b17655ba3f36a15f84efa",
     "semantic_hash": ""
   },
   "docs/conversion-tracking-setup.md": {
-    "mtime": 1782343949.8254821,
-    "ast_hash": "f233fbe4241c5f9fe1063040643ba761",
+    "mtime": 1784526239.988439,
+    "ast_hash": "f19fae2567ac2fbee90cfdcbf3cd5457",
     "semantic_hash": ""
   },
   "docs/seo-offsite-kit.md": {
-    "mtime": 1783644538.2172852,
+    "mtime": 1784526240.001027,
     "ast_hash": "f09af1da55fbb01ecb26a9c7a2c04ca5",
     "semantic_hash": ""
   },
   "docs/seo-plan.md": {
-    "mtime": 1782429188.0838845,
+    "mtime": 1784526240.0072863,
     "ast_hash": "0d1364d60231fe261bf01ab4aa269895",
     "semantic_hash": ""
   },
   "docs/superpowers/plans/2026-06-09-phase1-astro-foundation.md": {
-    "mtime": 1781310619.5264232,
+    "mtime": 1784526240.0088468,
     "ast_hash": "15c4d1c253bccb34912d8e866744e502",
     "semantic_hash": ""
   },
   "docs/superpowers/plans/2026-06-23-ad-landing-pages.md": {
-    "mtime": 1782197563.764582,
+    "mtime": 1784526240.0098922,
     "ast_hash": "165e9a3eb71fbef5498f8fc9679de773",
     "semantic_hash": ""
   },
   "docs/superpowers/specs/2026-06-09-seo-content-site-design.md": {
-    "mtime": 1781310619.5264232,
+    "mtime": 1784526240.0140839,
     "ast_hash": "3e6bf488ddf3eeec41c933807564ce3e",
     "semantic_hash": ""
   },
   "docs/superpowers/specs/2026-06-23-ad-landing-pages-design.md": {
-    "mtime": 1782197563.764582,
+    "mtime": 1784526240.0156958,
     "ast_hash": "16da3a70e713ae388b0ed5db522c22a7",
     "semantic_hash": ""
   },
   "public/robots.txt": {
-    "mtime": 1781310619.5525744,
+    "mtime": 1784526240.190955,
     "ast_hash": "7ea3c3db3d08204c43da340bc116b108",
     "semantic_hash": ""
   },
   "public/favicon.svg": {
-    "mtime": 1781310619.5392017,
+    "mtime": 1784526240.1427643,
     "ast_hash": "6f1caa8431983d3fc4666ed0d87d71d0",
     "semantic_hash": ""
   },
   "public/images/battery-repair.jpg": {
-    "mtime": 1781593367.259464,
+    "mtime": 1784526240.1465528,
     "ast_hash": "971d288d4c9f40b6eefba3b4258082f5",
     "semantic_hash": ""
   },
   "public/images/cable-1.jpg": {
-    "mtime": 1781593367.261471,
+    "mtime": 1784526240.152969,
     "ast_hash": "0d199f6914652d2cb8a2bf276035cf6a",
     "semantic_hash": ""
   },
   "public/images/case-1.jpg": {
-    "mtime": 1781593367.2634764,
+    "mtime": 1784526240.1567159,
     "ast_hash": "a5238d35767b91cdedb7fc899f475d98",
     "semantic_hash": ""
   },
   "public/images/charger-1.jpg": {
-    "mtime": 1781593367.2644818,
+    "mtime": 1784526240.1588006,
     "ast_hash": "966f4ba9e8b59c2d23715042b730e390",
     "semantic_hash": ""
   },
   "public/images/diagnostic.jpg": {
-    "mtime": 1781593367.2650437,
+    "mtime": 1784526240.1598601,
     "ast_hash": "8c3e190c409fff4fb1155b2942d29872",
     "semantic_hash": ""
   },
   "public/images/earbuds-1.jpg": {
-    "mtime": 1781593367.2650437,
+    "mtime": 1784526240.1614478,
     "ast_hash": "6e835603faa85b26a3bf6e5a036edfa9",
     "semantic_hash": ""
   },
   "public/images/glass-repair.jpg": {
-    "mtime": 1781593367.2650437,
+    "mtime": 1784526240.1646168,
     "ast_hash": "416ea53578eab996c3803cb8aad437f9",
     "semantic_hash": ""
   },
   "public/images/other-repairs.jpg": {
-    "mtime": 1781593367.2650437,
+    "mtime": 1784526240.1722214,
     "ast_hash": "152d4e93e14b38d1d7ce2c09de6046a8",
     "semantic_hash": ""
   },
   "public/images/port-repair.jpg": {
-    "mtime": 1781593367.2650437,
+    "mtime": 1784526240.174865,
     "ast_hash": "072283a3f95032d05b6f147adb098475",
     "semantic_hash": ""
   },
   "public/images/powerbank-1.jpg": {
-    "mtime": 1781593367.2650437,
+    "mtime": 1784526240.177519,
     "ast_hash": "75b652ce6925e459fbac9604bdf68efc",
     "semantic_hash": ""
   },
   "public/images/protector-1.jpg": {
-    "mtime": 1781593367.2711089,
+    "mtime": 1784526240.1818254,
     "ast_hash": "60f731d10e22e58761d1f3c1db538493",
     "semantic_hash": ""
   },
   "public/images/screen-repair.jpg": {
-    "mtime": 1781593367.2711089,
+    "mtime": 1784526240.1882868,
     "ast_hash": "9d9aa5167a2ed4c938e0fd480bafa1a0",
     "semantic_hash": ""
   },
   "docs/meta-ads-localization-playbook.md": {
-    "mtime": 1782456187.3320892,
-    "ast_hash": "ce05658370971f10a42a97e11c82bb3e",
+    "mtime": 1784526239.9894397,
+    "ast_hash": "4c18ee01ddaeea87eb9e442c1fa4b303",
     "semantic_hash": ""
   },
   "docs/print/review-card.html": {
-    "mtime": 1782434883.4723966,
-    "ast_hash": "04d970cf88d80ce1e32d788aa0a0fa2c",
+    "mtime": 1784526239.9914403,
+    "ast_hash": "06cf64f068be2d66c7b9391a2bac7142",
     "semantic_hash": ""
   },
   "docs/print/till-tally.html": {
-    "mtime": 1782434731.5434241,
-    "ast_hash": "bd985aead980f545fab2f380b060bb51",
+    "mtime": 1784526239.9924393,
+    "ast_hash": "9962ae19bfde4724e824589aaf3a00f3",
     "semantic_hash": ""
   },
   "docs/quoting-sheet.md": {
-    "mtime": 1782456549.9824681,
-    "ast_hash": "0024e7265d533a43f5fa1177a025007a",
+    "mtime": 1784526239.9934392,
+    "ast_hash": "84dbb178b21c47adbb2e8ecf1f5d7adc",
     "semantic_hash": ""
   },
   "docs/repair-price-list.md": {
-    "mtime": 1782455824.7766125,
-    "ast_hash": "e2cbb12a8e35194e3b9dc7884c7a1990",
+    "mtime": 1784526239.9994645,
+    "ast_hash": "e8e4562f6667287d0319c9719d21b674",
     "semantic_hash": ""
   },
   "docs/superpowers/plans/2026-07-02-review-request-sms.md": {
-    "mtime": 1783644538.2182844,
+    "mtime": 1784526240.011999,
     "ast_hash": "9f094e73e6f1c7332151646575bf74a6",
     "semantic_hash": ""
   },
   "docs/superpowers/specs/2026-07-01-review-request-sms-design.md": {
-    "mtime": 1783644538.2182844,
+    "mtime": 1784526240.0209908,
     "ast_hash": "173147e7ce42ac6947699f0a45863d98",
     "semantic_hash": ""
   },
   "docs/quoting-sheet.pdf": {
-    "mtime": 1782457019.780565,
+    "mtime": 1784526239.9978611,
     "ast_hash": "8adb2b7187b197c8f8dd68df4c4a8b9b",
     "semantic_hash": ""
   },
   "docs/seo-offsite-kit.pdf": {
-    "mtime": 1782788019.7364893,
+    "mtime": 1784526240.006243,
     "ast_hash": "cc8596d9723afe38be6961ca5ffd3d75",
     "semantic_hash": ""
   },
   "public/images/logo.png": {
-    "mtime": 1783642331.822,
+    "mtime": 1784526240.169569,
     "ast_hash": "404b0ba0d5d0f3d42b494d7c6b74ed4c",
     "semantic_hash": ""
   },
   "public/logo.svg": {
-    "mtime": 1783473535.8281024,
-    "ast_hash": "9afa0984d40ef2c58a0c0fb7277da2af",
+    "mtime": 1784526240.1893408,
+    "ast_hash": "a84c4e1319845dbcd9ac0bc1a8a4a029",
     "semantic_hash": ""
   },
   "src/assets/blog/battery-repair.jpg": {
-    "mtime": 1783473436.0788312,
+    "mtime": 1784526240.1967824,
     "ast_hash": "971d288d4c9f40b6eefba3b4258082f5",
     "semantic_hash": ""
   },
   "src/assets/blog/diagnostic.jpg": {
-    "mtime": 1783473436.1038313,
+    "mtime": 1784526240.2000937,
     "ast_hash": "8c3e190c409fff4fb1155b2942d29872",
     "semantic_hash": ""
   },
   "src/assets/blog/glass-repair.jpg": {
-    "mtime": 1783473436.0701833,
+    "mtime": 1784526240.2022784,
     "ast_hash": "416ea53578eab996c3803cb8aad437f9",
     "semantic_hash": ""
   },
   "src/assets/blog/other-repairs.jpg": {
-    "mtime": 1783473436.0858314,
+    "mtime": 1784526240.2038844,
     "ast_hash": "152d4e93e14b38d1d7ce2c09de6046a8",
     "semantic_hash": ""
   },
   "src/assets/blog/port-repair.jpg": {
-    "mtime": 1783473436.0938332,
+    "mtime": 1784526240.204957,
     "ast_hash": "072283a3f95032d05b6f147adb098475",
     "semantic_hash": ""
   },
   "src/assets/blog/screen-repair.jpg": {
-    "mtime": 1783473436.063187,
+    "mtime": 1784526240.207608,
     "ast_hash": "9d9aa5167a2ed4c938e0fd480bafa1a0",
     "semantic_hash": ""
   },
   "src/assets/photos/back-repair-iphone-13-pro.webp": {
-    "mtime": 1783640692.561,
+    "mtime": 1784526240.2108269,
     "ast_hash": "bd8c0d0617f76b6fc643783d05d61732",
     "semantic_hash": ""
   },
   "src/assets/photos/broken-and-fixed-phone.webp": {
-    "mtime": 1783640692.889,
+    "mtime": 1784526240.2134438,
     "ast_hash": "047e293f3aba6baa9c048b427a521476",
     "semantic_hash": ""
   },
   "src/assets/photos/broken-back.webp": {
-    "mtime": 1783640693.192,
+    "mtime": 1784526240.2170744,
     "ast_hash": "bc487952b945d55141014468487c2c3d",
     "semantic_hash": ""
   },
   "src/assets/photos/broken-vs-fixed.webp": {
-    "mtime": 1783640693.048,
+    "mtime": 1784526240.2202964,
     "ast_hash": "4d19426962205dd0589481095a41f217",
     "semantic_hash": ""
   },
   "src/assets/photos/express-repairs-2026-07-01.webp": {
-    "mtime": 1783640693.305,
+    "mtime": 1784526240.2230053,
     "ast_hash": "8cc2511b1e4bbd935475a0f641d17dfa",
     "semantic_hash": ""
   },
   "src/assets/photos/express-repairs-2026-07-05.webp": {
-    "mtime": 1783640693.45,
+    "mtime": 1784526240.2256632,
     "ast_hash": "742ab0059163eacee81838ace9b239d7",
     "semantic_hash": ""
   },
   "src/assets/photos/fixing-phone.webp": {
-    "mtime": 1783640693.584,
+    "mtime": 1784526240.2283483,
     "ast_hash": "ae625ab5d34c56a7bb0ead2e5df90742",
     "semantic_hash": ""
   },
   "src/assets/photos/front-repair-for-phone.webp": {
-    "mtime": 1783640693.726,
+    "mtime": 1784526240.2318947,
     "ast_hash": "746a69d3b9488b2810409acc92ddb82d",
     "semantic_hash": ""
   },
   "src/assets/photos/lens-cracked.webp": {
-    "mtime": 1783640693.857,
+    "mtime": 1784526240.234027,
     "ast_hash": "ffabda0c3f3820a172f14a22bc38c980",
     "semantic_hash": ""
   },
   "src/assets/photos/logo-xpress.png": {
-    "mtime": 1783640695.677,
+    "mtime": 1784526240.2409022,
     "ast_hash": "dea5bcdd12a510dbcc96bfa409d7a769",
     "semantic_hash": ""
   },
   "src/assets/photos/low-battery-ad-post.webp": {
-    "mtime": 1783640693.986,
+    "mtime": 1784526240.2430334,
     "ast_hash": "6b06c4640442ac2235eced39f5ba4e2f",
     "semantic_hash": ""
   },
   "src/assets/photos/low-battery.webp": {
-    "mtime": 1783640694.113,
+    "mtime": 1784526240.2446673,
     "ast_hash": "b5fd71989761c361064f9abb9cd21357",
     "semantic_hash": ""
   },
   "src/assets/photos/phone-coffee-rainy-day.webp": {
-    "mtime": 1783640694.564,
+    "mtime": 1784526240.2483513,
     "ast_hash": "6d36b9ec15fe66a4fff2c450db0a6db0",
     "semantic_hash": ""
   },
   "src/assets/photos/phone-on-desk.webp": {
-    "mtime": 1783640694.276,
+    "mtime": 1784526240.2508907,
     "ast_hash": "987ff868bc270fce0d150a7e99116c01",
     "semantic_hash": ""
   },
   "src/assets/photos/phone-repair.webp": {
-    "mtime": 1783640694.416,
+    "mtime": 1784526240.2523997,
     "ast_hash": "f27189a8d55d4aae954a752e93de5067",
     "semantic_hash": ""
   },
   "src/assets/photos/phone-water.webp": {
-    "mtime": 1783640692.714,
+    "mtime": 1784526240.2564094,
     "ast_hash": "671de35bc5aa01c70e7ded6d4c12b9c1",
     "semantic_hash": ""
   },
   "src/assets/photos/phones-in-drawer.webp": {
-    "mtime": 1783640694.706,
+    "mtime": 1784526240.2595568,
     "ast_hash": "65d6bec5781c9f800e532cd9d66fa093",
     "semantic_hash": ""
   },
   "src/assets/photos/repair-cover-photo.webp": {
-    "mtime": 1783640694.817,
+    "mtime": 1784526240.261706,
     "ast_hash": "348dcf08be6682fead41d35d9e9f4312",
     "semantic_hash": ""
   },
   "src/assets/photos/repair-image.webp": {
-    "mtime": 1783640694.944,
+    "mtime": 1784526240.2643547,
     "ast_hash": "d62360fceb5955f833ba2979b9bfbf4a",
     "semantic_hash": ""
   },
   "src/assets/photos/screen-repair-from-99.webp": {
-    "mtime": 1783640695.077,
+    "mtime": 1784526240.2675276,
     "ast_hash": "35e4a78a22709f4d61eaa5ca1f070554",
     "semantic_hash": ""
   },
   "src/assets/photos/screen-repair-image.webp": {
-    "mtime": 1783640695.215,
+    "mtime": 1784526240.2696612,
     "ast_hash": "fd060776a62f81a33b2d75bc12826934",
     "semantic_hash": ""
   },
   "src/assets/photos/xpress-repair.webp": {
-    "mtime": 1783640695.365,
+    "mtime": 1784526240.2731895,
     "ast_hash": "b2fa688fb64e14d7b0be780a3faedb16",
     "semantic_hash": ""
   },
   "functions/api/review-sms.js": {
-    "mtime": 1783644538.219285,
+    "mtime": 1784526240.0263226,
     "ast_hash": "5c8413e833e70c41ac050503c4b215cc",
     "semantic_hash": ""
   },
   "scripts/check-widget-prices.mjs": {
-    "mtime": 1783665225.8200865,
-    "ast_hash": "5449723545ef9761711cb716c5203fdf",
+    "mtime": 1784526240.1925569,
+    "ast_hash": "194aa7dcc0783e4e0b8d7f76c69f0900",
     "semantic_hash": ""
   },
   "src/pages/staff/review-request.astro": {
-    "mtime": 1783644538.2202852,
+    "mtime": 1784526240.3188741,
     "ast_hash": "9f04368bad864b2e0facb21b836c3ba3",
     "semantic_hash": ""
   },
   "tests/reviewSms.test.js": {
-    "mtime": 1783644538.222478,
+    "mtime": 1784526240.3334453,
     "ast_hash": "5ebe1e2b2655b5718d91c5afde95c66d",
     "semantic_hash": ""
   },
   "public/images/broken-vs-fixed.jpg": {
-    "mtime": 1783642331.633,
+    "mtime": 1784526240.1502903,
     "ast_hash": "959f2571b02b42c8902e35d7e7ae4140",
     "semantic_hash": ""
   },
   "src/assets/blog/broken-vs-fixed.jpg": {
-    "mtime": 1783642331.761,
+    "mtime": 1784526240.1989095,
     "ast_hash": "959f2571b02b42c8902e35d7e7ae4140",
+    "semantic_hash": ""
+  },
+  "functions/api/checkout.js": {
+    "mtime": 1784542173.7141783,
+    "ast_hash": "77926a426a67fc3f666ac9fa9b8e9612",
+    "semantic_hash": ""
+  },
+  "functions/api/stripe-webhook.js": {
+    "mtime": 1784543555.5254579,
+    "ast_hash": "4d4e212c8fd439241a67586c2c6a5af5",
+    "semantic_hash": ""
+  },
+  "scripts/sync-products.mjs": {
+    "mtime": 1784543611.9490318,
+    "ast_hash": "e0fc75175a9973440baa2e5f7eb95683",
+    "semantic_hash": ""
+  },
+  "src/components/ShopCartPage.jsx": {
+    "mtime": 1784543613.2047775,
+    "ast_hash": "8567a8ee7011442d42dac2076ec4e46c",
+    "semantic_hash": ""
+  },
+  "src/data/products.js": {
+    "mtime": 1784526390.4317138,
+    "ast_hash": "5432a8fe9bd668c64afbf8f22986919f",
+    "semantic_hash": ""
+  },
+  "src/data/products.json": {
+    "mtime": 1784543511.6161509,
+    "ast_hash": "58e0494c51d30eb3494f7c9198986bb9",
+    "semantic_hash": ""
+  },
+  "src/pages/shop/[id].astro": {
+    "mtime": 1784528173.5708323,
+    "ast_hash": "09cfc5fdbbef58cb8e5da4fc19d6623a",
+    "semantic_hash": ""
+  },
+  "src/pages/shop/cart.astro": {
+    "mtime": 1784528203.8213582,
+    "ast_hash": "b5d3b1efa7579896077dcfbfd476540f",
+    "semantic_hash": ""
+  },
+  "src/pages/shop/index.astro": {
+    "mtime": 1784543522.9991672,
+    "ast_hash": "630b1e645d0d2e7957d0c575d2daa3ed",
+    "semantic_hash": ""
+  },
+  "src/pages/shop/thanks.astro": {
+    "mtime": 1784528213.2058454,
+    "ast_hash": "8fe9f5388357755ca0a71f125e806ff1",
+    "semantic_hash": ""
+  },
+  "src/shop/cart-count.js": {
+    "mtime": 1784528162.7601752,
+    "ast_hash": "2ed4050b86dc8cbf88686266f7e021c4",
+    "semantic_hash": ""
+  },
+  "src/shop/cart-store.js": {
+    "mtime": 1784528153.8438914,
+    "ast_hash": "57c92abe3bd6d295fcf825985b3479d5",
+    "semantic_hash": ""
+  },
+  "tests/cartStore.test.js": {
+    "mtime": 1784528140.6949656,
+    "ast_hash": "3dec4319d4006b14c2265be9faf8ec93",
+    "semantic_hash": ""
+  },
+  "tests/checkout.test.js": {
+    "mtime": 1784543535.3563154,
+    "ast_hash": "792209bcc952c42428ce9c5ad78b6d71",
+    "semantic_hash": ""
+  },
+  "tests/products.test.js": {
+    "mtime": 1784543501.1385634,
+    "ast_hash": "21e539369b10c81e6fd40a68a9091ee1",
+    "semantic_hash": ""
+  },
+  "tests/stripeWebhook.test.js": {
+    "mtime": 1784543596.2011433,
+    "ast_hash": "70b19408e5ff7ecf660fa364fdae10eb",
+    "semantic_hash": ""
+  },
+  "tests/syncProducts.test.js": {
+    "mtime": 1784543619.1171987,
+    "ast_hash": "53c933c04d003466ac940e99792d50c2",
+    "semantic_hash": ""
+  },
+  ".github/workflows/sync-products.yml": {
+    "mtime": 1784527221.498204,
+    "ast_hash": "a17ee3fc34fc4ae2deff1758de85c63c",
+    "semantic_hash": ""
+  },
+  ".superpowers/sdd/task-7-brief.md": {
+    "mtime": 1784542184.231134,
+    "ast_hash": "22d1a676835bcb85a4db4dd1acfcc1d1",
+    "semantic_hash": ""
+  },
+  ".superpowers/sdd/task-7-report.md": {
+    "mtime": 1784542937.2041643,
+    "ast_hash": "65f068f71befabf1d9b7ce53fed34631",
+    "semantic_hash": ""
+  },
+  ".superpowers/sdd/task-8-brief.md": {
+    "mtime": 1784542184.5022907,
+    "ast_hash": "2faafca34dbaa3c2d30b6f0ef2e67d25",
+    "semantic_hash": ""
+  },
+  ".superpowers/sdd/task-8-report.md": {
+    "mtime": 1784542588.4472015,
+    "ast_hash": "760cd1615a6e1637dcebaafe5e1555b9",
+    "semantic_hash": ""
+  },
+  "docs/shop-setup.md": {
+    "mtime": 1784543606.2879598,
+    "ast_hash": "52156e1153402898674a792f32d7bbc5",
+    "semantic_hash": ""
+  },
+  "docs/superpowers/plans/2026-07-20-online-accessories-store.md": {
+    "mtime": 1784526240.01304,
+    "ast_hash": "594d1728857396786a4a8e583e7379f6",
+    "semantic_hash": ""
+  },
+  "docs/superpowers/specs/2026-07-20-online-accessories-store-design.md": {
+    "mtime": 1784526240.0231504,
+    "ast_hash": "d30914f295c9f6df0f68fd61270972af",
     "semantic_hash": ""
   }
 }
