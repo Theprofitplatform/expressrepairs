@@ -72,4 +72,37 @@ describe('POST /api/stripe-webhook', () => {
     const res = await onRequest({ request: makeReq(EVENT, await sign(EVENT, SECRET)), env: ENV });
     expect(res.status).toBe(503);
   });
+
+  it('sanitizes CR/LF in the customer name and puts the session id in the subject', async () => {
+    const spy = mockUpstreams();
+    const crlf = String.fromCharCode(13) + String.fromCharCode(10);
+    const evilName = `Jo${crlf}Bcc: attacker@evil.com`;
+    const evilEvent = JSON.stringify({
+      type: 'checkout.session.completed',
+      data: {
+        object: {
+          id: 'cs_test_abc123',
+          amount_total: 4085,
+          customer_details: { name: evilName, email: 'jo@x.com', phone: '+614' },
+        },
+      },
+    });
+    const res = await onRequest({ request: makeReq(evilEvent, await sign(evilEvent, SECRET)), env: ENV });
+    expect(res.status).toBe(200);
+    const resendCall = spy.mock.calls.find(([u]) => String(u).includes('resend'));
+    const body = JSON.parse(resendCall[1].body);
+    expect(body.subject).not.toContain(String.fromCharCode(13));
+    expect(body.subject).not.toContain(String.fromCharCode(10));
+    expect(body.subject).toContain('cs_test_abc123');
+  });
+
+  it('413s on an oversized Content-Length, sends nothing', async () => {
+    const spy = mockUpstreams();
+    const headers = new Headers();
+    headers.set('content-length', String(20 * 1024));
+    const req = { method: 'POST', headers, text: async () => EVENT };
+    const res = await onRequest({ request: req, env: ENV });
+    expect(res.status).toBe(413);
+    expect(spy).not.toHaveBeenCalled();
+  });
 });

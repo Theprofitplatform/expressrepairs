@@ -15,6 +15,8 @@
 const DEFAULT_TO = 'sales@funcovers.com.au';
 const DEFAULT_FROM = 'Express Repairs <quotes@expressrepairs.com.au>';
 const TOLERANCE_SECONDS = 300;
+const MAX_BODY_BYTES = 16 * 1024;
+const MAX_FIELD_LEN = 2000;
 
 const json = (status, body) =>
   new Response(JSON.stringify(body), { status, headers: { 'Content-Type': 'application/json' } });
@@ -41,8 +43,25 @@ async function validSignature(payload, header, secret) {
 const money = (cents) => `$${((cents || 0) / 100).toFixed(2)}`;
 const esc = (s) => String(s ?? '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
 
+// Single-line, length-capped value for anything that lands in a mail header
+// (subject) — strips CR/LF and other control chars without using escapes.
+const oneLine = (s, max = MAX_FIELD_LEN) => {
+  let out = '';
+  for (const ch of String(s ?? '')) {
+    const code = ch.charCodeAt(0);
+    out += code < 32 || code === 127 ? ' ' : ch;
+  }
+  return out.replace(/  +/g, ' ').trim().slice(0, max);
+};
+
 export async function onRequest({ request, env }) {
   if (request.method !== 'POST') return json(405, { ok: false });
+
+  // Reject oversized bodies before reading them — mirrors lead.js's guard.
+  // Legitimate Stripe payloads (a session object, no line items embedded)
+  // are far under this cap, so it can't break signature verification below.
+  const declaredLen = Number(request.headers.get('content-length') || 0);
+  if (declaredLen > MAX_BODY_BYTES) return json(413, { ok: false, error: 'Request too large.' });
 
   const payload = await request.text();
   const ok = env.STRIPE_WEBHOOK_SECRET &&
@@ -68,6 +87,10 @@ export async function onRequest({ request, env }) {
   }
 
   const c = s.customer_details || {};
+  // c.name is the paying customer's raw Stripe input and lands in the Resend
+  // "subject" header below — a name containing CR/LF could inject extra
+  // headers (e.g. a Bcc). Sanitize with the same oneLine() lead.js uses.
+  const name = oneLine(c.name);
   const addr = s.shipping_details?.address;
   const shipTo = addr && addr.line1
     ? [addr.line1, addr.line2, `${addr.city || ''} ${addr.state || ''} ${addr.postal_code || ''}`].filter(Boolean).join(', ')
@@ -75,7 +98,7 @@ export async function onRequest({ request, env }) {
 
   const itemLines = items.map((i) => `${i.quantity} × ${i.description} — ${money(i.amount_total)}`);
   const rows = [
-    ['Customer', c.name],
+    ['Customer', name],
     ['Email', c.email],
     ['Phone', c.phone],
     ['Deliver to', shipTo],
@@ -96,7 +119,11 @@ export async function onRequest({ request, env }) {
       body: JSON.stringify({
         from: env.LEAD_FROM_EMAIL || DEFAULT_FROM,
         to: [env.LEAD_TO_EMAIL || DEFAULT_TO],
-        subject: `New online order — ${money(s.amount_total)}${c.name ? ` — ${c.name}` : ''}`,
+        // ponytail: no idempotency store — Stripe redelivery can send this
+        // twice; the session id in the subject makes a duplicate obvious.
+        // Add a KV dedup keyed on event.id if order volume makes that
+        // insufficient.
+        subject: `New online order — ${money(s.amount_total)}${name ? ` — ${name}` : ''} [${s.id}]`,
         text,
         html,
       }),
