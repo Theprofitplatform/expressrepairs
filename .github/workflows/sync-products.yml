@@ -1,0 +1,57 @@
+name: Sync products from DXPOS
+
+# Pulls the accessories catalog from the POS (shop PC via the pos tunnel) and
+# commits src/data/products.json + images. deploy.yml picks up the push and
+# ships it. Runs during shop hours because the shop PC hosts DXPOS; an offline
+# PC makes the sync a no-op (script exits 0), never a broken shop.
+#
+# Repo secrets required: POS_GATE_USER POS_GATE_PASS POS_EMAIL POS_PASSWORD
+
+on:
+  schedule:
+    - cron: '30 23 * * 0-5'  # ~9:30am Sydney, Mon–Sat
+    - cron: '0 4 * * 1-6'    # ~2–3pm Sydney, Mon–Sat
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: sync-products
+  cancel-in-progress: false
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - run: npm ci
+
+      - name: Sync catalog
+        run: npm run sync:products
+        env:
+          POS_GATE_USER: ${{ secrets.POS_GATE_USER }}
+          POS_GATE_PASS: ${{ secrets.POS_GATE_PASS }}
+          POS_EMAIL: ${{ secrets.POS_EMAIL }}
+          POS_PASSWORD: ${{ secrets.POS_PASSWORD }}
+
+      - name: Validate synced data
+        run: npx vitest run tests/products.test.js
+
+      - name: Commit if changed
+        run: |
+          git add src/data/products.json public/images/products
+          if git diff --cached --quiet; then
+            echo "No product changes."
+          else
+            git config user.name "product-sync[bot]"
+            git config user.email "sales@funcovers.com.au"
+            git commit -m "chore(shop): sync products from DXPOS"
+            git push
+          fi
