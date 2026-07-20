@@ -1,0 +1,79 @@
+---
+import Layout from '../../layouts/Layout.astro';
+import SiteNav from '../../components/SiteNav.astro';
+import SiteFooter from '../../components/SiteFooter.astro';
+import MobileCta from '../../components/MobileCta.astro';
+import { PRODUCTS, fmtPrice } from '../../data/products.js';
+import { breadcrumbSchema } from '../../lib/seo.js';
+
+const navLinks = [
+  { label: 'Repairs', href: '/repairs/' },
+  { label: 'Blog', href: '/blog/' },
+  { label: 'Shop', href: '/shop/' },
+];
+
+const categories = [...new Set(PRODUCTS.map((p) => p.category))];
+
+const schema = breadcrumbSchema([
+  { name: 'Home', path: '/' },
+  { name: 'Shop', path: '/shop/' },
+]);
+---
+<Layout
+  title="Phone Accessories — Cases, Chargers & More | Express Repairs"
+  description="Quality phone accessories with fast shipping Australia-wide or free pickup in store at Riverwood Plaza. Cases, screen protectors, chargers, cables and audio."
+  path="/shop/"
+  schema={schema}
+  htmlAttrs={{ 'data-palette': 'electric-blue', 'data-fontpair': 'jakarta', 'data-dark': 'false' }}
+>
+  <SiteNav links={navLinks} ctaHref="/shop/cart/" />
+
+  <main id="main-content">
+  <section class="hero" style="padding-bottom: 24px;">
+    <div class="hero-bg"></div>
+    <div class="container-wide" style="position: relative; z-index: 1;">
+      <nav class="breadcrumb" aria-label="Breadcrumb">
+        <a href="/">Home</a>
+        <span class="crumb-sep">/</span>
+        <span class="crumb-current">Shop</span>
+      </nav>
+      <span class="eyebrow">Accessories</span>
+      <h1 class="hero-title" style="font-size: clamp(36px, 4.8vw, 58px); margin-top: 16px; max-width: 720px;">
+        Cases, chargers &amp; more, <em>ready today</em>.
+      </h1>
+      <p class="hero-sub">
+        Ship Australia-wide (free over $99) or pick up in store at Riverwood Plaza — same stock as our counter.
+      </p>
+      <p style="margin-top: 20px;"><a href="/shop/cart/" class="btn btn-ghost btn-sm">View cart (<span data-cart-count>0</span>)</a></p>
+    </div>
+  </section>
+
+  <section class="section" style="padding-top: 24px;">
+    <div class="container-wide">
+      {categories.map((cat) => (
+        <div style="margin-bottom: 48px;">
+          <h2 class="section-title" style="font-size: clamp(22px, 2.4vw, 28px);">{cat}</h2>
+          <div class="acc-grid" style="margin-top: 24px;">
+            {PRODUCTS.filter((p) => p.category === cat).map((p) => (
+              <a href={`/shop/${p.id}/`} class="acc-card">
+                <div class="acc-visual">
+                  {!p.inStock && <span class="acc-tag" style="background: var(--ink-500, #64748b);">Out of stock</span>}
+                  <img src={p.image} alt={p.name} loading="lazy" width="400" height="300" style="width: 100%; height: 100%; object-fit: cover;" />
+                </div>
+                <div class="acc-body">
+                  <div class="acc-title">{p.name}</div>
+                  <div class="acc-price">{fmtPrice(p.priceCents)}</div>
+                </div>
+              </a>
+            ))}
+          </div>
+        </div>
+      ))}
+    </div>
+  </section>
+  </main>
+
+  <SiteFooter />
+  <MobileCta />
+  <!-- Task 5 wires shop/cart-count.js: binds [data-add-to-cart] and refreshes [data-cart-count] -->
+</Layout>

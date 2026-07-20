@@ -1,0 +1,66 @@
+---
+import Layout from '../../layouts/Layout.astro';
+import SiteNav from '../../components/SiteNav.astro';
+import SiteFooter from '../../components/SiteFooter.astro';
+import { PRODUCTS, fmtPrice } from '../../data/products.js';
+import { breadcrumbSchema } from '../../lib/seo.js';
+
+export function getStaticPaths() {
+  return PRODUCTS.map((p) => ({ params: { id: p.id }, props: { p } }));
+}
+const { p } = Astro.props;
+
+const navLinks = [
+  { label: 'Repairs', href: '/repairs/' },
+  { label: 'Shop', href: '/shop/' },
+];
+
+const schema = breadcrumbSchema([
+  { name: 'Home', path: '/' },
+  { name: 'Shop', path: '/shop/' },
+  { name: p.name, path: `/shop/${p.id}/` },
+]);
+---
+<Layout
+  title={`${p.name} | Express Repairs`}
+  description={`Buy ${p.name} online — ship Australia-wide or free pickup at Express Repairs, Riverwood Plaza.`}
+  path={`/shop/${p.id}/`}
+  schema={schema}
+  htmlAttrs={{ 'data-palette': 'electric-blue', 'data-fontpair': 'jakarta', 'data-dark': 'false' }}
+>
+  <SiteNav links={navLinks} ctaHref="/shop/cart/" />
+
+  <main id="main-content" class="section">
+    <div class="container">
+      <nav class="breadcrumb" aria-label="Breadcrumb">
+        <a href="/">Home</a>
+        <span class="crumb-sep">/</span>
+        <a href="/shop/">Shop</a>
+        <span class="crumb-sep">/</span>
+        <span class="crumb-current">{p.name}</span>
+      </nav>
+
+      <div class="hero-grid" style="margin-top: 32px; align-items: start;">
+        <div class="acc-visual" style="border-radius: 20px; border: 1px solid var(--border);">
+          <img src={p.image} alt={p.name} width="480" height="480" style="width: 100%; height: 100%; object-fit: cover;" />
+        </div>
+        <div>
+          <h1 style="font-size: clamp(28px, 3.2vw, 38px); font-weight: 800;">{p.name}</h1>
+          <p style="font-size: 1.6rem; font-weight: 700; color: var(--brand-700); margin-top: 12px;">{fmtPrice(p.priceCents)}</p>
+          {p.inStock ? (
+            <button class="btn btn-primary btn-lg" data-add-to-cart data-id={p.id} data-name={p.name} data-price={p.priceCents}>Add to cart</button>
+          ) : (
+            <button class="btn btn-ghost btn-lg" disabled style="opacity: .6; cursor: not-allowed;">Out of stock</button>
+          )}
+          <p style="margin-top: 16px;"><a href="/shop/cart/">View cart (<span data-cart-count>0</span>)</a></p>
+          <p class="hero-sub" style="margin-top: 20px;">GST included. Flat $10.95 shipping — free over $99 — or free pickup in store at Riverwood Plaza.</p>
+        </div>
+      </div>
+
+      <p style="margin-top: 40px;"><a href="/shop/">← All accessories</a></p>
+    </div>
+  </main>
+
+  <SiteFooter />
+  <!-- Task 5 wires shop/cart-count.js: binds [data-add-to-cart] and refreshes [data-cart-count] -->
+</Layout>

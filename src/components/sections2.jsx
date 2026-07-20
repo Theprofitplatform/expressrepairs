@@ -422,6 +422,7 @@ export function Footer() {
             <ul>
               <li><a href="#plans">Plans</a></li>
               <li><a href="#accessories">Accessories</a></li>
+              <li><a href="/shop/">Shop</a></li>
               <li><a href="#faq">FAQ</a></li>
               <li><a href="#warranty">Warranty</a></li>
             </ul>

@@ -105,3 +105,19 @@ describe('staff review-request page', () => {
     expect(sm).not.toContain('/staff/');
   });
 });
+
+describe('shop pages', () => {
+  it('builds /shop/ with product cards and no cost price', () => {
+    const html = readFileSync('dist/shop/index.html', 'utf8');
+    expect(html).toContain('/shop/');
+    expect(html).not.toMatch(/costCents/);
+  });
+
+  it('builds a product detail page per product', () => {
+    const products = JSON.parse(readFileSync('src/data/products.json', 'utf8'));
+    const p = products[0];
+    const html = readFileSync(`dist/shop/${p.id}/index.html`, 'utf8');
+    expect(html).toContain(p.name);
+    expect(html).toContain('data-add-to-cart');
+  });
+});
