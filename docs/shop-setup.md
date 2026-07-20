@@ -159,6 +159,16 @@ You're now live and able to take real payments.
   $99 or more, and a free **"Pickup in store"** option is always offered too.
   These numbers live in `src/data/products.js` (the `SHOP` object) if they
   ever need changing.
+- The order email now says either **"Fulfilment: Pickup in store — Express
+  Repairs"** or a shipping option — so you can tell at a glance whether to
+  post it or set it aside for pickup.
+- **If you ever get two identical order emails**, don't panic and don't post
+  the item twice — that's just Stripe re-sending its notification (it does
+  this sometimes to make sure nothing gets missed). Both emails will have the
+  exact same session id in square brackets in the subject line, e.g.
+  `[cs_1AbC2dEf]`. Same session id = same order, sent twice. Check DXPOS or
+  the Stripe Dashboard for that order if you're ever unsure whether it's a
+  duplicate.
 
 ---
 

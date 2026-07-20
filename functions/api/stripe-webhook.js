@@ -74,8 +74,19 @@ export async function onRequest({ request, env }) {
 
   const s = event.data.object;
 
-  // Fetch what was bought (line items aren't embedded in the event).
+  // checkout.session.completed also fires with payment_status: 'unpaid' for
+  // delayed-notification methods (e.g. some bank redirects) — the session is
+  // "completed" (checkout finished) but no money has moved yet. Stripe sends
+  // a second event once it actually settles. Treat anything but 'paid' as a
+  // no-op here so the shop is never told to pack and post an unpaid order.
+  if (s.payment_status !== 'paid') return json(200, { ok: true, ignored: true });
+
+  // Fetch what was bought (line items aren't embedded in the event), and —
+  // best-effort — the chosen shipping rate's display name, so the email can
+  // say "Pickup in store" / "Free shipping" / "Standard shipping" instead of
+  // just an amount. checkout.js gives each option a distinct display_name.
   let items = [];
+  let fulfilment = '';
   try {
     const res = await fetch(`https://api.stripe.com/v1/checkout/sessions/${s.id}/line_items?limit=100`, {
       headers: { Authorization: `Bearer ${env.STRIPE_SECRET_KEY}` },
@@ -85,13 +96,27 @@ export async function onRequest({ request, env }) {
   } catch (err) {
     console.error('line_items fetch error', err);
   }
+  try {
+    const res = await fetch(
+      `https://api.stripe.com/v1/checkout/sessions/${s.id}?expand[]=shipping_cost.shipping_rate`,
+      { headers: { Authorization: `Bearer ${env.STRIPE_SECRET_KEY}` } },
+    );
+    if (res.ok) fulfilment = (await res.json()).shipping_cost?.shipping_rate?.display_name || '';
+    else console.error('session expand fetch failed', res.status);
+  } catch (err) {
+    console.error('session expand fetch error', err);
+  }
 
   const c = s.customer_details || {};
   // c.name is the paying customer's raw Stripe input and lands in the Resend
   // "subject" header below — a name containing CR/LF could inject extra
   // headers (e.g. a Bcc). Sanitize with the same oneLine() lead.js uses.
   const name = oneLine(c.name);
-  const addr = s.shipping_details?.address;
+  // Stripe API version 2025-03-31.basil moved shipping details from
+  // `shipping_details` to `collected_information.shipping_details` on the
+  // Checkout Session. Read the new location first, fall back to the old one,
+  // so this keeps working on both an existing account and a brand-new one.
+  const addr = (s.collected_information?.shipping_details || s.shipping_details)?.address;
   const shipTo = addr && addr.line1
     ? [addr.line1, addr.line2, `${addr.city || ''} ${addr.state || ''} ${addr.postal_code || ''}`].filter(Boolean).join(', ')
     : 'PICKUP IN STORE';
@@ -101,6 +126,7 @@ export async function onRequest({ request, env }) {
     ['Customer', name],
     ['Email', c.email],
     ['Phone', c.phone],
+    ['Fulfilment', fulfilment],
     ['Deliver to', shipTo],
     ['Items', itemLines.join('\n') || `(see Stripe session ${s.id})`],
     ['Shipping', money(s.shipping_cost?.amount_total)],

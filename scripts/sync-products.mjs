@@ -40,7 +40,9 @@ export function transformCatalog(rows) {
       priceCents: r.sellCents,
       image: `/images/products/${r.id}.${extOf(r.imageUrl)}`,
       inStock: (r.stockLevels?.[0]?.onHand ?? null) !== 0,
-      sku: r.sku,
+      // A missing SKU must not fail Zod validation and silently halt every
+      // future sync — the schema requires a string, so default to ''.
+      sku: r.sku || '',
       _sourceImage: r.imageUrl,
     }));
 }

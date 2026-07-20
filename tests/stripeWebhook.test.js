@@ -13,7 +13,7 @@ async function sign(payload, secret, t = Math.floor(Date.now() / 1000)) {
 
 const EVENT = JSON.stringify({
   type: 'checkout.session.completed',
-  data: { object: { id: 'cs_1', amount_total: 4085, customer_details: { name: 'Jo', email: 'jo@x.com', phone: '+614' }, shipping_details: { address: { line1: '1 St', city: 'Sydney', postal_code: '2000', state: 'NSW' } }, shipping_cost: { amount_total: 1095 } } },
+  data: { object: { id: 'cs_1', payment_status: 'paid', amount_total: 4085, customer_details: { name: 'Jo', email: 'jo@x.com', phone: '+614' }, shipping_details: { address: { line1: '1 St', city: 'Sydney', postal_code: '2000', state: 'NSW' } }, shipping_cost: { amount_total: 1095 } } },
 });
 
 function makeReq(payload, sigHeader) {
@@ -22,11 +22,15 @@ function makeReq(payload, sigHeader) {
   return { method: 'POST', headers, text: async () => payload };
 }
 
-// fetch mock: first call = Stripe line_items GET, second = Resend POST
-const mockUpstreams = (resendStatus = 200) =>
+// fetch mock: Stripe line_items GET, Stripe session-expand GET, Resend POST
+const mockUpstreams = (resendStatus = 200, fulfilmentLabel = 'Standard shipping (AusPost)') =>
   vi.spyOn(globalThis, 'fetch').mockImplementation(async (url) => {
-    if (String(url).includes('api.stripe.com')) {
+    const u = String(url);
+    if (u.includes('line_items')) {
       return new Response(JSON.stringify({ data: [{ description: 'Case', quantity: 2, amount_total: 3800 }] }), { status: 200 });
+    }
+    if (u.includes('api.stripe.com')) {
+      return new Response(JSON.stringify({ shipping_cost: { shipping_rate: { display_name: fulfilmentLabel } } }), { status: 200 });
     }
     return new Response('{}', { status: resendStatus });
   });
@@ -67,6 +71,49 @@ describe('POST /api/stripe-webhook', () => {
     expect(spy).not.toHaveBeenCalled();
   });
 
+  it('200s and ignores an unpaid session (delayed-notification payment method) without emailing', async () => {
+    const spy = mockUpstreams();
+    const unpaid = JSON.stringify({
+      type: 'checkout.session.completed',
+      data: { object: { id: 'cs_unpaid', payment_status: 'unpaid', amount_total: 4085, customer_details: { name: 'Jo', email: 'jo@x.com' } } },
+    });
+    const res = await onRequest({ request: makeReq(unpaid, await sign(unpaid, SECRET)), env: ENV });
+    expect(res.status).toBe(200);
+    expect((await res.json()).ignored).toBe(true);
+    expect(spy).not.toHaveBeenCalled();
+  });
+
+  it('prints the shipping-rate display name as a Fulfilment row in the email', async () => {
+    mockUpstreams(200, 'Pickup in store — Express Repairs');
+    const res = await onRequest({ request: makeReq(EVENT, await sign(EVENT, SECRET)), env: ENV });
+    expect(res.status).toBe(200);
+    const spy = globalThis.fetch;
+    const resendCall = spy.mock.calls.find(([u]) => String(u).includes('resend'));
+    const body = JSON.parse(resendCall[1].body);
+    expect(body.text).toContain('Pickup in store — Express Repairs');
+  });
+
+  it('falls back to collected_information.shipping_details for the address (newer Stripe API versions)', async () => {
+    const spy = mockUpstreams();
+    const evt = JSON.stringify({
+      type: 'checkout.session.completed',
+      data: {
+        object: {
+          id: 'cs_new_api',
+          payment_status: 'paid',
+          amount_total: 4085,
+          customer_details: { name: 'Jo', email: 'jo@x.com' },
+          collected_information: { shipping_details: { address: { line1: '9 New St', city: 'Sydney', postal_code: '2000', state: 'NSW' } } },
+        },
+      },
+    });
+    const res = await onRequest({ request: makeReq(evt, await sign(evt, SECRET)), env: ENV });
+    expect(res.status).toBe(200);
+    const resendCall = spy.mock.calls.find(([u]) => String(u).includes('resend'));
+    const body = JSON.parse(resendCall[1].body);
+    expect(body.text).toContain('9 New St');
+  });
+
   it('503s when the email fails so Stripe retries', async () => {
     mockUpstreams(500);
     const res = await onRequest({ request: makeReq(EVENT, await sign(EVENT, SECRET)), env: ENV });
@@ -82,6 +129,7 @@ describe('POST /api/stripe-webhook', () => {
       data: {
         object: {
           id: 'cs_test_abc123',
+          payment_status: 'paid',
           amount_total: 4085,
           customer_details: { name: evilName, email: 'jo@x.com', phone: '+614' },
         },

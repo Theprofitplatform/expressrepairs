@@ -1,6 +1,20 @@
 import { describe, it, expect, beforeEach, vi } from 'vitest';
-import { onRequest } from '../functions/api/checkout.js';
-import { PRODUCTS, SHOP } from '../src/data/products.js';
+
+// products.json ships empty until the first real DXPOS sync (see
+// src/data/products.json / FIX 1) — this checkout flow still needs
+// shaped product rows (in-stock + out-of-stock, real prices) to exercise
+// pricing/stock/shipping-threshold logic, so it gets its own local fixture
+// instead of depending on the public catalog file.
+vi.mock('../src/data/products.json', () => ({
+  default: [
+    { id: 'X-1', name: 'Tempered Glass Screen Protector', category: 'Accessories', priceCents: 1500, image: '/images/products/X-1.jpg', inStock: true, sku: 'SP-TG-01' },
+    { id: 'X-2', name: 'USB-C Fast Charger 20W', category: 'Cables & power', priceCents: 2500, image: '/images/products/X-2.jpg', inStock: true, sku: 'CH-20W' },
+    { id: 'X-3', name: 'Wireless Earbuds', category: 'Audio', priceCents: 3900, image: '/images/products/X-3.jpg', inStock: false, sku: 'AU-EB-01' },
+  ],
+}));
+
+const { onRequest } = await import('../functions/api/checkout.js');
+const { PRODUCTS, SHOP } = await import('../src/data/products.js');
 
 const ORIGIN = 'https://expressrepairs.com.au';
 const ENV = { STRIPE_SECRET_KEY: 'sk_test_x' };

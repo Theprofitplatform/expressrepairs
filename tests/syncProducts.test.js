@@ -42,4 +42,9 @@ describe('transformCatalog', () => {
   it('exports the owner-editable grid-group allowlist', () => {
     expect(ONLINE_GRID_GROUPS).toContain('Accessories');
   });
+
+  it('defaults a missing sku to an empty string instead of undefined (Zod requires a string)', () => {
+    const [p] = transformCatalog([row({ sku: undefined })]);
+    expect(p.sku).toBe('');
+  });
 });

@@ -61,7 +61,7 @@ export default function ShopCartPage() {
 
       <div className="quote-summary" style={{ marginTop: '1.5rem' }}>
         <div className="quote-line">
-          <span>Subtotal ({cartCount(cart)} items)</span>
+          <span>Subtotal ({cartCount(Object.fromEntries(lines))} items)</span>
           <span style={{ fontWeight: 700 }}>{fmtPrice(subtotal)}</span>
         </div>
         <div className="quote-line">
