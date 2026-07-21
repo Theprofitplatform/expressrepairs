@@ -13,3 +13,10 @@ export const specRows = (p) =>
     ['Shipping', 'Flat $10.95 — free over $99 — free pickup in store'],
     ['GST', 'Included in price'],
   ].filter(([, v]) => v);
+
+// Same category, same-brand first (stable), never the product itself.
+export const relatedProducts = (p, all, n = 4) =>
+  all
+    .filter((x) => x.category === p.category && x.id !== p.id)
+    .sort((x, y) => (y.brand === p.brand) - (x.brand === p.brand))
+    .slice(0, n);

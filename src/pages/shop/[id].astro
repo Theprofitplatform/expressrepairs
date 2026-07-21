@@ -4,12 +4,13 @@ import SiteNav from '../../components/SiteNav.astro';
 import SiteFooter from '../../components/SiteFooter.astro';
 import { PRODUCTS, fmtPrice } from '../../data/products.js';
 import { breadcrumbSchema } from '../../lib/seo.js';
-import { specRows, slugifyCategory } from '../../lib/shop.js';
+import { specRows, slugifyCategory, relatedProducts } from '../../lib/shop.js';
 
 export function getStaticPaths() {
   return PRODUCTS.map((p) => ({ params: { id: p.id }, props: { p } }));
 }
 const { p } = Astro.props;
+const related = relatedProducts(p, PRODUCTS);
 
 const navLinks = [
   { label: 'Repairs', href: '/repairs/' },
@@ -67,6 +68,33 @@ const schema = breadcrumbSchema([
           </dl>
         </div>
       </div>
+
+      {related.length > 0 && (
+        <section style="margin-top: 48px;">
+          <h2 class="section-title" style="font-size: clamp(22px, 2.4vw, 28px);">More like this</h2>
+          <div class="acc-grid" style="margin-top: 24px;">
+            {related.map((r) => (
+              <a href={`/shop/${r.id}/`} class="acc-card">
+                <div class="acc-visual">
+                  <img
+                    src={r.thumb}
+                    alt={r.name}
+                    loading="lazy"
+                    decoding="async"
+                    width="400"
+                    height="300"
+                    style="width: 100%; height: auto; aspect-ratio: 4 / 3; object-fit: contain; background: #fff; padding: 12px; box-sizing: border-box;"
+                  />
+                </div>
+                <div class="acc-body">
+                  <div class="acc-title">{r.name}</div>
+                  <div class="acc-price">{fmtPrice(r.priceCents)}</div>
+                </div>
+              </a>
+            ))}
+          </div>
+        </section>
+      )}
 
       <p style="margin-top: 40px;"><a href="/shop/">← All accessories</a></p>
     </div>
