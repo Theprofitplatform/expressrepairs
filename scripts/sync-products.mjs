@@ -71,24 +71,26 @@ async function main() {
   // so scan every Set-Cookie header rather than assuming ours is the first.
   const setCookies = gateRes.headers.getSetCookie?.() ?? [gateRes.headers.get('set-cookie') || ''];
   const cookie = setCookies.join(',').match(/pos_gate=[^;,\s]+/)?.[0];
+  // The gate is optional: pos.expressrepairs.com.au has at times been served
+  // without the Basic-auth Worker in front, in which case no pos_gate cookie
+  // is issued and DXPOS's own JWT is the only thing protecting /api. Warn
+  // loudly (that is a security regression worth fixing) but keep syncing.
   if (!cookie) {
-    // Names only — never log cookie values.
-    const names = setCookies.map((c) => String(c).split('=')[0].trim()).filter(Boolean);
-    console.error(
-      `No gate cookie issued (gate returned ${gateRes.status}; cookies seen: ${names.join(', ') || 'none'})`,
+    console.warn(
+      `WARNING: no pos_gate cookie issued (gate returned ${gateRes.status}) — ` +
+        'the POS auth gate appears to be inactive. Continuing with DXPOS login only.',
     );
-    process.exit(1);
   }
 
   // 2. DXPOS login -> JWT.
   const loginRes = await fetch(`${BASE}/api/auth/login`, {
     method: 'POST',
-    headers: { 'Content-Type': 'application/json', Cookie: cookie },
+    headers: { 'Content-Type': 'application/json', ...(cookie ? { Cookie: cookie } : {}) },
     body: JSON.stringify({ email: POS_EMAIL, password: POS_PASSWORD }),
   });
   if (!loginRes.ok) { console.error('DXPOS login failed', loginRes.status); process.exit(1); }
   const { token } = await loginRes.json();
-  const auth = { Cookie: cookie, Authorization: `Bearer ${token}` };
+  const auth = { ...(cookie ? { Cookie: cookie } : {}), Authorization: `Bearer ${token}` };
 
   // 3. Page through the catalog (hard-capped at 200/page server-side).
   const rows = [];
@@ -112,7 +114,7 @@ async function main() {
   for (const p of products) {
     const external = p._sourceImage.startsWith('http');
     const src = external ? p._sourceImage : BASE + p._sourceImage;
-    const res = await fetch(src, external ? {} : { headers: { Cookie: cookie, Authorization: `Bearer ${token}` } }).catch(() => null);
+    const res = await fetch(src, external ? {} : { headers: auth }).catch(() => null);
     if (!res || !res.ok) { console.warn(`image failed for ${p.id} (${res ? res.status : 'network error'}) — keeping previous file if any`); }
     else writeFileSync(join(imgDir, p.image.split('/').pop()), Buffer.from(await res.arrayBuffer()));
     delete p._sourceImage;
