@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { transformCatalog, thumbUrl, ONLINE_GRID_GROUPS } from '../scripts/sync-products.mjs';
+import { transformCatalog, thumbUrl, ONLINE_GRID_GROUPS, TRADE_ONLY_PATTERNS } from '../scripts/sync-products.mjs';
 
 const row = (over = {}) => ({
   id: 'X-10', name: 'Case', sku: 'C1', type: 'PRODUCT', archived: false,
@@ -61,6 +61,29 @@ describe('transformCatalog', () => {
   it('falls back to the supplier image map by SKU when DXPOS has no photo', () => {
     // DXPOS carries no product images; the map is keyed on a normalised SKU.
     expect(transformCatalog([row({ imageUrl: null, sku: 'no-such-sku-xyz' })])).toHaveLength(0);
+  });
+
+  // Shop fixtures / trade supplies live in the same DXPOS groups as consumer
+  // accessories — a customer must never be sold a banner stand or a 100pcs
+  // film roll for a cutting machine.
+  it('excludes trade-only products by name', () => {
+    const tradeNames = [
+      'BLACKTECH 3D Custom Sublimation Retractable Banner Stands',
+      'hoco. GF012 Phone Screen Protector 100pcs For Film Cutting Machine',
+      'BLACKTECH Camera Glass Display Stand',
+    ];
+    for (const name of tradeNames) {
+      expect(transformCatalog([row({ name })]), name).toHaveLength(0);
+    }
+    // …but a normal consumer product is kept.
+    expect(
+      transformCatalog([row({ name: 'BLACKTECH USB-A To Lightning Fast Charging Cable 100cm - White' })]),
+    ).toHaveLength(1);
+  });
+
+  it('exports an owner-reviewable trade-only pattern list', () => {
+    expect(Array.isArray(TRADE_ONLY_PATTERNS)).toBe(true);
+    expect(TRADE_ONLY_PATTERNS.length).toBeGreaterThan(0);
   });
 
   it('exports the owner-editable grid-group allowlist', () => {

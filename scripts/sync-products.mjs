@@ -47,6 +47,19 @@ export const ONLINE_GRID_GROUPS = [
   'Audio',
 ];
 
+// Trade/shop-fixture stock that lives in the same DXPOS groups as consumer
+// accessories but must never be sold to a customer. Owner: add a pattern here
+// to hide a whole class of product; matched against the product name.
+export const TRADE_ONLY_PATTERNS = [
+  /display stand/i, // shop-counter display fixtures
+  /banner stand/i, // retractable shop banners
+  /sublimation/i, // custom-print trade equipment
+  /cutting machine/i, // film-plotter consumables reference the machine
+  /\b\d{2,}\s*pcs\b/i, // bulk packs (100pcs film rolls etc.) — "100cm" is NOT matched
+  /film roll/i, // plotter film consumables
+];
+const isTradeOnly = (r) => TRADE_ONLY_PATTERNS.some((p) => p.test(r.name || ''));
+
 // Pure transform: DXPOS catalog rows -> products.json entries.
 export function transformCatalog(rows) {
   return rows
@@ -56,7 +69,8 @@ export function transformCatalog(rows) {
         r.type === 'PRODUCT' &&
         r.sellCents > 0 &&
         imageFor(r) &&
-        ONLINE_GRID_GROUPS.includes(r.gridGroup),
+        ONLINE_GRID_GROUPS.includes(r.gridGroup) &&
+        !isTradeOnly(r),
     )
     .map((r) => {
       const image = imageFor(r);
@@ -143,11 +157,16 @@ async function main() {
   {
     const live = rows.filter((r) => !r.archived);
     const inGroups = live.filter((r) => ONLINE_GRID_GROUPS.includes(r.gridGroup));
+    const withImage = inGroups.filter(imageFor);
+    const trade = withImage.filter(isTradeOnly);
     console.log(
       `catalog funnel: fetched=${rows.length} live=${live.length} ` +
-        `in-groups=${inGroups.length} with-image=${inGroups.filter(imageFor).length} ` +
-        `-> sellable=${products.length}`,
+        `in-groups=${inGroups.length} with-image=${withImage.length} ` +
+        `trade-only=${trade.length} -> sellable=${products.length}`,
     );
+    // Expect tens excluded, not thousands — if this list is long, a pattern is
+    // matching consumer products and needs tightening.
+    if (trade.length) console.log('trade-only excluded:', trade.map((r) => r.name).join(' | '));
   }
 
   if (products.length > MAX_ONLINE) {
