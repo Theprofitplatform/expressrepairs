@@ -55,7 +55,13 @@ async function main() {
 
   // 1. Pass the Worker gate once with Basic auth; keep the pos_gate cookie.
   const basic = 'Basic ' + Buffer.from(`${POS_GATE_USER}:${POS_GATE_PASS}`).toString('base64');
-  const gateRes = await fetch(`${BASE}/`, { headers: { Authorization: basic } }).catch(() => null);
+  // redirect:'manual' — the Worker sets pos_gate on ITS response; if the DXPOS
+  // app then redirects (e.g. / -> /login) and fetch follows it automatically,
+  // we would read the final hop's headers and never see the cookie.
+  const gateRes = await fetch(`${BASE}/`, {
+    headers: { Authorization: basic },
+    redirect: 'manual',
+  }).catch(() => null);
   if (!gateRes || gateRes.status === 503) {
     console.log('POS offline (shop PC / tunnel down) — keeping last synced data.');
     process.exit(0); // graceful: not an error, just no update this run
@@ -66,7 +72,11 @@ async function main() {
   const setCookies = gateRes.headers.getSetCookie?.() ?? [gateRes.headers.get('set-cookie') || ''];
   const cookie = setCookies.join(',').match(/pos_gate=[^;,\s]+/)?.[0];
   if (!cookie) {
-    console.error(`No gate cookie issued (gate returned ${gateRes.status})`);
+    // Names only — never log cookie values.
+    const names = setCookies.map((c) => String(c).split('=')[0].trim()).filter(Boolean);
+    console.error(
+      `No gate cookie issued (gate returned ${gateRes.status}; cookies seen: ${names.join(', ') || 'none'})`,
+    );
     process.exit(1);
   }
 
