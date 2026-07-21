@@ -87,8 +87,22 @@ const schema = breadcrumbSchema([
       status.textContent = hits.length
         ? `${hits.length} result${hits.length === 1 ? '' : 's'}${hits.length > 50 ? ', showing first 50' : ''}`
         : `No results for “${q}” — try fewer words, or call us on 0415 303 300.`;
+      // Every product image is mirrored to R2 keyed by id, so the thumb URL is
+      // derived here instead of bloating the search index with 3,500 URLs.
       results.innerHTML = hits.slice(0, 50).map((p) => `
         <a href="/shop/${esc(p.id)}/" class="acc-card">
+          <div class="acc-visual">
+            <img
+              src="https://img.expressrepairs.com.au/products/${esc(p.id)}.webp"
+              alt="${esc(p.name)}"
+              loading="lazy"
+              decoding="async"
+              width="400"
+              height="300"
+              style="width: 100%; height: auto; aspect-ratio: 4 / 3; object-fit: contain; background: #fff; padding: 12px; box-sizing: border-box;"
+              onerror="this.closest('.acc-visual').remove()"
+            />
+          </div>
           <div class="acc-body">
             <div class="acc-title">${esc(p.name)}</div>
             <div class="acc-price">${fmtPrice(p.priceCents)}${p.brand ? ` · ${esc(p.brand)}` : ''}</div>
