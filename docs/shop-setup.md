@@ -247,3 +247,38 @@ nothing to configure in the dashboard.
 ⚠️ Because `wrangler.toml` now manages Pages settings, add new environment
 variables in the dashboard as **Secrets** (encrypted) — plain-text vars added
 only in the dashboard can be overwritten on the next deploy.
+
+---
+
+## Go-live checklist (payments)
+
+Do a **test-mode dry run first**, then go live.
+
+**Dry run (test keys — no real money):**
+1. In Stripe, toggle **Test mode** and grab the test Secret key (`sk_test_…`).
+2. Create a test-mode webhook endpoint for
+   `https://www.expressrepairs.com.au/api/stripe-webhook`
+   (event `checkout.session.completed`) and copy its `whsec_…`.
+3. Put both into Cloudflare Pages → expressrepairs → Settings → Environment
+   variables (Production, as **Secrets**): `STRIPE_SECRET_KEY`,
+   `STRIPE_WEBHOOK_SECRET`. Redeploy (Deployments → Retry latest).
+4. Place an order on the site with Stripe's test card `4242 4242 4242 4242`
+   (any future expiry, any CVC).
+5. Confirm ALL of: exactly **one** order email to the shop, **one**
+   confirmation email to the customer address you entered, the Purchase
+   event in Meta Events Manager (Test Events tab), and the session in the
+   Stripe Dashboard (test mode).
+
+**Go live:**
+1. Replace both env vars with the **live** values (`sk_live_…` + the live
+   webhook's `whsec_…` from section 1). Redeploy.
+2. Checks that should already be true (they're code/config, just confirm):
+   - KV binding `ORDERS_KV` shows under Pages → Settings → Bindings.
+   - `https://www.expressrepairs.com.au/shop/google-feed.xml` loads.
+   - Meta catalog "Express Repairs Accessories" shows products
+     (Commerce Manager → Data sources).
+3. Still owed separately: add the `R2_API_TOKEN` repo secret on GitHub so
+   new product images keep mirroring to the fast image host.
+4. Final check: place a **real $1-class order** (cheapest accessory, pickup
+   option), confirm both emails arrive, then refund it from the Stripe
+   Dashboard (Payments → ⋯ → Refund).
