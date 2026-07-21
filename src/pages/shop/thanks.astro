@@ -32,5 +32,15 @@ const navLinks = [
   <script>
     import { clearCart } from '../../shop/cart-store.js';
     clearCart();
+    // Purchase value was stashed by the cart page just before the Stripe
+    // redirect. Fire only when it exists (never invent a value), then clear
+    // it so a page reload can't double-count.
+    try {
+      const value = Number(sessionStorage.getItem('er-checkout-value'));
+      if (value > 0) {
+        window.fbq?.('track', 'Purchase', { currency: 'AUD', value });
+        sessionStorage.removeItem('er-checkout-value');
+      }
+    } catch {}
   </script>
 </Layout>

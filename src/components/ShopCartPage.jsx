@@ -27,7 +27,19 @@ export default function ShopCartPage() {
         body: JSON.stringify({ items: lines.map(([id, qty]) => ({ id, qty })) }),
       });
       const body = await res.json();
-      if (res.ok && body.url) { location.href = body.url; return; }
+      if (res.ok && body.url) {
+        window.fbq?.('track', 'InitiateCheckout', {
+          content_ids: lines.map(([id]) => id),
+          content_type: 'product',
+          value: subtotal / 100,
+          currency: 'AUD',
+          num_items: cartCount(Object.fromEntries(lines)),
+        });
+        // Purchase value for /shop/thanks/ — cleared there after firing.
+        try { sessionStorage.setItem('er-checkout-value', String(subtotal / 100)); } catch {}
+        location.href = body.url;
+        return;
+      }
       setError(body.error || 'Checkout is unavailable right now — call us and we can take payment over the phone.');
     } catch {
       setError('Checkout is unavailable right now — call us and we can take payment over the phone.');

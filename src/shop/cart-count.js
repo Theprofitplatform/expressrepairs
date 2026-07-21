@@ -15,6 +15,12 @@ document.querySelectorAll('[data-add-to-cart]').forEach((btn) =>
     } else {
       addToCart(btn.dataset.id);
     }
+    window.fbq?.('track', 'AddToCart', {
+      content_ids: [btn.dataset.id],
+      content_type: 'product',
+      value: Number(btn.dataset.price) / 100 || 0,
+      currency: 'AUD',
+    });
     refresh();
     btn.textContent = 'Added ✓';
     setTimeout(() => (btn.textContent = 'Add to cart'), 1200);
