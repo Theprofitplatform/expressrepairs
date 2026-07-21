@@ -54,6 +54,17 @@ const brands = [...new Set(page.data.map((p) => p.brand).filter(Boolean))].sort(
 
       <h1 class="section-title" style="margin-top: 16px; font-size: clamp(28px, 3.2vw, 38px);">{category}</h1>
 
+      <form action="/shop/search/" style="margin-top: 20px; max-width: 460px; display: flex; gap: 8px;">
+        <input
+          type="search"
+          name="q"
+          placeholder="Search accessories"
+          aria-label="Search accessories"
+          style="flex: 1; padding: 10px 14px; font-size: 16px; border: 1px solid var(--border, #d0d5dd); border-radius: 10px;"
+        />
+        <button type="submit" class="btn btn-ghost btn-sm">Search</button>
+      </form>
+
       {brands.length > 1 && (
         <div id="brand-filter" style="display: flex; flex-wrap: wrap; gap: 8px; margin-top: 20px;" aria-label="Filter by brand">
           <button class="btn btn-primary btn-sm" data-brand="">All brands</button>
