@@ -61,8 +61,8 @@ const schema = breadcrumbSchema([
   <SiteFooter />
   <MobileCta />
   <script>
-    // ponytail: plain token-substring match over a build-time JSON index — no
-    // search library; revisit only if relevance complaints show up.
+    import { searchProducts } from '../../shop/search-core.js';
+
     const input = document.getElementById('q');
     const status = document.getElementById('search-status');
     const results = document.getElementById('search-results');
@@ -79,13 +79,11 @@ const schema = breadcrumbSchema([
     const run = async () => {
       const q = input.value.trim();
       if (!q) { status.textContent = 'Type to search 3,000+ accessories.'; results.innerHTML = ''; return; }
-      const tokens = q.toLowerCase().split(/\s+/);
-      const hits = (await load()).filter((p) => {
-        const hay = `${p.name} ${p.brand} ${p.category}`.toLowerCase();
-        return tokens.every((t) => hay.includes(t));
-      });
+      const { hits, total, partial } = searchProducts(await load(), q, 50);
       status.textContent = hits.length
-        ? `${hits.length} result${hits.length === 1 ? '' : 's'}${hits.length > 50 ? ', showing first 50' : ''}`
+        ? partial
+          ? `No exact matches for “${q}” — showing ${total} closest result${total === 1 ? '' : 's'}`
+          : `${total} result${total === 1 ? '' : 's'}${total > 50 ? ', showing first 50' : ''}`
         : `No results for “${q}” — try fewer words, or call us on 0415 303 300.`;
       // Every product image is mirrored to R2 keyed by id, so the thumb URL is
       // derived here instead of bloating the search index with 3,500 URLs.
