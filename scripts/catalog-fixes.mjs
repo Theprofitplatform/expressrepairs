@@ -39,6 +39,9 @@ move('Accessories', [
   'X-03021', // USB flash drive
   'X-05204', 'X-05224', 'X-02163', // card readers
   'X-04907', 'X-02627', // wireless CarPlay adapters
+  // DXPOS "Holders" tag swept these into Mounts & Holders, but they're not
+  // mounts: ring light + its floor stand, folding keyboard, MagSafe thermos.
+  'X-02011', 'X-02008', 'X-02626', 'X-04919',
 ]);
 move('Mounts & Holders', [
   // car holders
@@ -127,21 +130,42 @@ const MAKERS = [
   'Hanman', 'iBuy', 'Simply Roar', 'EFM', 'Gecko', 'XIAOMI',
   'Apple', 'Samsung', 'Google',
 ];
+// Device-specific products (cases, glass) are named "<device> <maker> ...";
+// by catalog convention their brand is the device PLATFORM, so the category
+// pages can filter by it. Maker-first names (hoco. cables etc.) fall through
+// to the maker scan. ponytail: prefix match only — a "Simply Roar iPhone"
+// case named maker-first stays maker-branded; acceptable.
+const PLATFORM_PREFIX = [
+  [/^(iphone|ipad|airpods|apple|iwatch)/i, 'Apple'],
+  [/^samsung|^galaxy/i, 'Samsung'],
+  [/^(google )?pixel/i, 'Google'],
+  [/^oppo/i, 'OPPO'],
+];
 export function fixBrand(brand, name) {
   if (PLATFORM_BRANDS.has(brand)) return brand;
+  const platform = PLATFORM_PREFIX.find(([re]) => re.test(name));
+  if (platform) return platform[1];
   return MAKERS.find((m) => name.includes(m)) || '';
 }
 
 function fixCategory(p, name) {
   if (MOVES[p.id]) return MOVES[p.id];
-  // AirPods *cases* swept into Audio by the "AirPods" keyword
-  if (/^AirPods/i.test(name) && /BLACKTECH/i.test(name)) return 'Cases & Covers';
+  // AirPods cases get their own category (they also arrive misfiled in Audio,
+  // swept there by the "AirPods" keyword)
+  if (/^AirPods/i.test(name) && /case|cover|BLACKTECH/i.test(name)) return 'AirPods Cases';
   // screen/camera protectors filed under Audio ("speaker hole") or Cases
   if (/tempered glass|screen protector|corning glass|camera guard/i.test(name) && !/case with|with case/i.test(name)) {
     return 'Screen Protection';
   }
   // DXPOS's internal "Holders" tag marks future mounts synced into Accessories
   if (p.category === 'Accessories' && p.brand === 'Holders') return 'Mounts & Holders';
+  // Cases & Covers is 4 device types in one coat — split out the non-phone
+  // ones so the platform filter stays meaningful (an "Apple" filter mixing
+  // iPhone, iPad, and Watch cases helps nobody).
+  if (p.category === 'Cases & Covers') {
+    if (/\biPad\b|\bTab\b|\btablet\b/i.test(name)) return 'Tablet & iPad Cases';
+    if (/\bwatch\b/i.test(name)) return 'Watch Cases';
+  }
   return p.category;
 }
 

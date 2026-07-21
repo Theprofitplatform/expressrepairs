@@ -36,6 +36,12 @@ describe('fixBrand', () => {
     expect(fixBrand('Max Profit Picks', 'hoco. X59 cable')).toBe('hoco.');
     expect(fixBrand('hold', 'Generic widget')).toBe('');
   });
+
+  it('derives the platform from device-first names so the filter covers them', () => {
+    expect(fixBrand('Cases and Protectors', 'iPhone 15 Pro BLACKTECH Symmetry - Black')).toBe('Apple');
+    expect(fixBrand('', 'Samsung Galaxy S24 Goospery Mercury Case - Blue')).toBe('Samsung');
+    expect(fixBrand('Holders', 'BLACKTECH Windshield Car Holder - Black')).toBe('BLACKTECH');
+  });
 });
 
 describe('applyCatalogFixes', () => {
@@ -54,14 +60,23 @@ describe('applyCatalogFixes', () => {
     expect(out[0].id).toBe('X-3');
   });
 
+  it('splits Cases & Covers by device type', () => {
+    const split = (name) => applyCatalogFixes([p({ name, category: 'Cases & Covers' })])[0].category;
+    expect(split('iPad 10.9 iBuy Case - Black')).toBe('Tablet & iPad Cases');
+    expect(split('Samsung Galaxy Tab S9 Hanman Wallet - Black')).toBe('Tablet & iPad Cases');
+    expect(split('Apple Watch 45mm hoco. WS1 Bumper Case - Black')).toBe('Watch Cases');
+    expect(split('iPhone 15 BLACKTECH Silicone Case - Clear')).toBe('Cases & Covers');
+  });
+
   it('recategorizes AirPods cases and mislabeled screen protectors', () => {
     const [a] = applyCatalogFixes([p({ name: 'AirPods 2 BLACKTECH Silicone Case - Blue', category: 'Audio' })]);
-    expect(a.category).toBe('Cases & Covers');
+    expect(a.category).toBe('AirPods Cases');
     const [g] = applyCatalogFixes([p({ name: 'iPhone 12 LITO Tempered Glass - Black', category: 'Audio' })]);
     expect(g.category).toBe('Screen Protection');
-    // …but a case-with-glass combo is not dragged out of its category
+    // …but a case-with-glass combo is not dragged into Screen Protection
+    // (it does get the watch-case split)
     const [c] = applyCatalogFixes([p({ name: 'Watch Case With Tempered Glass', category: 'Cases & Covers' })]);
-    expect(c.category).toBe('Cases & Covers');
+    expect(c.category).toBe('Watch Cases');
   });
 });
 
