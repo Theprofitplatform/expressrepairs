@@ -35,10 +35,10 @@ each are in `docs/shop-setup.md`.
   diagnostic was `property_value_missing` (description) on all items —
   fixed by emitting a per-item `<description>` in the feed. Merchant Center
   treats description as required, so this had to land before GMC setup.
-- [ ] **Re-check the feed after the next daily replace** (3am Sydney) — it
-  should pick up the descriptions *and* drop 3,665 → 3,518 items (the
-  post-dedupe count from the catalog data-quality pass, `96993ff`).
-  Expect the descriptions diagnostic to clear.
+- [x] **Re-check the feed after the next daily replace** (3am Sydney) —
+  done: the 2026-07-21 replace `succeeded` (no warnings): 3,518 persisted,
+  147 deleted (dedupe), 0 invalid/errors. Catalog diagnostics now empty —
+  the descriptions issue cleared. Feed is clean and GMC-ready.
 - [ ] **Stripe test-mode dry run** — once owner adds test keys: full order →
   exactly one shop email, one customer email, KV key written, Purchase event,
   session visible in Stripe. Then update the go-live checklist status.
