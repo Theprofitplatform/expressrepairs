@@ -54,18 +54,18 @@
 - Modify: `src/pages/shop/index.astro`, `src/pages/shop/c/[category]/[...page].astro`
 - Test: `tests/syncProducts.test.js`, `tests/products.test.js`
 
-- [ ] **Step 1: Make `category` the DXPOS `gridGroup`, not `category.name`.**
+- [x] **Step 1: Make `category` the DXPOS `gridGroup`, not `category.name`.**
   `gridGroup` is already the filter list (`ONLINE_GRID_GROUPS`) and is clean: `Accessories`, `Cases & Covers`, `Screen Protection`, `Cables & Charging`, `Audio`. This alone deletes every junk category. Keep the supplier's `category.name` as a new `brand` field (Apple / Samsung / Google / OPPO / …) — useful for filtering, never as a category.
 
-- [ ] **Step 2: Add `brand` to `productSchema`** as `z.string()` (may be empty). Update the sync transform to emit it.
+- [x] **Step 2: Add `brand` to `productSchema`** as `z.string()` (may be empty). Update the sync transform to emit it.
 
-- [ ] **Step 3: Write failing tests first** — `transformCatalog` returns `category` equal to the row's `gridGroup` (NOT `category.name`), and `brand` equal to `category.name` (empty string when absent). Run, see them fail, then implement.
+- [x] **Step 3: Write failing tests first** — `transformCatalog` returns `category` equal to the row's `gridGroup` (NOT `category.name`), and `brand` equal to `category.name` (empty string when absent). Run, see them fail, then implement.
 
-- [ ] **Step 4: Shop index** — expect exactly 5 category tiles. Confirm no junk category renders.
+- [x] **Step 4: Shop index** — expect exactly 5 category tiles. Confirm no junk category renders.
 
-- [ ] **Step 5: Add a brand filter to the category page.** Simple links (`?brand=` is not possible on a static site — use sub-routes `/shop/c/<category>/b/<brand>/` via `getStaticPaths`, or client-side filtering on the already-rendered grid). Client-side filtering is the lazier option and fine at 48 items/page; prefer it unless the page count explodes.
+- [x] **Step 5: Add a brand filter to the category page.** Simple links (`?brand=` is not possible on a static site — use sub-routes `/shop/c/<category>/b/<brand>/` via `getStaticPaths`, or client-side filtering on the already-rendered grid). Client-side filtering is the lazier option and fine at 48 items/page; prefer it unless the page count explodes.
 
-- [ ] **Step 6:** `npm test` green, `npm run build` green, commit, push, run the sync, and verify on the live site that only the 5 categories exist.
+- [x] **Step 6:** `npm test` green, `npm run build` green, commit, push, run the sync, and verify on the live site that only the 5 categories exist.
 
 ---
 
@@ -75,17 +75,19 @@
 
 **Files:** Modify `scripts/sync-products.mjs`; test in `tests/syncProducts.test.js`.
 
-- [ ] **Step 1: Write the failing test.** Given rows named as above, `transformCatalog` excludes them; a normal product ("BLACKTECH USB-A To Lightning Fast Charging Cable 100cm - White") is kept.
+- [x] **Step 1: Write the failing test.** Given rows named as above, `transformCatalog` excludes them; a normal product ("BLACKTECH USB-A To Lightning Fast Charging Cable 100cm - White") is kept.
 
-- [ ] **Step 2: Implement an exported `TRADE_ONLY_PATTERNS` regex list** with a comment explaining each is trade stock, not consumer product. Start with: `display stand`, `banner stand`, `sublimation`, `cutting machine`, `\b\d{2,}\s*pcs\b`, `film roll`. Export it so it is reviewable and editable by the owner.
+- [x] **Step 2: Implement an exported `TRADE_ONLY_PATTERNS` regex list** with a comment explaining each is trade stock, not consumer product. Start with: `display stand`, `banner stand`, `sublimation`, `cutting machine`, `\b\d{2,}\s*pcs\b`, `film roll`. Export it so it is reviewable and editable by the owner.
 
-- [ ] **Step 3:** Run the sync and check the funnel log for how many were excluded; sanity-check the count is small (tens, not thousands). If it removes a large fraction, the patterns are too broad — tighten them.
+- [x] **Step 3:** Run the sync and check the funnel log for how many were excluded; sanity-check the count is small (tens, not thousands). If it removes a large fraction, the patterns are too broad — tighten them.
 
-- [ ] **Step 4:** Tests green, commit, push, sync, verify.
+- [x] **Step 4:** Tests green, commit, push, sync, verify.
 
 ---
 
 ### Task 3: Self-host images on Cloudflare R2
+
+> **BLOCKED 2026-07-21:** needs Cloudflare auth with R2 scope. Local wrangler OAuth is expired (refresh dead) and the GitHub `CLOUDFLARE_API_TOKEN` secret is Pages-only. Unblock: run `npx wrangler login` in the repo, then execute the steps below.
 
 **Problem:** images hotlink to `hoco.com.au` / `mobilemall.com.au`. If either blocks hotlinking or changes URLs, every product photo breaks at once. MobileMall images are ~2MB each, so category pages are slow on mobile.
 
@@ -117,13 +119,13 @@
 
 **Files:** Create `src/pages/shop/search.astro` + a small client-side island; modify the shop nav.
 
-- [ ] **Step 1: Generate a search index at build time** — `id`, `name`, `brand`, `category`, `priceCents`, `thumb`. At 3,875 products keep it lean; if it exceeds ~500KB, strip to `id`/`name`/`brand` and look the rest up from the rendered page.
+- [x] **Step 1: Generate a search index at build time** — `id`, `name`, `brand`, `category`, `priceCents`, `thumb`. At 3,875 products keep it lean; if it exceeds ~500KB, strip to `id`/`name`/`brand` and look the rest up from the rendered page.
 
-- [ ] **Step 2: Implement client-side search** — plain substring/token matching over the index, no new runtime dependency (see the ladder: do NOT add a search library for this). Debounce input, cap results at ~50.
+- [x] **Step 2: Implement client-side search** — plain substring/token matching over the index, no new runtime dependency (see the ladder: do NOT add a search library for this). Debounce input, cap results at ~50.
 
-- [ ] **Step 3: Add a search box** to the shop index and category pages.
+- [x] **Step 3: Add a search box** to the shop index and category pages.
 
-- [ ] **Step 4:** Test that the index builds and contains no cost price; `npm test`, `npm run build`, commit, push, verify live.
+- [x] **Step 4:** Test that the index builds and contains no cost price; `npm test`, `npm run build`, commit, push, verify live.
 
 ---
 
