@@ -11,6 +11,9 @@ describe('google merchant feed', () => {
     expect(xml.startsWith('<?xml')).toBe(true);
     expect(xml.match(/<item>/g).length).toBe(PRODUCTS.length);
   });
+  it('gives every item a description', () => {
+    expect(xml.match(/<item>[\s\S]*?<description>/g)?.length).toBe(PRODUCTS.length);
+  });
   it('never leaks cost and escapes ampersands', () => {
     expect(xml).not.toMatch(/costCents/);
     expect(xml).not.toMatch(/&(?!amp;|lt;|gt;|quot;|#)/);

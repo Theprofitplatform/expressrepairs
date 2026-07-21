@@ -12,6 +12,10 @@ const item = (p) => {
     '<item>',
     `<g:id>${xmlEsc(p.id)}</g:id>`,
     `<title>${xmlEsc(p.name)}</title>`,
+    // Merchant Center *requires* a description; DXPOS supplies none, so build one
+    // from name + category. Never `brand` — it's the supplier's category.name and
+    // may be internal jargon (see productSchema).
+    `<description>${xmlEsc(p.name)} — ${xmlEsc(p.category)} from Express Repairs, Riverwood. Ships Australia-wide, or free pickup in store.</description>`,
     `<link>https://www.expressrepairs.com.au/shop/${xmlEsc(p.id)}/</link>`,
     `<g:image_link>${xmlEsc(p.image)}</g:image_link>`,
     `<g:price>${price} AUD</g:price>`,

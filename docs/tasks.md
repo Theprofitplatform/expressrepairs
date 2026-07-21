@@ -29,10 +29,16 @@ each are in `docs/shop-setup.md`.
 
 ## Agent tasks (any Claude session can pick these up)
 
-- [ ] **Meta feed diagnostics** — first ingestion of feed `1564222575315748`
-  (catalog `1408359851110752`) was still in progress at last check
-  (3,665 detected, 0 invalid). Re-check `ads_catalog_get_diagnostics` /
-  feed details; expect ≥95% accepted, fix the top rejection reason if not.
+- [x] **Meta feed diagnostics** — first ingestion of feed `1564222575315748`
+  (catalog `1408359851110752`) finished 2026-07-20 21:01 PT: 3,665 detected →
+  **3,665 persisted, 0 invalid, 0 errors** (100%, vs. the ≥95% bar). Sole
+  diagnostic was `property_value_missing` (description) on all items —
+  fixed by emitting a per-item `<description>` in the feed. Merchant Center
+  treats description as required, so this had to land before GMC setup.
+- [ ] **Re-check the feed after the next daily replace** (3am Sydney) — it
+  should pick up the descriptions *and* drop 3,665 → 3,518 items (the
+  post-dedupe count from the catalog data-quality pass, `96993ff`).
+  Expect the descriptions diagnostic to clear.
 - [ ] **Stripe test-mode dry run** — once owner adds test keys: full order →
   exactly one shop email, one customer email, KV key written, Purchase event,
   session visible in Stripe. Then update the go-live checklist status.
