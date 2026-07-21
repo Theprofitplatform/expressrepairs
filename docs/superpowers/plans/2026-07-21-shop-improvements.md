@@ -87,7 +87,7 @@
 
 ### Task 3: Self-host images on Cloudflare R2
 
-> **BLOCKED 2026-07-21:** needs Cloudflare auth with R2 scope. Local wrangler OAuth is expired (refresh dead) and the GitHub `CLOUDFLARE_API_TOKEN` secret is Pages-only. Unblock: run `npx wrangler login` in the repo, then execute the steps below.
+> **DONE 2026-07-21** (after owner re-ran `npx wrangler login`): bucket `expressrepairs-products` at `img.expressrepairs.com.au`, all 3,665 images mirrored (800px WebP, 0 failures). One owner task left: add an R2-scoped token as the `R2_API_TOKEN` repo secret (Cloudflare dash → R2 → Manage API Tokens) so the sync workflow mirrors NEW products automatically; until then new items just keep supplier URLs.
 
 **Problem:** images hotlink to `hoco.com.au` / `mobilemall.com.au`. If either blocks hotlinking or changes URLs, every product photo breaks at once. MobileMall images are ~2MB each, so category pages are slow on mobile.
 
@@ -99,17 +99,17 @@
 - Modify: `wrangler.jsonc` / Cloudflare dashboard config as needed
 - Test: `tests/syncProducts.test.js`
 
-- [ ] **Step 1: Create the R2 bucket and public domain.** `npx wrangler r2 bucket create expressrepairs-products`, then attach a custom domain (e.g. `img.expressrepairs.com.au`) in the Cloudflare dashboard. Record the public base URL. `~/.cloudflared/cert.pem` exists and can create DNS routes; `CLOUDFLARE_API_TOKEN` and `CLOUDFLARE_ACCOUNT_ID` are already GitHub secrets.
+- [x] **Step 1: Create the R2 bucket and public domain.** `npx wrangler r2 bucket create expressrepairs-products`, then attach a custom domain (e.g. `img.expressrepairs.com.au`) in the Cloudflare dashboard. Record the public base URL. `~/.cloudflared/cert.pem` exists and can create DNS routes; `CLOUDFLARE_API_TOKEN` and `CLOUDFLARE_ACCOUNT_ID` are already GitHub secrets.
 
-- [ ] **Step 2: Write `scripts/upload-images-r2.mjs`.** For each product in `src/data/products.json`: derive the R2 key from the product id (`products/<id>.webp`); skip if it already exists in the bucket (list once up front, don't HEAD 3,875 times); otherwise download the supplier image, resize with `sharp` (devDependency) to max 800px WebP quality ~80, and upload via `wrangler r2 object put` or the S3 API. Be polite: concurrency ≤ 5, and log failures without aborting the whole run.
+- [x] **Step 2: Write `scripts/upload-images-r2.mjs`.** For each product in `src/data/products.json`: derive the R2 key from the product id (`products/<id>.webp`); skip if it already exists in the bucket (list once up front, don't HEAD 3,875 times); otherwise download the supplier image, resize with `sharp` (devDependency) to max 800px WebP quality ~80, and upload via `wrangler r2 object put` or the S3 API. Be polite: concurrency ≤ 5, and log failures without aborting the whole run.
 
-- [ ] **Step 3: Run the one-off migration** for all 3,875. Expect it to take a while; log progress. Verify a sample of R2 URLs return 200 and are markedly smaller than the originals.
+- [x] **Step 3: Run the one-off migration** for all 3,875. Expect it to take a while; log progress. Verify a sample of R2 URLs return 200 and are markedly smaller than the originals.
 
-- [ ] **Step 4: Point the sync at R2.** `image`/`thumb` become `<R2_BASE>/products/<id>.webp`. **Fall back to the supplier URL when the image has not been uploaded yet**, so a new product is never imageless — and remember `transformCatalog` currently *requires* an image, so a new product with no R2 object must still qualify via its supplier URL.
+- [x] **Step 4: Point the sync at R2.** `image`/`thumb` become `<R2_BASE>/products/<id>.webp`. **Fall back to the supplier URL when the image has not been uploaded yet**, so a new product is never imageless — and remember `transformCatalog` currently *requires* an image, so a new product with no R2 object must still qualify via its supplier URL.
 
-- [ ] **Step 5: Make it incremental.** Add an "upload new product images" step to `sync-products.yml` that runs before the commit, so products added in DXPOS get their images into R2 automatically. Needs the R2 credentials as repo secrets.
+- [x] **Step 5: Make it incremental.** Add an "upload new product images" step to `sync-products.yml` that runs before the commit, so products added in DXPOS get their images into R2 automatically. Needs the R2 credentials as repo secrets.
 
-- [ ] **Step 6:** Tests green, commit, push, sync, and confirm on the live site that image URLs point at your own domain and pages are visibly lighter.
+- [x] **Step 6:** Tests green, commit, push, sync, and confirm on the live site that image URLs point at your own domain and pages are visibly lighter.
 
 ---
 
