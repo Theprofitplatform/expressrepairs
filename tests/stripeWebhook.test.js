@@ -159,8 +159,10 @@ describe('POST /api/stripe-webhook', () => {
     const second = await onRequest({ request: makeReq(evt, sigd), env });
     expect(second.status).toBe(200);
     expect(await second.json()).toMatchObject({ ok: true, duplicate: true });
-    const resendCalls = spy.mock.calls.filter(([u]) => String(u).includes('resend'));
-    expect(resendCalls.length).toBe(1);
+    const shopEmails = spy.mock.calls
+      .filter(([u]) => String(u).includes('resend'))
+      .filter(([, o]) => JSON.parse(o.body).subject.startsWith('New online order'));
+    expect(shopEmails.length).toBe(1);
   });
 
   it('still processes without a KV binding (graceful degradation)', async () => {
@@ -169,6 +171,33 @@ describe('POST /api/stripe-webhook', () => {
       id: 'evt_nokv_1',
       type: 'checkout.session.completed',
       data: { object: { id: 'cs_nokv', payment_status: 'paid', amount_total: 4085, customer_details: { name: 'Jo', email: 'jo@x.com' } } },
+    });
+    const res = await onRequest({ request: makeReq(evt, await sign(evt, SECRET)), env: ENV });
+    expect(res.status).toBe(200);
+    const shopEmails = spy.mock.calls
+      .filter(([u]) => String(u).includes('resend'))
+      .filter(([, o]) => JSON.parse(o.body).subject.startsWith('New online order'));
+    expect(shopEmails.length).toBe(1);
+  });
+
+  it('sends a customer confirmation email alongside the shop email', async () => {
+    const spy = mockUpstreams();
+    const res = await onRequest({ request: makeReq(EVENT, await sign(EVENT, SECRET)), env: ENV });
+    expect(res.status).toBe(200);
+    const resend = spy.mock.calls.filter(([u]) => String(u).includes('resend')).map(([, o]) => JSON.parse(o.body));
+    expect(resend.length).toBe(2);
+    const customer = resend.find((b) => b.subject.includes('Your Express Repairs order'));
+    expect(customer).toBeTruthy();
+    expect(customer.to).toEqual(['jo@x.com']);
+    expect(customer.text).toContain('Case');
+  });
+
+  it('sends only the shop email when the session has no customer email', async () => {
+    const spy = mockUpstreams();
+    const evt = JSON.stringify({
+      id: 'evt_noemail_1',
+      type: 'checkout.session.completed',
+      data: { object: { id: 'cs_noemail', payment_status: 'paid', amount_total: 4085, customer_details: { name: 'Jo' } } },
     });
     const res = await onRequest({ request: makeReq(evt, await sign(evt, SECRET)), env: ENV });
     expect(res.status).toBe(200);

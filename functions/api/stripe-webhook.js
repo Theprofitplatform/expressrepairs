@@ -166,6 +166,46 @@ export async function onRequest({ request, env }) {
     return json(503, { ok: false });
   }
 
+  // Customer confirmation — best-effort AFTER the shop email. A failure here
+  // must NOT return non-2xx: the shop already has the order, and a Stripe
+  // retry would double-email the shop if the KV put below also failed.
+  if (c.email) {
+    const pickup = shipTo === 'PICKUP IN STORE';
+    const bodyLines = [
+      `Hi ${name || 'there'},`,
+      '',
+      `Thanks for your order! Here's what you bought:`,
+      '',
+      ...itemLines.map((l) => `  ${l}`),
+      '',
+      `Total paid: ${money(s.amount_total)} (GST included)`,
+      '',
+      pickup
+        ? 'Pickup: Riverwood Plaza, 257 Belmore Rd, Riverwood — we\'ll have it ready for you.'
+        : `Delivery to: ${shipTo}`,
+      'Orders are dispatched in 1–2 business days.',
+      '',
+      'Questions? Call us on 0415 303 300.',
+      '',
+      '— Express Repairs, Riverwood Plaza',
+    ];
+    try {
+      const res = await fetch('https://api.resend.com/emails', {
+        method: 'POST',
+        headers: { Authorization: `Bearer ${env.RESEND_API_KEY}`, 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          from: env.LEAD_FROM_EMAIL || DEFAULT_FROM,
+          to: [c.email],
+          subject: `Your Express Repairs order — ${money(s.amount_total)}`,
+          text: bodyLines.join('\n'),
+        }),
+      });
+      if (!res.ok) console.error('Customer confirmation email failed', res.status, await res.text());
+    } catch (err) {
+      console.error('Customer confirmation email error', err);
+    }
+  }
+
   // Mark processed only after the shop email succeeded; 7-day TTL comfortably
   // outlives Stripe's 3-day retry window.
   if (event.id) {
