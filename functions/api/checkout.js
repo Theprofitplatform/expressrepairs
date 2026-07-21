@@ -11,37 +11,13 @@
 // Shipping: flat rate below the free threshold, free at/over it, and a free
 // "Pickup in store" option always. Values live in src/data/products.js (SHOP).
 import { PRODUCTS, SHOP } from '../../src/data/products.js';
+import { json, sameSite } from '../_shared.js';
 
 const MAX_QTY = 20; // per line — matches the cart UI cap
 const MAX_BODY_BYTES = 16 * 1024;
 const SITE = 'https://www.expressrepairs.com.au';
 
 const byId = Object.fromEntries(PRODUCTS.map((p) => [p.id, p]));
-
-// Same-site gate — same policy as lead.js.
-const hostAllowed = (host, env) => {
-  if (!host) return false;
-  const extra = String(env.ALLOWED_ORIGINS || '').split(',').map((s) => s.trim()).filter(Boolean);
-  return (
-    host === 'expressrepairs.com.au' ||
-    host === 'www.expressrepairs.com.au' ||
-    host === 'localhost' ||
-    host === '127.0.0.1' ||
-    host.endsWith('.pages.dev') ||
-    extra.includes(host)
-  );
-};
-const sameSite = (request, env) => {
-  const hostOf = (v) => { try { return new URL(v).host; } catch { return ''; } };
-  const origin = request.headers.get('Origin');
-  if (origin) return hostAllowed(hostOf(origin), env);
-  const referer = request.headers.get('Referer');
-  if (referer) return hostAllowed(hostOf(referer), env);
-  return false;
-};
-
-const json = (status, body) =>
-  new Response(JSON.stringify(body), { status, headers: { 'Content-Type': 'application/json' } });
 
 export async function onRequest({ request, env }) {
   if (request.method !== 'POST') return json(405, { ok: false, error: 'Method not allowed.' });

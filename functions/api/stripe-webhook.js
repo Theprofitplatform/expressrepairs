@@ -18,8 +18,7 @@ const TOLERANCE_SECONDS = 300;
 const MAX_BODY_BYTES = 16 * 1024;
 const MAX_FIELD_LEN = 2000;
 
-const json = (status, body) =>
-  new Response(JSON.stringify(body), { status, headers: { 'Content-Type': 'application/json' } });
+import { json } from '../_shared.js';
 
 const hex = (buf) => [...new Uint8Array(buf)].map((b) => b.toString(16).padStart(2, '0')).join('');
 

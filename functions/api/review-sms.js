@@ -12,8 +12,7 @@
 //   REVIEW_LINK         (required)          — https://g.page/r/…/review
 //   CLICKSEND_SENDER    (optional)          — sender ID, default 'Xpress' (≤11 chars)
 //
-// Self-contained by design: it duplicates lead.js's small guard helpers rather
-// than editing lead.js, so the two endpoints never conflict.
+import { json, sameSite } from '../_shared.js';
 
 const MAX_BODY_BYTES = 16 * 1024;
 
@@ -52,33 +51,6 @@ export function buildReviewMessage(name, reviewLink) {
     `${reviewLink} - The team`
   );
 }
-
-const json = (status, body) =>
-  new Response(JSON.stringify(body), { status, headers: { 'Content-Type': 'application/json' } });
-
-const hostAllowed = (host, env) => {
-  if (!host) return false;
-  const extra = String(env.ALLOWED_ORIGINS || '').split(',').map((s) => s.trim()).filter(Boolean);
-  return (
-    host === 'expressrepairs.com.au' ||
-    host === 'www.expressrepairs.com.au' ||
-    host === 'localhost' ||
-    host === '127.0.0.1' ||
-    extra.includes(host)
-  );
-};
-
-// True when the request originates from our own site (Origin, else Referer).
-const sameSite = (request, env) => {
-  const hostOf = (v) => {
-    try { return new URL(v).host; } catch { return ''; }
-  };
-  const origin = request.headers.get('Origin');
-  if (origin) return hostAllowed(hostOf(origin), env);
-  const referer = request.headers.get('Referer');
-  if (referer) return hostAllowed(hostOf(referer), env);
-  return false;
-};
 
 // Length-safe PIN comparison (avoids a trivial early-exit timing signal).
 const pinEqual = (a, b) => {

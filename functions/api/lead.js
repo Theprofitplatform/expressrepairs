@@ -40,44 +40,7 @@ const MAX_BODY_BYTES = 16 * 1024;
 const MAX_FIELD_LEN = 2000;
 const MAX_DETAILS_LEN = 5000;
 
-const hostAllowed = (host, env) => {
-  if (!host) return false;
-  const extra = String(env.ALLOWED_ORIGINS || '')
-    .split(',')
-    .map((s) => s.trim())
-    .filter(Boolean);
-  return (
-    host === 'expressrepairs.com.au' ||
-    host === 'www.expressrepairs.com.au' ||
-    host === 'localhost' ||
-    host === '127.0.0.1' ||
-    host.endsWith('.pages.dev') ||
-    extra.includes(host)
-  );
-};
-
-// True when the request comes from our own site (Origin or, failing that,
-// Referer). A scripted cross-origin POST has neither matching → rejected.
-const sameSite = (request, env) => {
-  const hostOf = (v) => {
-    try {
-      return new URL(v).host;
-    } catch {
-      return '';
-    }
-  };
-  const origin = request.headers.get('Origin');
-  if (origin) return hostAllowed(hostOf(origin), env);
-  const referer = request.headers.get('Referer');
-  if (referer) return hostAllowed(hostOf(referer), env);
-  return false;
-};
-
-const json = (status, body) =>
-  new Response(JSON.stringify(body), {
-    status,
-    headers: { 'Content-Type': 'application/json' },
-  });
+import { json, sameSite } from '../_shared.js';
 
 const esc = (s) =>
   String(s ?? '')
