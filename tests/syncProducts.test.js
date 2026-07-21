@@ -14,12 +14,26 @@ describe('transformCatalog', () => {
   it('maps a sellable row and strips cost price', () => {
     const [p] = transformCatalog([row()]);
     expect(p).toEqual({
-      id: 'X-10', name: 'Case', category: 'Cases', priceCents: 1900,
+      id: 'X-10', name: 'Case', category: 'Accessories', brand: 'Cases', priceCents: 1900,
       image: 'https://www.hoco.com.au/web/image/product.template/10/image_1024',
       thumb: 'https://www.hoco.com.au/web/image/product.template/10/image_256',
       inStock: true, sku: 'C1',
     });
     expect(JSON.stringify(p)).not.toMatch(/cost/i);
+  });
+
+  // DXPOS category.name is internal shop jargon ("Max Profit Picks", "hold",
+  // "nan", brand names…) — never customer-facing. The clean Sell-grid group is
+  // the category; the supplier's category.name is kept only as `brand`.
+  it('uses gridGroup as the category, never category.name', () => {
+    const [p] = transformCatalog([row({ category: { name: 'Max Profit Picks' } })]);
+    expect(p.category).toBe('Accessories');
+    expect(ONLINE_GRID_GROUPS).toContain(p.category);
+  });
+
+  it('keeps category.name as brand, empty string when absent', () => {
+    expect(transformCatalog([row({ category: { name: 'Apple' } })])[0].brand).toBe('Apple');
+    expect(transformCatalog([row({ category: null })])[0].brand).toBe('');
   });
 
   it('excludes archived, non-PRODUCT, zero-price, no-image, and off-list grid groups', () => {
@@ -40,9 +54,8 @@ describe('transformCatalog', () => {
     expect(transformCatalog([row({ stockLevels: undefined })])).toHaveLength(1);
   });
 
-  it('a listed product is always in stock, and category falls back to gridGroup', () => {
+  it('a listed product is always in stock', () => {
     expect(transformCatalog([row()])[0].inStock).toBe(true);
-    expect(transformCatalog([row({ category: null })])[0].category).toBe('Accessories');
   });
 
   it('falls back to the supplier image map by SKU when DXPOS has no photo', () => {

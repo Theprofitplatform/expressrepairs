@@ -28,6 +28,10 @@ const schema = breadcrumbSchema([
   { name: 'Shop', path: '/shop/' },
   { name: category, path: `/shop/c/${categorySlug}/` },
 ]);
+
+// ponytail: brand filter is client-side over the 48 rendered cards only — no
+// per-brand routes; add /b/<brand>/ sub-routes if cross-page filtering matters.
+const brands = [...new Set(page.data.map((p) => p.brand).filter(Boolean))].sort();
 ---
 <Layout
   title={`${category} | Express Repairs Shop`}
@@ -50,9 +54,18 @@ const schema = breadcrumbSchema([
 
       <h1 class="section-title" style="margin-top: 16px; font-size: clamp(28px, 3.2vw, 38px);">{category}</h1>
 
+      {brands.length > 1 && (
+        <div id="brand-filter" style="display: flex; flex-wrap: wrap; gap: 8px; margin-top: 20px;" aria-label="Filter by brand">
+          <button class="btn btn-primary btn-sm" data-brand="">All brands</button>
+          {brands.map((b) => (
+            <button class="btn btn-ghost btn-sm" data-brand={b}>{b}</button>
+          ))}
+        </div>
+      )}
+
       <div class="acc-grid" style="margin-top: 24px;">
         {page.data.map((p) => (
-          <a href={`/shop/${p.id}/`} class="acc-card">
+          <a href={`/shop/${p.id}/`} class="acc-card" data-brand={p.brand}>
             <div class="acc-visual">
               <img
                 src={p.thumb}
@@ -84,5 +97,17 @@ const schema = breadcrumbSchema([
 
   <SiteFooter />
   <MobileCta />
+  <script>
+    const bar = document.getElementById('brand-filter');
+    bar?.addEventListener('click', (e) => {
+      const btn = e.target.closest('button[data-brand]');
+      if (!btn) return;
+      const brand = btn.dataset.brand;
+      for (const b of bar.querySelectorAll('button[data-brand]'))
+        b.className = `btn btn-sm ${b === btn ? 'btn-primary' : 'btn-ghost'}`;
+      for (const card of document.querySelectorAll('.acc-card[data-brand]'))
+        card.style.display = !brand || card.dataset.brand === brand ? '' : 'none';
+    });
+  </script>
   <script src="../../../../shop/cart-count.js"></script>
 </Layout>

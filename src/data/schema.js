@@ -99,6 +99,10 @@ export const productSchema = z.object({
   id: z.string().min(1),
   name: z.string().min(1),
   category: z.string().min(1),
+  // Supplier's category.name (usually a brand: Apple / Samsung / …); may be
+  // internal jargon. Filter on it, never render it as a category. Defaults ''
+  // so products.json synced before this field existed still validates.
+  brand: z.string().default(''),
   priceCents: z.number().int().positive(),
   // Hotlinked from the supplier catalogue — full URL, not a repo-local path.
   image: z.string().url(),

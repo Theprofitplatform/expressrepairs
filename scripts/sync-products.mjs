@@ -63,7 +63,12 @@ export function transformCatalog(rows) {
       return {
         id: r.id,
         name: r.name,
-        category: r.category?.name || r.gridGroup,
+        // gridGroup is the clean Sell-grid folder (the ONLINE_GRID_GROUPS
+        // allowlist); DXPOS category.name is internal jargon ("Max Profit
+        // Picks", "hold") or a brand ("Apple") — kept as brand, never shown
+        // as a category.
+        category: r.gridGroup,
+        brand: r.category?.name || '',
         priceCents: r.sellCents,
         image,
         thumb: thumbUrl(image),
