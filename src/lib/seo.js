@@ -78,6 +78,29 @@ export function businessRef(site) {
   return { '@type': 'LocalBusiness', '@id': BUSINESS_ID, name: site.name };
 }
 
+// Product JSON-LD for shop pages. Deliberately NO aggregateRating/review —
+// the only real rating is the store-level Google one (see localBusinessSchema).
+export function productSchema(p) {
+  return {
+    '@context': 'https://schema.org',
+    '@type': 'Product',
+    name: p.name,
+    image: [p.image],
+    sku: p.sku || undefined,
+    mpn: p.sku || undefined,
+    brand: p.brand ? { '@type': 'Brand', name: p.brand } : undefined,
+    offers: {
+      '@type': 'Offer',
+      url: `https://www.expressrepairs.com.au/shop/${p.id}/`,
+      price: (p.priceCents / 100).toFixed(2),
+      priceCurrency: 'AUD',
+      availability: 'https://schema.org/InStock',
+      itemCondition: 'https://schema.org/NewCondition',
+      seller: { '@type': 'Organization', name: 'Express Repairs' },
+    },
+  };
+}
+
 export function faqPageSchema(faqs) {
   return {
     '@context': 'https://schema.org',

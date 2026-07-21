@@ -3,7 +3,7 @@ import Layout from '../../layouts/Layout.astro';
 import SiteNav from '../../components/SiteNav.astro';
 import SiteFooter from '../../components/SiteFooter.astro';
 import { PRODUCTS, fmtPrice } from '../../data/products.js';
-import { breadcrumbSchema } from '../../lib/seo.js';
+import { breadcrumbSchema, productSchema } from '../../lib/seo.js';
 import { specRows, slugifyCategory, relatedProducts } from '../../lib/shop.js';
 import { SITE } from '../../data/site.js';
 
@@ -20,11 +20,14 @@ const navLinks = [
   { label: 'Shop', href: '/shop/' },
 ];
 
-const schema = breadcrumbSchema([
-  { name: 'Home', path: '/' },
-  { name: 'Shop', path: '/shop/' },
-  { name: p.name, path: `/shop/${p.id}/` },
-]);
+const schema = [
+  breadcrumbSchema([
+    { name: 'Home', path: '/' },
+    { name: 'Shop', path: '/shop/' },
+    { name: p.name, path: `/shop/${p.id}/` },
+  ]),
+  productSchema(p),
+];
 ---
 <Layout
   title={`${p.name} | Express Repairs`}
