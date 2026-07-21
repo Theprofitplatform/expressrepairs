@@ -100,7 +100,9 @@ export const productSchema = z.object({
   name: z.string().min(1),
   category: z.string().min(1),
   priceCents: z.number().int().positive(),
-  image: z.string().startsWith('/images/products/'),
+  // Hotlinked from the supplier catalogue — full URL, not a repo-local path.
+  image: z.string().url(),
+  thumb: z.string(),
   inStock: z.boolean(),
   sku: z.string(),
 });

@@ -107,18 +107,25 @@ describe('staff review-request page', () => {
 });
 
 describe('shop pages', () => {
-  it('builds /shop/ with product cards and no cost price', () => {
+  it('builds /shop/ as a category landing page with no cost price', () => {
     const html = readFileSync('dist/shop/index.html', 'utf8');
     expect(html).toContain('/shop/');
     expect(html).not.toMatch(/costCents/);
   });
 
-  it('builds a product detail page per product (skips if catalog is empty pre-sync)', () => {
+  it('builds a product detail page and a paginated category page per product (skips if catalog is empty pre-sync)', () => {
     const products = JSON.parse(readFileSync('src/data/products.json', 'utf8'));
     if (products.length === 0) return;
     const p = products[0];
-    const html = readFileSync(`dist/shop/${p.id}/index.html`, 'utf8');
-    expect(html).toContain(p.name);
-    expect(html).toContain('data-add-to-cart');
+
+    const detail = readFileSync(`dist/shop/${p.id}/index.html`, 'utf8');
+    expect(detail).toContain(p.name);
+    expect(detail).toContain('data-add-to-cart');
+    expect(detail).toContain('In stock — dispatched in 1-2 business days');
+
+    const slug = p.category.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '');
+    const category = readFileSync(`dist/shop/c/${slug}/index.html`, 'utf8');
+    expect(category).toContain(p.name);
+    expect(category).toContain('Page 1 of');
   });
 });

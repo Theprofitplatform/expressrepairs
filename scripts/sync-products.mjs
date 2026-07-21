@@ -1,13 +1,17 @@
 // scripts/sync-products.mjs — pull the accessories catalog from DXPOS into
-// src/data/products.json + public/images/products/, for the /shop pages.
-// Runs in .github/workflows/sync-products.yml during shop hours (the shop PC
-// hosts DXPOS behind the pos tunnel — offline PC = graceful no-op, site keeps
-// last synced data). Cost price is stripped here and must never be committed.
+// src/data/products.json, for the /shop pages. Runs in
+// .github/workflows/sync-products.yml during shop hours (the shop PC hosts
+// DXPOS behind the pos tunnel — offline PC = graceful no-op, site keeps last
+// synced data). Cost price is stripped here and must never be committed.
+//
+// Availability is not tracked in DXPOS (no stock counts for this catalogue),
+// so every qualifying product is listed as available — see CONTEXT in the
+// project notes. Images are hotlinked from the supplier catalogues (absolute
+// URLs); nothing is downloaded into the repo.
 //
 // Env: POS_GATE_USER POS_GATE_PASS (Worker Basic gate), POS_EMAIL POS_PASSWORD
 // (DXPOS login), optional POS_BASE.
-import { writeFileSync, mkdirSync } from 'node:fs';
-import { join } from 'node:path';
+import { writeFileSync } from 'node:fs';
 import { fileURLToPath, pathToFileURL } from 'node:url';
 import IMAGE_MAP from '../src/data/product-images.json' with { type: 'json' };
 
@@ -19,13 +23,15 @@ const BASE = process.env.POS_BASE || 'https://pos.expressrepairs.com.au';
 const skuKey = (s) => String(s ?? '').toLowerCase().replace(/[^a-z0-9]/g, '');
 const imageFor = (r) => r.imageUrl || IMAGE_MAP[skuKey(r.sku)] || '';
 
-// Only sell what the shop actually holds. Without this, ~11k supplier-catalogue
-// rows (never stocked, onHand null) would all be listed as buyable.
-const inStockNow = (r) => (r.stockLevels?.[0]?.onHand ?? 0) > 0;
+// HOCO catalogue URLs follow Odoo's standard image sizes
+// (.../product.template/<id>/image_1024). Swap the trailing size token for
+// the small grid variant; leave any other URL shape unchanged.
+export const thumbUrl = (url) => (url || '').replace(/image_1024(?=\?|$)/, 'image_256');
 
-// Refuse to publish an unreviewed mega-catalogue: a local repair shop listing
-// thousands of SKUs is unusable and would bloat the repo with images.
-const MAX_ONLINE = Number(process.env.MAX_ONLINE || 400);
+// The full accessory range is listed regardless of stock (DXPOS carries no
+// stock counts for this catalogue) — every listed product ships "dispatched
+// in 1-2 business days".
+const MAX_ONLINE = Number(process.env.MAX_ONLINE || 5000);
 
 // Which DXPOS Sell-grid groups go online. Owner: edit this list to change
 // what the shop sells; archive a product in DXPOS to remove just one item.
@@ -41,13 +47,7 @@ export const ONLINE_GRID_GROUPS = [
   'Audio',
 ];
 
-const extOf = (url) => {
-  const m = /\.(jpe?g|png|webp|gif)(\?|$)/i.exec(url || '');
-  return m ? m[1].toLowerCase().replace('jpeg', 'jpg') : 'jpg';
-};
-
-// Pure transform: DXPOS catalog rows -> products.json entries (+ _sourceImage,
-// which main() uses to download and then deletes before writing the file).
+// Pure transform: DXPOS catalog rows -> products.json entries.
 export function transformCatalog(rows) {
   return rows
     .filter(
@@ -56,21 +56,23 @@ export function transformCatalog(rows) {
         r.type === 'PRODUCT' &&
         r.sellCents > 0 &&
         imageFor(r) &&
-        inStockNow(r) &&
         ONLINE_GRID_GROUPS.includes(r.gridGroup),
     )
-    .map((r) => ({
-      id: r.id,
-      name: r.name,
-      category: r.category?.name || r.gridGroup,
-      priceCents: r.sellCents,
-      image: `/images/products/${r.id}.${extOf(imageFor(r))}`,
-      inStock: true,
-      // A missing SKU must not fail Zod validation and silently halt every
-      // future sync — the schema requires a string, so default to ''.
-      sku: r.sku || '',
-      _sourceImage: imageFor(r),
-    }));
+    .map((r) => {
+      const image = imageFor(r);
+      return {
+        id: r.id,
+        name: r.name,
+        category: r.category?.name || r.gridGroup,
+        priceCents: r.sellCents,
+        image,
+        thumb: thumbUrl(image),
+        inStock: true,
+        // A missing SKU must not fail Zod validation and silently halt every
+        // future sync — the schema requires a string, so default to ''.
+        sku: r.sku || '',
+      };
+    });
 }
 
 async function main() {
@@ -136,20 +138,10 @@ async function main() {
   {
     const live = rows.filter((r) => !r.archived);
     const inGroups = live.filter((r) => ONLINE_GRID_GROUPS.includes(r.gridGroup));
-    const stocked = inGroups.filter(inStockNow);
     console.log(
       `catalog funnel: fetched=${rows.length} live=${live.length} ` +
-        `in-groups=${inGroups.length} in-stock=${stocked.length} ` +
-        `with-image=${stocked.filter(imageFor).length} -> sellable=${products.length}`,
-    );
-    // Which signal actually identifies what the shop sells? Stock may simply
-    // never have been counted into DXPOS (a supplier-catalogue import).
-    const anyStockRow = inGroups.filter((r) => (r.stockLevels?.length ?? 0) > 0).length;
-    const onHandVals = [...new Set(inGroups.map((r) => r.stockLevels?.[0]?.onHand ?? 'no-row'))];
-    console.log(
-      `signals in-groups: with-stock-row=${anyStockRow} pinned=${inGroups.filter((r) => r.pinned).length} ` +
-        `with-image=${inGroups.filter(imageFor).length} ` +
-        `onHand values seen=${onHandVals.slice(0, 8).join(',')}`,
+        `in-groups=${inGroups.length} with-image=${inGroups.filter(imageFor).length} ` +
+        `-> sellable=${products.length}`,
     );
   }
 
@@ -177,19 +169,6 @@ async function main() {
         `  (online groups configured: ${ONLINE_GRID_GROUPS.join(' | ')})`,
     );
     process.exit(1);
-  }
-
-  // 4. Download images (POS-relative paths go through the gate; absolute
-  //    supplier URLs are fetched directly) so the live site never hotlinks.
-  const imgDir = fileURLToPath(new URL('../public/images/products/', import.meta.url));
-  mkdirSync(imgDir, { recursive: true });
-  for (const p of products) {
-    const external = p._sourceImage.startsWith('http');
-    const src = external ? p._sourceImage : BASE + p._sourceImage;
-    const res = await fetch(src, external ? {} : { headers: auth }).catch(() => null);
-    if (!res || !res.ok) { console.warn(`image failed for ${p.id} (${res ? res.status : 'network error'}) — keeping previous file if any`); }
-    else writeFileSync(join(imgDir, p.image.split('/').pop()), Buffer.from(await res.arrayBuffer()));
-    delete p._sourceImage;
   }
 
   const out = fileURLToPath(new URL('../src/data/products.json', import.meta.url));

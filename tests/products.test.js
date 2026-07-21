@@ -11,7 +11,8 @@ describe('products data', () => {
     for (const p of PRODUCTS) {
       expect(p.id).toBeTruthy();
       expect(p.priceCents).toBeGreaterThan(0);
-      expect(p.image).toMatch(/^\/images\/products\//);
+      // Images are hotlinked from the supplier catalogues, not repo-local.
+      expect(p.image).toMatch(/^https:\/\//);
     }
   });
 

@@ -7,9 +7,9 @@ import { describe, it, expect, beforeEach, vi } from 'vitest';
 // instead of depending on the public catalog file.
 vi.mock('../src/data/products.json', () => ({
   default: [
-    { id: 'X-1', name: 'Tempered Glass Screen Protector', category: 'Accessories', priceCents: 1500, image: '/images/products/X-1.jpg', inStock: true, sku: 'SP-TG-01' },
-    { id: 'X-2', name: 'USB-C Fast Charger 20W', category: 'Cables & power', priceCents: 2500, image: '/images/products/X-2.jpg', inStock: true, sku: 'CH-20W' },
-    { id: 'X-3', name: 'Wireless Earbuds', category: 'Audio', priceCents: 3900, image: '/images/products/X-3.jpg', inStock: false, sku: 'AU-EB-01' },
+    { id: 'X-1', name: 'Tempered Glass Screen Protector', category: 'Accessories', priceCents: 1500, image: 'https://cdn.example.com/products/X-1.jpg', thumb: 'https://cdn.example.com/products/X-1.jpg', inStock: true, sku: 'SP-TG-01' },
+    { id: 'X-2', name: 'USB-C Fast Charger 20W', category: 'Cables & power', priceCents: 2500, image: 'https://cdn.example.com/products/X-2.jpg', thumb: 'https://cdn.example.com/products/X-2.jpg', inStock: true, sku: 'CH-20W' },
+    { id: 'X-3', name: 'Wireless Earbuds', category: 'Audio', priceCents: 3900, image: 'https://cdn.example.com/products/X-3.jpg', thumb: 'https://cdn.example.com/products/X-3.jpg', inStock: false, sku: 'AU-EB-01' },
   ],
 }));
 

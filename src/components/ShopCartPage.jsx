@@ -41,7 +41,7 @@ export default function ShopCartPage() {
     <div>
       {lines.map(([id, qty]) => (
         <div key={id} style={{ display: 'flex', gap: '1rem', alignItems: 'center', padding: '14px 0', borderBottom: '1px solid var(--border)' }}>
-          <img src={byId[id].image} alt="" width="64" height="64" style={{ objectFit: 'contain', borderRadius: 10, border: '1px solid var(--border)' }} />
+          <img src={byId[id].thumb || byId[id].image} alt="" width="64" height="64" style={{ objectFit: 'contain', borderRadius: 10, border: '1px solid var(--border)' }} />
           <div style={{ flex: 1 }}>
             <strong>{byId[id].name}</strong>
             <div style={{ color: 'var(--brand-700)', fontWeight: 700 }}>{fmtPrice(byId[id].priceCents)}</div>

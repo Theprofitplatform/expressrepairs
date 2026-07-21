@@ -1,10 +1,11 @@
 import { describe, it, expect } from 'vitest';
-import { transformCatalog, ONLINE_GRID_GROUPS } from '../scripts/sync-products.mjs';
+import { transformCatalog, thumbUrl, ONLINE_GRID_GROUPS } from '../scripts/sync-products.mjs';
 
 const row = (over = {}) => ({
   id: 'X-10', name: 'Case', sku: 'C1', type: 'PRODUCT', archived: false,
   sellCents: 1900, costCents: 700, gridGroup: 'Accessories',
-  imageUrl: '/uploads/x10.jpg', category: { name: 'Cases' },
+  imageUrl: 'https://www.hoco.com.au/web/image/product.template/10/image_1024',
+  category: { name: 'Cases' },
   stockLevels: [{ onHand: 4 }],
   ...over,
 });
@@ -14,8 +15,9 @@ describe('transformCatalog', () => {
     const [p] = transformCatalog([row()]);
     expect(p).toEqual({
       id: 'X-10', name: 'Case', category: 'Cases', priceCents: 1900,
-      image: '/images/products/X-10.jpg', inStock: true, sku: 'C1',
-      _sourceImage: '/uploads/x10.jpg',
+      image: 'https://www.hoco.com.au/web/image/product.template/10/image_1024',
+      thumb: 'https://www.hoco.com.au/web/image/product.template/10/image_256',
+      inStock: true, sku: 'C1',
     });
     expect(JSON.stringify(p)).not.toMatch(/cost/i);
   });
@@ -28,14 +30,14 @@ describe('transformCatalog', () => {
     expect(transformCatalog([row({ gridGroup: 'Services' })])).toHaveLength(0);
   });
 
-  // Only stocked items are listed at all: the POS holds ~11k supplier-catalogue
-  // rows that are never stocked (no StockLevel row), and listing those as
-  // buyable would sell things the shop does not have.
-  it('lists only products actually in stock', () => {
+  // Availability is not tracked in DXPOS for this catalogue (no stock counts),
+  // so every qualifying product is listed regardless of onHand — the shop
+  // promises "dispatched in 1-2 business days" instead of tracking stock.
+  it('lists products regardless of stock level', () => {
     expect(transformCatalog([row({ stockLevels: [{ onHand: 4 }] })])).toHaveLength(1);
-    expect(transformCatalog([row({ stockLevels: [{ onHand: 0 }] })])).toHaveLength(0);
-    expect(transformCatalog([row({ stockLevels: [] })])).toHaveLength(0);
-    expect(transformCatalog([row({ stockLevels: undefined })])).toHaveLength(0);
+    expect(transformCatalog([row({ stockLevels: [{ onHand: 0 }] })])).toHaveLength(1);
+    expect(transformCatalog([row({ stockLevels: [] })])).toHaveLength(1);
+    expect(transformCatalog([row({ stockLevels: undefined })])).toHaveLength(1);
   });
 
   it('a listed product is always in stock, and category falls back to gridGroup', () => {
@@ -48,11 +50,6 @@ describe('transformCatalog', () => {
     expect(transformCatalog([row({ imageUrl: null, sku: 'no-such-sku-xyz' })])).toHaveLength(0);
   });
 
-  it('image extension follows the source url, defaulting to jpg', () => {
-    expect(transformCatalog([row({ imageUrl: '/u/a.PNG' })])[0].image).toBe('/images/products/X-10.png');
-    expect(transformCatalog([row({ imageUrl: '/u/a' })])[0].image).toBe('/images/products/X-10.jpg');
-  });
-
   it('exports the owner-editable grid-group allowlist', () => {
     expect(ONLINE_GRID_GROUPS).toContain('Accessories');
   });
@@ -60,5 +57,18 @@ describe('transformCatalog', () => {
   it('defaults a missing sku to an empty string instead of undefined (Zod requires a string)', () => {
     const [p] = transformCatalog([row({ sku: undefined })]);
     expect(p.sku).toBe('');
+  });
+});
+
+describe('thumbUrl', () => {
+  it('rewrites the trailing Odoo image_1024 size to image_256', () => {
+    expect(thumbUrl('https://www.hoco.com.au/web/image/product.template/10/image_1024')).toBe(
+      'https://www.hoco.com.au/web/image/product.template/10/image_256',
+    );
+  });
+
+  it('leaves other urls unchanged', () => {
+    expect(thumbUrl('https://cdn.example.com/uploads/x10.jpg')).toBe('https://cdn.example.com/uploads/x10.jpg');
+    expect(thumbUrl('')).toBe('');
   });
 });
