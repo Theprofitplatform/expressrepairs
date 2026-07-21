@@ -201,3 +201,22 @@ apply regardless (faulty goods must be remedied), but any voluntary
 change-of-mind returns policy needs wording from you before we publish it.
 Send the wording (or "ACL only, no change-of-mind returns") and we'll add it
 to the shop pages.
+
+---
+
+## Google free listings — one-time setup
+
+The site publishes a Google Merchant feed of all shop products at
+`https://www.expressrepairs.com.au/shop/google-feed.xml` (regenerated on every
+deploy, so it tracks the twice-daily product sync automatically).
+
+1. Create a Google Merchant Center account at https://merchants.google.com
+   (use the same Google account as the Business Profile).
+2. Verify the website: choose the **DNS record** method — Merchant Center gives
+   you a TXT record, add it in Cloudflare → expressrepairs.com.au → DNS.
+3. Products → Feeds → Add feed → **Scheduled fetch**, URL
+   `https://www.expressrepairs.com.au/shop/google-feed.xml`, fetch **daily**.
+4. Shipping settings: add a rate for Australia — $10.95 flat, **free over
+   $99** (the free threshold lives here, not in the feed).
+5. Done — products appear in the free listings tab of Google Search/Shopping
+   within a few days. No ad spend required.
