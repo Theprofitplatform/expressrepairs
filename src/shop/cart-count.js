@@ -1,5 +1,5 @@
 // Wires [data-add-to-cart] buttons and [data-cart-count] badges on shop pages.
-import { getCart, addToCart, cartCount } from './cart-store.js';
+import { getCart, addToCart, setQty, cartCount } from './cart-store.js';
 
 const refresh = () => {
   const n = cartCount(getCart());
@@ -8,7 +8,13 @@ const refresh = () => {
 
 document.querySelectorAll('[data-add-to-cart]').forEach((btn) =>
   btn.addEventListener('click', () => {
-    addToCart(btn.dataset.id);
+    const qtyInput = document.querySelector('[data-qty]');
+    if (qtyInput) {
+      const qty = Math.min(20, Math.max(1, Number(qtyInput.value) || 1));
+      setQty(btn.dataset.id, (getCart()[btn.dataset.id] || 0) + qty);
+    } else {
+      addToCart(btn.dataset.id);
+    }
     refresh();
     btn.textContent = 'Added ✓';
     setTimeout(() => (btn.textContent = 'Add to cart'), 1200);
