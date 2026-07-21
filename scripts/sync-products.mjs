@@ -142,6 +142,15 @@ async function main() {
         `in-groups=${inGroups.length} in-stock=${stocked.length} ` +
         `with-image=${stocked.filter(imageFor).length} -> sellable=${products.length}`,
     );
+    // Which signal actually identifies what the shop sells? Stock may simply
+    // never have been counted into DXPOS (a supplier-catalogue import).
+    const anyStockRow = inGroups.filter((r) => (r.stockLevels?.length ?? 0) > 0).length;
+    const onHandVals = [...new Set(inGroups.map((r) => r.stockLevels?.[0]?.onHand ?? 'no-row'))];
+    console.log(
+      `signals in-groups: with-stock-row=${anyStockRow} pinned=${inGroups.filter((r) => r.pinned).length} ` +
+        `with-image=${inGroups.filter(imageFor).length} ` +
+        `onHand values seen=${onHandVals.slice(0, 8).join(',')}`,
+    );
   }
 
   if (products.length > MAX_ONLINE) {
