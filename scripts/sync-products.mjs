@@ -105,7 +105,23 @@ async function main() {
   }
 
   const products = transformCatalog(rows);
-  if (products.length === 0) { console.error('0 sellable products — refusing to blank the shop'); process.exit(1); }
+  if (products.length === 0) {
+    // Say WHY nothing qualified — otherwise diagnosing this needs POS access.
+    const live = rows.filter((r) => !r.archived);
+    const n = (f) => live.filter(f).length;
+    const groups = [...new Set(live.map((r) => r.gridGroup ?? '(none)'))];
+    console.error(
+      `0 sellable products — refusing to blank the shop.\n` +
+        `  fetched=${rows.length} not-archived=${live.length}\n` +
+        `  type=PRODUCT: ${n((r) => r.type === 'PRODUCT')}\n` +
+        `  sellCents>0: ${n((r) => r.sellCents > 0)}\n` +
+        `  has imageUrl: ${n((r) => r.imageUrl)}\n` +
+        `  in ONLINE_GRID_GROUPS: ${n((r) => ONLINE_GRID_GROUPS.includes(r.gridGroup))}\n` +
+        `  grid groups present: ${groups.join(' | ')}\n` +
+        `  (online groups configured: ${ONLINE_GRID_GROUPS.join(' | ')})`,
+    );
+    process.exit(1);
+  }
 
   // 4. Download images (POS-relative paths go through the gate; absolute
   //    supplier URLs are fetched directly) so the live site never hotlinks.
