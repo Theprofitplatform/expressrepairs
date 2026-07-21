@@ -220,3 +220,17 @@ deploy, so it tracks the twice-daily product sync automatically).
    $99** (the free threshold lives here, not in the feed).
 5. Done — products appear in the free listings tab of Google Search/Shopping
    within a few days. No ad spend required.
+
+---
+
+## Meta catalog (done — for reference)
+
+Product catalog **Express Repairs Accessories** (id `1408359851110752`) lives
+under the "Xpress Phone Repairs" business (`1645681176516723`) and is fed by a
+daily 3am scheduled fetch (feed id `1564222575315748`) of the same
+`https://www.expressrepairs.com.au/shop/google-feed.xml` used for Google.
+View/manage in Commerce Manager → Data sources.
+
+Dynamic (catalog) ads need the pixel to send `content_ids` matching the feed's
+`g:id` values — the AddToCart/InitiateCheckout/Purchase events wired on the
+shop already do this.
