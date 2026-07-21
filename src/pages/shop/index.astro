@@ -15,13 +15,23 @@ const navLinks = [
 
 // One tile per category, with its product count — a flat grid of ~3,875
 // products is unusable, so /shop/ is a landing page into /shop/c/<category>/.
+// Hand-picked tile artwork per category (owner-editable — any product id).
+// If a pinned product leaves the catalog, the tile falls back to the first
+// R2-hosted product in the category, so a stale pin can't blank a tile.
+const TILE_PICKS = {
+  'Cases & Covers': 'X-04961', // iPhone 16 MagSafe stand case
+  'Cables & Charging': 'X-08163', // Apple 20W USB-C adapter
+  'Screen Protection': 'X-01753', // privacy tempered glass on phone
+  Audio: 'X-06308', // Baseus Bowie true wireless earbuds
+  Accessories: 'X-05283', // magnetic car holder with phone
+};
+
 const categories = [...new Set(PRODUCTS.map((p) => p.category))].map((name) => ({
   name,
   slug: slugifyCategory(name),
   count: PRODUCTS.filter((p) => p.category === name).length,
-  // Tile artwork: first product in the category with an R2-hosted image
-  // (self-hosted = fast + stable), else whatever image the category has.
-  img: (PRODUCTS.find((p) => p.category === name && p.thumb.includes('img.expressrepairs.com.au')) ??
+  img: (PRODUCTS.find((p) => p.id === TILE_PICKS[name]) ??
+    PRODUCTS.find((p) => p.category === name && p.thumb.includes('img.expressrepairs.com.au')) ??
     PRODUCTS.find((p) => p.category === name))?.thumb,
 }));
 
