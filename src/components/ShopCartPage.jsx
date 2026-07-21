@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { PRODUCTS, SHOP, fmtPrice } from '../data/products.js';
-import { getCart, setQty, cartCount } from '../shop/cart-store.js';
+import { getCart, setQty, addToCart, cartCount } from '../shop/cart-store.js';
+import { crossSells } from '../lib/shop.js';
 
 const byId = Object.fromEntries(PRODUCTS.map((p) => [p.id, p]));
 
@@ -13,6 +14,7 @@ export default function ShopCartPage() {
   const lines = Object.entries(cart).filter(([id]) => byId[id]);
   const subtotal = lines.reduce((sum, [id, qty]) => sum + byId[id].priceCents * qty, 0);
   const freeShip = subtotal >= SHOP.freeShippingThresholdCents;
+  const upsells = crossSells(lines.map(([id]) => id), PRODUCTS);
 
   const update = (id, qty) => setCart({ ...setQty(id, qty) });
 
@@ -59,6 +61,24 @@ export default function ShopCartPage() {
         </div>
       ))}
 
+      {upsells.length > 0 && (
+        <div style={{ marginTop: '1.5rem' }}>
+          <strong>Popular add-ons</strong>
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(150px, 1fr))', gap: '12px', marginTop: 10 }}>
+            {upsells.map((p) => (
+              <div key={p.id} style={{ border: '1px solid var(--border)', borderRadius: 12, padding: 10, textAlign: 'center' }}>
+                <a href={`/shop/${p.id}/`}>
+                  <img src={p.thumb || p.image} alt={p.name} width="120" height="90" loading="lazy" style={{ width: '100%', height: 'auto', aspectRatio: '4 / 3', objectFit: 'contain', background: '#fff' }} />
+                  <div style={{ fontSize: '0.85rem', marginTop: 6 }}>{p.name}</div>
+                </a>
+                <div style={{ fontWeight: 700, color: 'var(--brand-700)', marginTop: 4 }}>{fmtPrice(p.priceCents)}</div>
+                <button className="btn btn-ghost btn-sm" style={{ marginTop: 6 }} onClick={() => setCart({ ...addToCart(p.id) })}>Add</button>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+
       <div className="quote-summary" style={{ marginTop: '1.5rem' }}>
         <div className="quote-line">
           <span>Subtotal ({cartCount(Object.fromEntries(lines))} items)</span>
@@ -70,6 +90,12 @@ export default function ShopCartPage() {
         </div>
         <div className="quote-note">Or choose free pickup in store at checkout.</div>
       </div>
+
+      <p style={{ marginTop: 12 }}>
+        {freeShip
+          ? '✓ Free shipping unlocked.'
+          : <>Add <strong>{fmtPrice(SHOP.freeShippingThresholdCents - subtotal)}</strong> more for free shipping — otherwise {fmtPrice(SHOP.flatShippingCents)} flat / free pickup.</>}
+      </p>
 
       {error && <div className="form-error" role="alert" style={{ marginTop: 10 }}>{error}</div>}
 

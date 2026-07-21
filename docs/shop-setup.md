@@ -190,3 +190,14 @@ same live site. Nothing is broken.
 | `RESEND_API_KEY` | Cloudflare Pages | same place (already set) |
 | `POS_GATE_USER` / `POS_GATE_PASS` | GitHub | repo → Settings → Secrets and variables → Actions |
 | `POS_EMAIL` / `POS_PASSWORD` | GitHub | same place |
+
+---
+
+## Returns policy (owner to supply)
+
+The shop currently makes **no returns claims anywhere** — no returns text on
+product pages, cart, or checkout. Australian Consumer Law consumer guarantees
+apply regardless (faulty goods must be remedied), but any voluntary
+change-of-mind returns policy needs wording from you before we publish it.
+Send the wording (or "ACL only, no change-of-mind returns") and we'll add it
+to the shop pages.
