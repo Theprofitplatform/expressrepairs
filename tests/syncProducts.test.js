@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { transformCatalog, thumbUrl, ONLINE_GRID_GROUPS, TRADE_ONLY_PATTERNS } from '../scripts/sync-products.mjs';
+import { transformCatalog, thumbUrl, ONLINE_GRID_GROUPS, TRADE_ONLY_PATTERNS, R2_BASE } from '../scripts/sync-products.mjs';
 
 const row = (over = {}) => ({
   id: 'X-10', name: 'Case', sku: 'C1', type: 'PRODUCT', archived: false,
@@ -12,7 +12,9 @@ const row = (over = {}) => ({
 
 describe('transformCatalog', () => {
   it('maps a sellable row and strips cost price', () => {
-    const [p] = transformCatalog([row()]);
+    // Explicit empty R2 manifest — asserted URLs must not depend on which
+    // ids happen to be mirrored in src/data/r2-images.json.
+    const [p] = transformCatalog([row()], new Set());
     expect(p).toEqual({
       id: 'X-10', name: 'Case', category: 'Accessories', brand: 'Cases', priceCents: 1900,
       image: 'https://www.hoco.com.au/web/image/product.template/10/image_1024',
@@ -79,6 +81,21 @@ describe('transformCatalog', () => {
     expect(
       transformCatalog([row({ name: 'BLACKTECH USB-A To Lightning Fast Charging Cable 100cm - White' })]),
     ).toHaveLength(1);
+  });
+
+  // Images are self-hosted on R2 once mirrored (scripts/upload-images-r2.mjs
+  // maintains the r2-images.json manifest); products not yet mirrored keep
+  // their supplier URL so a new DXPOS product is never imageless.
+  it('emits R2 URLs for mirrored images, supplier URLs otherwise', () => {
+    const [hosted] = transformCatalog([row()], new Set(['X-10']));
+    expect(hosted.image).toBe(`${R2_BASE}/products/X-10.webp`);
+    expect(hosted.thumb).toBe(`${R2_BASE}/products/X-10.webp`);
+
+    const [fallback] = transformCatalog([row()], new Set());
+    expect(fallback.image).toBe('https://www.hoco.com.au/web/image/product.template/10/image_1024');
+    expect(fallback.thumb).toBe('https://www.hoco.com.au/web/image/product.template/10/image_256');
+    // Not mirrored + no supplier image still means not sellable.
+    expect(transformCatalog([row({ imageUrl: null, sku: 'no-such-sku' })], new Set(['X-10']))).toHaveLength(0);
   });
 
   it('exports an owner-reviewable trade-only pattern list', () => {

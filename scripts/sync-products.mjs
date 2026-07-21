@@ -14,6 +14,13 @@
 import { writeFileSync } from 'node:fs';
 import { fileURLToPath, pathToFileURL } from 'node:url';
 import IMAGE_MAP from '../src/data/product-images.json' with { type: 'json' };
+import R2_MANIFEST from '../src/data/r2-images.json' with { type: 'json' };
+
+// Images mirrored to R2 by scripts/upload-images-r2.mjs are served from our
+// own domain (800px WebP); anything not yet mirrored keeps its supplier URL
+// so a new DXPOS product is never imageless.
+export const R2_BASE = 'https://img.expressrepairs.com.au';
+const R2_IDS = new Set(R2_MANIFEST);
 
 const BASE = process.env.POS_BASE || 'https://pos.expressrepairs.com.au';
 
@@ -61,7 +68,7 @@ export const TRADE_ONLY_PATTERNS = [
 const isTradeOnly = (r) => TRADE_ONLY_PATTERNS.some((p) => p.test(r.name || ''));
 
 // Pure transform: DXPOS catalog rows -> products.json entries.
-export function transformCatalog(rows) {
+export function transformCatalog(rows, r2Ids = R2_IDS) {
   return rows
     .filter(
       (r) =>
@@ -73,7 +80,9 @@ export function transformCatalog(rows) {
         !isTradeOnly(r),
     )
     .map((r) => {
-      const image = imageFor(r);
+      const supplier = imageFor(r);
+      const hosted = r2Ids.has(r.id) ? `${R2_BASE}/products/${r.id}.webp` : '';
+      const image = hosted || supplier;
       return {
         id: r.id,
         name: r.name,
@@ -85,7 +94,9 @@ export function transformCatalog(rows) {
         brand: r.category?.name || '',
         priceCents: r.sellCents,
         image,
-        thumb: thumbUrl(image),
+        // R2 WebPs are already grid-sized; only supplier URLs get the Odoo
+        // small-size rewrite.
+        thumb: hosted || thumbUrl(supplier),
         inStock: true,
         // A missing SKU must not fail Zod validation and silently halt every
         // future sync — the schema requires a string, so default to ''.
