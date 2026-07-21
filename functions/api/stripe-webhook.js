@@ -80,6 +80,14 @@ export async function onRequest({ request, env }) {
   // no-op here so the shop is never told to pack and post an unpaid order.
   if (s.payment_status !== 'paid') return json(200, { ok: true, ignored: true });
 
+  // Idempotency: Stripe redelivers events until it sees a 2xx, so a slow
+  // response can produce duplicate deliveries. Skip events we've fully
+  // processed (key written only after the shop email succeeds).
+  if (env.ORDERS_KV && event.id) {
+    const seen = await env.ORDERS_KV.get(event.id);
+    if (seen) return json(200, { ok: true, duplicate: true });
+  }
+
   // Fetch what was bought (line items aren't embedded in the event), and —
   // best-effort — the chosen shipping rate's display name, so the email can
   // say "Pickup in store" / "Free shipping" / "Standard shipping" instead of
@@ -144,10 +152,6 @@ export async function onRequest({ request, env }) {
       body: JSON.stringify({
         from: env.LEAD_FROM_EMAIL || DEFAULT_FROM,
         to: [env.LEAD_TO_EMAIL || DEFAULT_TO],
-        // ponytail: no idempotency store — Stripe redelivery can send this
-        // twice; the session id in the subject makes a duplicate obvious.
-        // Add a KV dedup keyed on event.id if order volume makes that
-        // insufficient.
         subject: `New online order — ${money(s.amount_total)}${name ? ` — ${name}` : ''} [${s.id}]`,
         text,
         html,
@@ -160,6 +164,16 @@ export async function onRequest({ request, env }) {
   } catch (err) {
     console.error('Resend order email error', err);
     return json(503, { ok: false });
+  }
+
+  // Mark processed only after the shop email succeeded; 7-day TTL comfortably
+  // outlives Stripe's 3-day retry window.
+  if (event.id) {
+    try {
+      await env.ORDERS_KV?.put(event.id, '1', { expirationTtl: 60 * 60 * 24 * 7 });
+    } catch (err) {
+      console.error('ORDERS_KV put failed', err);
+    }
   }
 
   return json(200, { ok: true });

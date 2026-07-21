@@ -1,0 +1,12 @@
+# Pages project config — bindings declared here are applied on every deploy
+# (.github/workflows/deploy.yml), so they can't drift from the dashboard.
+# compatibility_date matches the project's existing setting (downloaded via
+# `wrangler pages download config` 2026-07-21).
+name = "expressrepairs"
+compatibility_date = "2026-04-20"
+pages_build_output_dir = "dist"
+
+# Webhook idempotency store (functions/api/stripe-webhook.js).
+[[kv_namespaces]]
+binding = "ORDERS_KV"
+id = "76d87c01303149d5b37f520242b0f335"

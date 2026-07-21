@@ -12,6 +12,9 @@
 //   REVIEW_LINK         (required)          — https://g.page/r/…/review
 //   CLICKSEND_SENDER    (optional)          — sender ID, default 'Xpress' (≤11 chars)
 //
+// Note: the shared sameSite also allows *.pages.dev (preview deploys), which
+// the old local copy here did not. Acceptable widening: the PIN below is the
+// real gate — Origin/Referer are forgeable off-browser regardless.
 import { json, sameSite } from '../_shared.js';
 
 const MAX_BODY_BYTES = 16 * 1024;

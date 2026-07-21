@@ -144,6 +144,37 @@ describe('POST /api/stripe-webhook', () => {
     expect(body.subject).toContain('cs_test_abc123');
   });
 
+  it('emails once for duplicate deliveries of the same event id (KV idempotency)', async () => {
+    const spy = mockUpstreams();
+    const store = new Map();
+    const kv = { get: async (k) => (store.has(k) ? store.get(k) : null), put: async (k, v) => void store.set(k, v) };
+    const env = { ...ENV, ORDERS_KV: kv };
+    const evt = JSON.stringify({
+      id: 'evt_dup_1',
+      type: 'checkout.session.completed',
+      data: { object: { id: 'cs_dup', payment_status: 'paid', amount_total: 4085, customer_details: { name: 'Jo', email: 'jo@x.com' } } },
+    });
+    const sigd = await sign(evt, SECRET);
+    expect((await onRequest({ request: makeReq(evt, sigd), env })).status).toBe(200);
+    const second = await onRequest({ request: makeReq(evt, sigd), env });
+    expect(second.status).toBe(200);
+    expect(await second.json()).toMatchObject({ ok: true, duplicate: true });
+    const resendCalls = spy.mock.calls.filter(([u]) => String(u).includes('resend'));
+    expect(resendCalls.length).toBe(1);
+  });
+
+  it('still processes without a KV binding (graceful degradation)', async () => {
+    const spy = mockUpstreams();
+    const evt = JSON.stringify({
+      id: 'evt_nokv_1',
+      type: 'checkout.session.completed',
+      data: { object: { id: 'cs_nokv', payment_status: 'paid', amount_total: 4085, customer_details: { name: 'Jo', email: 'jo@x.com' } } },
+    });
+    const res = await onRequest({ request: makeReq(evt, await sign(evt, SECRET)), env: ENV });
+    expect(res.status).toBe(200);
+    expect(spy.mock.calls.filter(([u]) => String(u).includes('resend')).length).toBe(1);
+  });
+
   it('413s on an oversized Content-Length, sends nothing', async () => {
     const spy = mockUpstreams();
     const headers = new Headers();

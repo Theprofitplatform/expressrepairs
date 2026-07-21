@@ -234,3 +234,16 @@ View/manage in Commerce Manager → Data sources.
 Dynamic (catalog) ads need the pixel to send `content_ids` matching the feed's
 `g:id` values — the AddToCart/InitiateCheckout/Purchase events wired on the
 shop already do this.
+
+---
+
+## KV binding (done — for reference)
+
+KV namespace `ORDERS_KV` (id `76d87c01303149d5b37f520242b0f335`) stores seen
+Stripe event ids so a webhook redelivery can't email the shop twice. The
+binding is declared in `wrangler.toml`, so every deploy re-applies it —
+nothing to configure in the dashboard.
+
+⚠️ Because `wrangler.toml` now manages Pages settings, add new environment
+variables in the dashboard as **Secrets** (encrypted) — plain-text vars added
+only in the dashboard can be overwritten on the next deploy.
