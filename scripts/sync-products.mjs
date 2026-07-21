@@ -61,8 +61,14 @@ async function main() {
     process.exit(0); // graceful: not an error, just no update this run
   }
   if (gateRes.status === 401) { console.error('Gate credentials rejected'); process.exit(1); }
-  const cookie = (gateRes.headers.get('set-cookie') || '').split(';')[0];
-  if (!cookie.startsWith('pos_gate=')) { console.error('No gate cookie issued'); process.exit(1); }
+  // The Worker APPENDS its pos_gate cookie after any the DXPOS app already set,
+  // so scan every Set-Cookie header rather than assuming ours is the first.
+  const setCookies = gateRes.headers.getSetCookie?.() ?? [gateRes.headers.get('set-cookie') || ''];
+  const cookie = setCookies.join(',').match(/pos_gate=[^;,\s]+/)?.[0];
+  if (!cookie) {
+    console.error(`No gate cookie issued (gate returned ${gateRes.status})`);
+    process.exit(1);
+  }
 
   // 2. DXPOS login -> JWT.
   const loginRes = await fetch(`${BASE}/api/auth/login`, {
