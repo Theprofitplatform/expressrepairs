@@ -1,16 +1,16 @@
-# Graph Report - wt-shop  (2026-07-20)
+# Graph Report - repo  (2026-07-21)
 
 ## Corpus Check
-- 108 files · ~304,004 words
+- 127 files · ~433,731 words
 - Verdict: corpus is large enough that graph structure adds value.
 
 ## Summary
-- 614 nodes · 885 edges · 49 communities (37 shown, 12 thin omitted)
+- 738 nodes · 1099 edges · 52 communities (43 shown, 9 thin omitted)
 - Extraction: 100% EXTRACTED · 0% INFERRED · 0% AMBIGUOUS
 - Token cost: 0 input · 0 output
 
 ## Graph Freshness
-- Built from commit: `35627cd7`
+- Built from commit: `f328898c`
 - Run `git rev-parse HEAD` and compare to check if the graph is stale.
 - Run `graphify update .` after code changes (no API cost).
 
@@ -61,43 +61,46 @@
 - [[_COMMUNITY_Community 46|Community 46]]
 - [[_COMMUNITY_Community 47|Community 47]]
 - [[_COMMUNITY_Community 48|Community 48]]
+- [[_COMMUNITY_Community 49|Community 49]]
+- [[_COMMUNITY_Community 50|Community 50]]
+- [[_COMMUNITY_Community 51|Community 51]]
 
 ## God Nodes (most connected - your core abstractions)
-1. `../../layouts/Layout.astro` - 27 edges
-2. `SITE` - 15 edges
+1. `../../layouts/Layout.astro` - 28 edges
+2. `SITE` - 16 edges
 3. `SEO Plan — expressrepairs.com.au` - 15 edges
-4. `../../../data/site.js` - 14 edges
-5. `Phase 1 — Astro Foundation + Homepage Migration Implementation Plan` - 14 edges
-6. `expressrepairs.com.au — SEO Content Site Design` - 14 edges
-7. `Off-Site SEO Execution Kit — expressrepairs.com.au` - 12 edges
-8. `scripts` - 11 edges
-9. `Ad Landing Pages — Design` - 11 edges
-10. `HOURS` - 10 edges
+4. `Online Shop Setup — Owner Runbook` - 15 edges
+5. `../../components/SiteFooter.astro` - 14 edges
+6. `Phase 1 — Astro Foundation + Homepage Migration Implementation Plan` - 14 edges
+7. `expressrepairs.com.au — SEO Content Site Design` - 14 edges
+8. `../../data/site.js` - 13 edges
+9. `../../components/SiteNav.astro` - 12 edges
+10. `../../lib/seo.js` - 12 edges
 
 ## Surprising Connections (you probably didn't know these)
 - `fmtTime()` --calls--> `parseTimeToMinutes()`  [EXTRACTED]
   src/lib/seo.js → src/lib/hours.js
-- `ShopCartPage()` --calls--> `fmtPrice()`  [EXTRACTED]
-  src/components/ShopCartPage.jsx → src/data/products.js
-- `ShopCartPage()` --calls--> `cartCount()`  [EXTRACTED]
-  src/components/ShopCartPage.jsx → src/shop/cart-store.js
-- `Hero()` --calls--> `isOpenNow()`  [EXTRACTED]
-  src/components/sections.jsx → src/lib/hours.js
-- `Store()` --calls--> `isOpenNow()`  [EXTRACTED]
-  src/components/sections2.jsx → src/lib/hours.js
+- `onRequest()` --calls--> `json()`  [EXTRACTED]
+  functions/api/checkout.js → functions/_shared.js
+- `onRequest()` --calls--> `json()`  [EXTRACTED]
+  functions/api/lead.js → functions/_shared.js
+- `onRequest()` --calls--> `json()`  [EXTRACTED]
+  functions/api/review-sms.js → functions/_shared.js
+- `onRequest()` --calls--> `json()`  [EXTRACTED]
+  functions/api/stripe-webhook.js → functions/_shared.js
 
 ## Import Cycles
 - 1-file cycle: `src/data/products.js -> src/data/products.js`
 
-## Communities (49 total, 12 thin omitted)
+## Communities (52 total, 9 thin omitted)
 
 ### Community 0 - "Community 0"
-Cohesion: 0.06
-Nodes (52): ../components/sections2.jsx, ../components/sections.jsx, BookingWidget(), BrandLogo(), Icon, BrandsStrip(), Contact(), FAQ() (+44 more)
+Cohesion: 0.05
+Nodes (63): ../components/sections2.jsx, ../components/sections.jsx, BookingWidget(), BrandLogo(), Icon, BrandsStrip(), Contact(), FAQ() (+55 more)
 
 ### Community 1 - "Community 1"
-Cohesion: 0.07
-Nodes (44): heroModules, navLinks, schema, ../../../components/CtaBand.astro, ../../components/LandingForm.jsx, ../../../components/MobileCta.astro, ../../../components/PageScripts.astro, ../../../components/PriceTable.astro (+36 more)
+Cohesion: 0.06
+Nodes (58): heroModules, navLinks, schema, ../../components/LandingForm.jsx, ../../components/ShopCartPage.jsx, ../../../data/content.js, ../../data/landing.js, ../../data/posts.js (+50 more)
 
 ### Community 2 - "Community 2"
 Cohesion: 0.06
@@ -105,39 +108,39 @@ Nodes (35): 10. Roadmap — 30 / 60 / 90 days, 1. Executive summary, 2. Audit sn
 
 ### Community 3 - "Community 3"
 Cohesion: 0.07
-Nodes (28): dependencies, astro, @astrojs/react, @astrojs/sitemap, react, react-dom, zod, description (+20 more)
+Nodes (29): dependencies, astro, @astrojs/react, @astrojs/sitemap, react, react-dom, zod, description (+21 more)
 
 ### Community 4 - "Community 4"
-Cohesion: 0.29
-Nodes (6): Commit Hash, Concerns, Status, Task 3 Report: Sync workflow, Validation Summary, Work Completed
+Cohesion: 0.09
+Nodes (21): Accessibility, Component State, Concerns, Design Decisions, Event Dispatch, Files Changed, Files Created, Git Commit (+13 more)
 
 ### Community 5 - "Community 5"
-Cohesion: 0.29
-Nodes (6): Concerns, Deviation from the brief (verified against actual code, not assumed), Status: DONE, Task 4 report: Shop pages, Test summary, What was built
+Cohesion: 0.12
+Nodes (16): Change, Concerns, Files Changed, Fix, Fix pass: build-test race, Fix pass: find-us layout, Full Suite, Full-suite run results (+8 more)
 
 ### Community 6 - "Community 6"
 Cohesion: 0.12
 Nodes (16): 10. Phasing, 11. Prerequisites / Inputs Required (at implementation), 12. Risks & Mitigations, 13. Open Questions (resolve at implementation), 1. Context, 2. Goals, 3. Non-Goals, 4. Decisions (locked) (+8 more)
 
 ### Community 7 - "Community 7"
-Cohesion: 0.19
-Nodes (10): emailValid(), hostAllowed(), json(), oneLine(), onRequest(), REPAIR_LABELS, sameSite(), CR (+2 more)
+Cohesion: 0.10
+Nodes (19): Context a fresh session needs, Deliberately NOT in this plan, Ecommerce Improvements Implementation Plan, Global Constraints, Phase 1 — Convert, Phase 2 — Be found, Phase 3 — Take money cleanly, Task 10: Customer order-confirmation email (+11 more)
 
 ### Community 8 - "Community 8"
 Cohesion: 0.13
 Nodes (14): File Structure, Follow-ups (out of scope, tracked), Phase 1 — Astro Foundation + Homepage Migration Implementation Plan, Scope, Self-Review, Task 1: Initialise Astro project + tooling, Task 2: Data layer — ESM modules + Zod validation, Task 3: `hours` logic library (open-now) (+6 more)
 
 ### Community 9 - "Community 9"
-Cohesion: 0.25
-Nodes (7): Self-Review Notes, Step 1: Failing test (before implementation), Step 2: Product tests after implementation, Step 3: Full test suite, Task 1: Product Data Foundation - Report, Test Execution, What Was Done
+Cohesion: 0.14
+Nodes (13): Commit, Commit, Concerns, Edits Applied, Files Changed, Fix pass (review round 1), Self-Review, Step 1: RED — Write Failing Test (+5 more)
 
 ### Community 10 - "Community 10"
 Cohesion: 0.14
 Nodes (13): Ad Landing Pages — Design, Architecture, Data layer — `src/data/landing.js`, Decisions (from brainstorming), Error handling, Goal, Honesty constraints, Out of scope (YAGNI) (+5 more)
 
 ### Community 11 - "Community 11"
-Cohesion: 0.12
-Nodes (16): Changes Applied, Commit, Commit, Implementation Summary, Key Implementation Details, No Concerns, Pagination Fix (Commit 7938b6c), Review Findings Fix (Commit d9944c0) (+8 more)
+Cohesion: 0.15
+Nodes (12): Commit, Files Created, Fix pass (review round 1), No Concerns, Self-Review, Step 1-2: Test Written & RED, Step 3-4: Implementation & GREEN, Step 5: AdTracking Component (+4 more)
 
 ### Community 12 - "Community 12"
 Cohesion: 0.17
@@ -152,32 +155,36 @@ Cohesion: 0.18
 Nodes (10): Ad Landing Pages Implementation Plan, Global Constraints, How to fill in tracking IDs (post-merge, no code change needed beyond IDs), Self-Review (completed by plan author), Task 1: Landing-page data layer, Task 2: Tracking config + AdTracking component, Task 3: Landing lead helpers + LandingForm island, Task 4: The landing route + build verification (+2 more)
 
 ### Community 15 - "Community 15"
-Cohesion: 0.44
-Nodes (8): dayName(), DAYS, isOpenAt(), isTradingDay(), parseHourTo24(), parseTimeToMinutes(), splitHoursRange(), fmtTime()
+Cohesion: 0.20
+Nodes (9): Commit, Final Fixes Report, Fix #1 — Landing campaign attribution in lead email (TDD), Fix #2 — Catch-all page price grid coverage, Full Suite, Step 1 — RED (failing tests written first), Step 2 — Implementation in `functions/api/lead.js`, Step 3 — GREEN (+1 more)
 
 ### Community 16 - "Community 16"
-Cohesion: 0.10
-Nodes (30): byId, hostAllowed(), json(), onRequest(), sameSite(), ../../components/ShopCartPage.jsx, ../../data/products.js, ../data/site.js (+22 more)
+Cohesion: 0.14
+Nodes (20): byId, ShopCartPage(), fmtPrice(), PRODUCTS, SHOP, productSchema, crossSells(), relatedProducts() (+12 more)
 
 ### Community 17 - "Community 17"
-Cohesion: 0.33
-Nodes (5): Concerns, Status, Task 5 Report: Cart, Test summary, What was built
+Cohesion: 0.20
+Nodes (9): Commit, Concerns, Files Changed, Self-Review, Step 1: Add the failing assertion (RED), Step 2: Add the sitemap filter (GREEN), Step 3: Full regression suite (ALL GREEN), Task 5 Report: Exclude landing pages from the sitemap (+1 more)
 
 ### Community 19 - "Community 19"
-Cohesion: 0.22
-Nodes (9): esc(), hex(), json(), money(), oneLine(), onRequest(), validSignature(), ENV (+1 more)
+Cohesion: 0.08
+Nodes (27): byId, onRequest(), emailValid(), oneLine(), onRequest(), REPAIR_LABELS, buildReviewMessage(), normalizeAuMobile() (+19 more)
 
 ### Community 20 - "Community 20"
-Cohesion: 0.14
-Nodes (13): Changes, Commit, Concerns, Files, Files Changed, Fix: Review findings (Findings 1 & 2), Process followed (TDD), Security note (the point of this task) (+5 more)
+Cohesion: 0.29
+Nodes (6): 1. README.md — Added Ad landing pages section, 2. docs/superpowers/specs/2026-06-23-ad-landing-pages-design.md — Updated Status, Changes Made, Commit, Task 6: Documentation — Completion Report, Verification Summary
 
 ### Community 21 - "Community 21"
-Cohesion: 0.39
-Nodes (4): LandingForm(), buildLeadPayload(), validateContact(), sendLead()
+Cohesion: 0.60
+Nodes (3): LandingForm(), buildLeadPayload(), validateContact()
 
 ### Community 22 - "Community 22"
 Cohesion: 0.10
 Nodes (19): 1. Current account structure (so we localize the right things), 2. Two findings that change the plan (read first), 2a. "Shift budget to the Leads ads" — budget is **not** the bottleneck, 2b. "Wire up the Pixel Lead event" — it's **already wired in code**, 3. Localization — the part you asked for, 4. Paste-ready localized creative copy, 5. Suburb landing pages (ad destinations), 6. Targeting / radius guide (apply in Ads Manager) (+11 more)
+
+### Community 23 - "Community 23"
+Cohesion: 0.50
+Nodes (3): How to fill in tracking IDs (post-merge, no code change needed beyond IDs), Self-Review (completed by plan author), Task 6: Documentation + README note
 
 ### Community 33 - "Community 33"
 Cohesion: 0.12
@@ -196,8 +203,8 @@ Cohesion: 0.22
 Nodes (8): File Structure, Global Constraints, Review-Request SMS Implementation Plan, Self-Review, Task 1: Pure helpers — `normalizeAuMobile` + `buildReviewMessage`, Task 2: The `/api/review-sms` endpoint, Task 3: Staff page + sitemap exclusion, Task 4: Document env vars + owner setup
 
 ### Community 37 - "Community 37"
-Cohesion: 0.29
-Nodes (9): buildReviewMessage(), hostAllowed(), json(), normalizeAuMobile(), oneLine(), onRequest(), pinEqual(), sameSite() (+1 more)
+Cohesion: 0.22
+Nodes (8): Context a fresh session needs, Deliberately NOT in this plan, Global Constraints, Shop Improvements Implementation Plan, Task 1: Customer-facing categories (highest visible impact), Task 2: Exclude trade-only products, Task 3: Self-host images on Cloudflare R2, Task 4: Product search
 
 ### Community 38 - "Community 38"
 Cohesion: 0.14
@@ -208,44 +215,64 @@ Cohesion: 0.17
 Nodes (11): Global Constraints, Launch checklist (after all tasks merge & deploy), Online Accessories Store Implementation Plan, Task 1: Product data foundation, Task 2: DXPOS sync script, Task 3: Sync workflow, Task 4: Shop pages, Task 5: Cart (+3 more)
 
 ### Community 40 - "Community 40"
-Cohesion: 0.18
-Nodes (10): 1. Set up Stripe (takes payments), 2. Add the Stripe keys to Cloudflare Pages, 3. Add the DXPOS secrets to GitHub, 4. Run the first sync, 5. How the day-to-day range is managed, 6. Test before going live with real money, 7. How orders work day-to-day, One thing not to worry about (+2 more)
+Cohesion: 0.12
+Nodes (15): 1. Set up Stripe (takes payments), 2. Add the Stripe keys to Cloudflare Pages, 3. Add the DXPOS secrets to GitHub, 4. Run the first sync, 5. How the day-to-day range is managed, 6. Test before going live with real money, 7. How orders work day-to-day, Go-live checklist (payments) (+7 more)
 
 ### Community 41 - "Community 41"
 Cohesion: 0.25
-Nodes (7): Ad landing pages (`/go/`), Deploy, Develop, expressrepairs.com.au, Lead delivery (`/api/lead`), Review-request SMS (staff tool), What it is
+Nodes (7): auth, failures, ids, keyFor(), queue, todo, uploadOne()
 
 ### Community 42 - "Community 42"
-Cohesion: 0.43
-Nodes (3): main(), ONLINE_GRID_GROUPS, transformCatalog()
+Cohesion: 0.23
+Nodes (9): imageFor(), main(), MAX_ONLINE, ONLINE_GRID_GROUPS, R2_IDS, skuKey(), thumbUrl(), TRADE_ONLY_PATTERNS (+1 more)
 
 ### Community 43 - "Community 43"
-Cohesion: 0.40
-Nodes (4): ../components/AdTracking.astro, ../data/tracking.js, ../data/tracking.js, enabled
+Cohesion: 0.50
+Nodes (4): ../data/tracking.js, ../components/AdTracking.astro, enabled, ../components/SiteAnalytics.astro
 
 ### Community 45 - "Community 45"
+Cohesion: 0.22
+Nodes (8): Context, Ecommerce Improvements — Design, Goal, Non-goals, Phase 1 — Convert (works before Stripe is on), Phase 2 — Be found, Phase 3 — Take money cleanly, Success criteria
+
+### Community 46 - "Community 46"
+Cohesion: 0.36
+Nodes (4): tracker-lock.sh script, usage(), validate_name(), write_owner()
+
+### Community 47 - "Community 47"
+Cohesion: 0.25
+Nodes (7): Ad landing pages (`/go/`), Deploy, Develop, expressrepairs.com.au, Lead delivery (`/api/lead`), Review-request SMS (staff tool), What it is
+
+### Community 48 - "Community 48"
+Cohesion: 0.40
+Nodes (4): Active, Done log (newest first), Protocol (both executors), Shared Work Tracker — expressrepairs
+
+### Community 49 - "Community 49"
+Cohesion: 0.83
+Nodes (3): tracker-lock.test.sh script, check(), cleanup()
+
+### Community 50 - "Community 50"
 Cohesion: 0.50
-Nodes (3): Concerns, Task 8 report — Owner setup runbook, What it covers
+Nodes (3): Changes, Concerns, Full-range shop: report
 
 ## Knowledge Gaps
-- **306 isolated node(s):** `byId`, `REPAIR_LABELS`, `name`, `version`, `private` (+301 more)
+- **371 isolated node(s):** `byId`, `REPAIR_LABELS`, `name`, `version`, `private` (+366 more)
   These have ≤1 connection - possible missing edges or undocumented components.
-- **12 thin communities (<3 nodes) omitted from report** — run `graphify query` to explore isolated nodes.
+- **9 thin communities (<3 nodes) omitted from report** — run `graphify query` to explore isolated nodes.
 
 ## Suggested Questions
 _Questions this graph is uniquely positioned to answer:_
 
-- **Why does `../../layouts/Layout.astro` connect `Community 1` to `Community 0`, `Community 16`, `Community 43`, `Community 15`?**
-  _High betweenness centrality (0.032) - this node is a cross-community bridge._
-- **Why does `SITE` connect `Community 1` to `Community 0`, `Community 21`?**
-  _High betweenness centrality (0.015) - this node is a cross-community bridge._
-- **Why does `HOURS` connect `Community 1` to `Community 0`, `Community 15`?**
-  _High betweenness centrality (0.005) - this node is a cross-community bridge._
+- **Why does `../../layouts/Layout.astro` connect `Community 1` to `Community 0`, `Community 43`?**
+  _High betweenness centrality (0.019) - this node is a cross-community bridge._
+- **Why does `PRODUCTS` connect `Community 16` to `Community 1`, `Community 19`?**
+  _High betweenness centrality (0.014) - this node is a cross-community bridge._
 - **What connects `byId`, `REPAIR_LABELS`, `name` to the rest of the system?**
-  _306 weakly-connected nodes found - possible documentation gaps or missing edges._
+  _371 weakly-connected nodes found - possible documentation gaps or missing edges._
 - **Should `Community 0` be split into smaller, more focused modules?**
-  _Cohesion score 0.06233538191395961 - nodes in this community are weakly interconnected._
+  _Cohesion score 0.05048766494549627 - nodes in this community are weakly interconnected._
 - **Should `Community 1` be split into smaller, more focused modules?**
-  _Cohesion score 0.07132867132867132 - nodes in this community are weakly interconnected._
+  _Cohesion score 0.05934065934065934 - nodes in this community are weakly interconnected._
 - **Should `Community 2` be split into smaller, more focused modules?**
   _Cohesion score 0.05555555555555555 - nodes in this community are weakly interconnected._
+- **Should `Community 3` be split into smaller, more focused modules?**
+  _Cohesion score 0.06666666666666667 - nodes in this community are weakly interconnected._
