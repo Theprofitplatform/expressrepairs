@@ -16,7 +16,9 @@ describe('transformCatalog', () => {
     // ids happen to be mirrored in src/data/r2-images.json.
     const [p] = transformCatalog([row()], new Set());
     expect(p).toEqual({
-      id: 'X-10', name: 'Case', category: 'Accessories', brand: 'Cases', priceCents: 1900,
+      // brand '' — the DXPOS category.name "Cases" is internal jargon, cleaned
+      // to empty by catalog-fixes (no maker named in the product name).
+      id: 'X-10', name: 'Case', category: 'Accessories', brand: '', priceCents: 1900,
       image: 'https://www.hoco.com.au/web/image/product.template/10/image_1024',
       thumb: 'https://www.hoco.com.au/web/image/product.template/10/image_256',
       inStock: true, sku: 'C1',

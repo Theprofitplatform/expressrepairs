@@ -15,6 +15,7 @@ import { writeFileSync } from 'node:fs';
 import { fileURLToPath, pathToFileURL } from 'node:url';
 import IMAGE_MAP from '../src/data/product-images.json' with { type: 'json' };
 import R2_MANIFEST from '../src/data/r2-images.json' with { type: 'json' };
+import { applyCatalogFixes } from './catalog-fixes.mjs';
 
 // Images mirrored to R2 by scripts/upload-images-r2.mjs are served from our
 // own domain (800px WebP); anything not yet mirrored keeps its supplier URL
@@ -68,8 +69,10 @@ export const TRADE_ONLY_PATTERNS = [
 const isTradeOnly = (r) => TRADE_ONLY_PATTERNS.some((p) => p.test(r.name || ''));
 
 // Pure transform: DXPOS catalog rows -> products.json entries.
+// applyCatalogFixes (catalog-fixes.mjs) then repairs names/categories/brands
+// and drops fixtures, repair parts, and double-imported duplicates.
 export function transformCatalog(rows, r2Ids = R2_IDS) {
-  return rows
+  return applyCatalogFixes(rows
     .filter(
       (r) =>
         !r.archived &&
@@ -102,7 +105,7 @@ export function transformCatalog(rows, r2Ids = R2_IDS) {
         // future sync — the schema requires a string, so default to ''.
         sku: r.sku || '',
       };
-    });
+    }));
 }
 
 async function main() {
