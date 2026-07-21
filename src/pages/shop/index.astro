@@ -19,6 +19,10 @@ const categories = [...new Set(PRODUCTS.map((p) => p.category))].map((name) => (
   name,
   slug: slugifyCategory(name),
   count: PRODUCTS.filter((p) => p.category === name).length,
+  // Tile artwork: first product in the category with an R2-hosted image
+  // (self-hosted = fast + stable), else whatever image the category has.
+  img: (PRODUCTS.find((p) => p.category === name && p.thumb.includes('img.expressrepairs.com.au')) ??
+    PRODUCTS.find((p) => p.category === name))?.thumb,
 }));
 
 const schema = breadcrumbSchema([
@@ -79,6 +83,19 @@ const schema = breadcrumbSchema([
         <div class="acc-grid">
           {categories.map((cat) => (
             <a href={`/shop/c/${cat.slug}/`} class="acc-card">
+              {cat.img && (
+                <div class="acc-visual">
+                  <img
+                    src={cat.img}
+                    alt={cat.name}
+                    loading="lazy"
+                    decoding="async"
+                    width="400"
+                    height="300"
+                    style="width: 100%; height: 100%; object-fit: cover;"
+                  />
+                </div>
+              )}
               <div class="acc-body">
                 <div class="acc-title">{cat.name}</div>
                 <div class="acc-price">{cat.count} product{cat.count === 1 ? '' : 's'}</div>
