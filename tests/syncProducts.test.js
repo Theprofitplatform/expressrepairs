@@ -28,10 +28,24 @@ describe('transformCatalog', () => {
     expect(transformCatalog([row({ gridGroup: 'Services' })])).toHaveLength(0);
   });
 
-  it('inStock: onHand>0 true, 0 false, untracked (null) true; falls back to gridGroup for category', () => {
-    expect(transformCatalog([row({ stockLevels: [{ onHand: 0 }] })])[0].inStock).toBe(false);
-    expect(transformCatalog([row({ stockLevels: [] })])[0].inStock).toBe(true);
+  // Only stocked items are listed at all: the POS holds ~11k supplier-catalogue
+  // rows that are never stocked (no StockLevel row), and listing those as
+  // buyable would sell things the shop does not have.
+  it('lists only products actually in stock', () => {
+    expect(transformCatalog([row({ stockLevels: [{ onHand: 4 }] })])).toHaveLength(1);
+    expect(transformCatalog([row({ stockLevels: [{ onHand: 0 }] })])).toHaveLength(0);
+    expect(transformCatalog([row({ stockLevels: [] })])).toHaveLength(0);
+    expect(transformCatalog([row({ stockLevels: undefined })])).toHaveLength(0);
+  });
+
+  it('a listed product is always in stock, and category falls back to gridGroup', () => {
+    expect(transformCatalog([row()])[0].inStock).toBe(true);
     expect(transformCatalog([row({ category: null })])[0].category).toBe('Accessories');
+  });
+
+  it('falls back to the supplier image map by SKU when DXPOS has no photo', () => {
+    // DXPOS carries no product images; the map is keyed on a normalised SKU.
+    expect(transformCatalog([row({ imageUrl: null, sku: 'no-such-sku-xyz' })])).toHaveLength(0);
   });
 
   it('image extension follows the source url, defaulting to jpg', () => {

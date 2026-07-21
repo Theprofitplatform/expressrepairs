@@ -9,12 +9,37 @@
 import { writeFileSync, mkdirSync } from 'node:fs';
 import { join } from 'node:path';
 import { fileURLToPath, pathToFileURL } from 'node:url';
+import IMAGE_MAP from '../src/data/product-images.json' with { type: 'json' };
 
 const BASE = process.env.POS_BASE || 'https://pos.expressrepairs.com.au';
 
+// DXPOS has no product photos, so images come from the supplier catalogues
+// (HOCO + MobileMall), keyed by SKU. Regenerate product-images.json when a new
+// supplier price list lands. A DXPOS imageUrl, if ever set, always wins.
+const skuKey = (s) => String(s ?? '').toLowerCase().replace(/[^a-z0-9]/g, '');
+const imageFor = (r) => r.imageUrl || IMAGE_MAP[skuKey(r.sku)] || '';
+
+// Only sell what the shop actually holds. Without this, ~11k supplier-catalogue
+// rows (never stocked, onHand null) would all be listed as buyable.
+const inStockNow = (r) => (r.stockLevels?.[0]?.onHand ?? 0) > 0;
+
+// Refuse to publish an unreviewed mega-catalogue: a local repair shop listing
+// thousands of SKUs is unusable and would bloat the repo with images.
+const MAX_ONLINE = Number(process.env.MAX_ONLINE || 400);
+
 // Which DXPOS Sell-grid groups go online. Owner: edit this list to change
 // what the shop sells; archive a product in DXPOS to remove just one item.
-export const ONLINE_GRID_GROUPS = ['Accessories', 'Cables & power', 'Audio'];
+// These must match DXPOS's gridGroup values EXACTLY (they are the Sell-grid
+// folder names). Confirmed present in the catalog: Screen Protection,
+// Cases & Covers, Audio, Accessories, Cables & Charging, SIM & Prepaid,
+// Phones & Devices, Recharge, Other, Repairs. Only postable accessories here.
+export const ONLINE_GRID_GROUPS = [
+  'Accessories',
+  'Cases & Covers',
+  'Screen Protection',
+  'Cables & Charging',
+  'Audio',
+];
 
 const extOf = (url) => {
   const m = /\.(jpe?g|png|webp|gif)(\?|$)/i.exec(url || '');
@@ -30,7 +55,8 @@ export function transformCatalog(rows) {
         !r.archived &&
         r.type === 'PRODUCT' &&
         r.sellCents > 0 &&
-        r.imageUrl &&
+        imageFor(r) &&
+        inStockNow(r) &&
         ONLINE_GRID_GROUPS.includes(r.gridGroup),
     )
     .map((r) => ({
@@ -38,12 +64,12 @@ export function transformCatalog(rows) {
       name: r.name,
       category: r.category?.name || r.gridGroup,
       priceCents: r.sellCents,
-      image: `/images/products/${r.id}.${extOf(r.imageUrl)}`,
-      inStock: (r.stockLevels?.[0]?.onHand ?? null) !== 0,
+      image: `/images/products/${r.id}.${extOf(imageFor(r))}`,
+      inStock: true,
       // A missing SKU must not fail Zod validation and silently halt every
       // future sync — the schema requires a string, so default to ''.
       sku: r.sku || '',
-      _sourceImage: r.imageUrl,
+      _sourceImage: imageFor(r),
     }));
 }
 
@@ -105,6 +131,27 @@ async function main() {
   }
 
   const products = transformCatalog(rows);
+
+  // Always report the funnel — this is the only visibility into the POS data.
+  {
+    const live = rows.filter((r) => !r.archived);
+    const inGroups = live.filter((r) => ONLINE_GRID_GROUPS.includes(r.gridGroup));
+    const stocked = inGroups.filter(inStockNow);
+    console.log(
+      `catalog funnel: fetched=${rows.length} live=${live.length} ` +
+        `in-groups=${inGroups.length} in-stock=${stocked.length} ` +
+        `with-image=${stocked.filter(imageFor).length} -> sellable=${products.length}`,
+    );
+  }
+
+  if (products.length > MAX_ONLINE) {
+    console.error(
+      `${products.length} products qualify, over the ${MAX_ONLINE} cap — refusing to publish.\n` +
+        `  Narrow ONLINE_GRID_GROUPS, or raise MAX_ONLINE deliberately if this range is intended.`,
+    );
+    process.exit(1);
+  }
+
   if (products.length === 0) {
     // Say WHY nothing qualified — otherwise diagnosing this needs POS access.
     const live = rows.filter((r) => !r.archived);
