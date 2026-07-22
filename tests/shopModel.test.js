@@ -13,6 +13,7 @@ describe('deviceModel', () => {
     ['Samsung Galaxy Z Fold 7 VividSilk Cover - Black', 'galaxy-z-fold-7', 'Galaxy Z Fold 7'],
     ['Samsung Galaxy A15 5G Flip Wallet', 'galaxy-a15-5g', 'Galaxy A15 5G'],
     ['Samsung Galaxy Note 20 Ultra Case', 'galaxy-note-20-ultra', 'Galaxy Note 20 Ultra'],
+    ['Samsung Galaxy Note 10+ BLACKTECH Case - Black', 'galaxy-note-10-plus', 'Galaxy Note 10 Plus'],
     ['Google Pixel 8 Pro Privacy Glass', 'pixel-8-pro', 'Pixel 8 Pro'],
     ['Pixel 7a Clear Case', 'pixel-7a', 'Pixel 7a'],
     ['iPad Pro 11 2024 LITO D20 Tempered Glass Screen Protector', 'ipad-pro-11', 'iPad Pro 11'],

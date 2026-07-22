@@ -53,7 +53,7 @@ const { category, categorySlug, model = '', brands = [], models = [] } = Astro.p
     </label>
   </div>
 
-  <p id="filter-status" class="hero-sub" style="margin-top: 12px;" hidden></p>
+  <p id="filter-status" class="hero-sub" role="status" style="margin-top: 12px;" hidden></p>
 </div>
 
 <script>
@@ -91,8 +91,8 @@ const { category, categorySlug, model = '', brands = [], models = [] } = Astro.p
     </a>`;
 
   const syncUrl = () => {
-    const params = new URLSearchParams();
-    for (const [k, v] of Object.entries(state)) if (v) params.set(k, v);
+    const params = new URLSearchParams(location.search);
+    for (const [k, v] of Object.entries(state)) v ? params.set(k, v) : params.delete(k);
     const qs = params.toString();
     history.replaceState(null, '', location.pathname + (qs ? `?${qs}` : ''));
   };

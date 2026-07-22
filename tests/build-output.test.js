@@ -144,7 +144,6 @@ describe('shop pages', () => {
     expect(html).toContain(group.label);
     const crumbs = jsonLdBlocks(html).find((b) => b['@type'] === 'BreadcrumbList');
     expect(crumbs.itemListElement).toHaveLength(4);
-    // Every product on the page belongs to the bucket.
     expect(html).toContain('Page 1 of');
   });
 });

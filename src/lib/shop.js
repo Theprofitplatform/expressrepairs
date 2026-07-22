@@ -59,7 +59,7 @@ export const deviceModel = (name) => {
   for (const [re, family] of MODEL_RES) {
     const m = name.match(re);
     if (!m) continue;
-    const label = `${family} ${(m[1] + (m[2] || '')).replace(/\s+/g, ' ').trim()}`;
+    const label = `${family} ${(m[1] + (m[2] || '')).replace(/\+/g, ' Plus').replace(/\s+/g, ' ').trim()}`;
     result = { key: slugifyCategory(label), label };
     break;
   }

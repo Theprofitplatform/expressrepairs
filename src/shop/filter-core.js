@@ -10,7 +10,9 @@ export const PRICE_BANDS = {
 
 // Pure filter over search-index entries ({id, name, brand, category,
 // priceCents}). Used by the category/model page filter bar (browser) and
-// tests (node). No sort => index order (= server "featured" order).
+// tests (node). No sort => index order (= server "featured" order), except
+// when `q` is set — those results are relevance-ranked by searchProducts
+// instead.
 export function filterProducts(index, { category, model, brand, price, sort, q } = {}) {
   let pool = index;
   if (category) pool = pool.filter((p) => p.category === category);
