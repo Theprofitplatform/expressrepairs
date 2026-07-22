@@ -553,6 +553,12 @@ input, select, textarea { font-family: inherit; font-size: inherit; color: inher
 .acc-grid { display:grid; grid-template-columns: repeat(3, 1fr); gap: 20px; }
 @media (max-width: 900px) { .acc-grid { grid-template-columns: repeat(2, 1fr); } }
 @media (max-width: 560px) { .acc-grid { grid-template-columns: 1fr; } }
+
+/* Dense product grid for shop browsing pages (landing/homepage keep base). */
+.acc-grid--dense { grid-template-columns: repeat(auto-fill, minmax(230px, 1fr)); gap: 16px; }
+@media (max-width: 560px) { .acc-grid--dense { grid-template-columns: repeat(2, 1fr); gap: 12px; } }
+.acc-grid--dense .acc-body { padding: 12px 14px 16px; }
+.acc-grid--dense .acc-title { font-size: 14.5px; font-weight: 600; }
 .acc-card {
   background: var(--surface); border: 1px solid var(--border); border-radius: 20px; overflow:hidden;
   transition: all .2s ease; display:flex; flex-direction:column;

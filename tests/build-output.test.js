@@ -127,6 +127,8 @@ describe('shop pages', () => {
     const category = readFileSync(`dist/shop/c/${slug}/index.html`, 'utf8');
     expect(category).toContain(p.name);
     expect(category).toContain('Page 1 of');
+    expect(category).toContain('acc-grid acc-grid--dense');
+    expect(category).toContain('section-tight');
   });
 
   it('builds device-model landing pages with a 4-level breadcrumb (skips pre-sync)', async () => {
