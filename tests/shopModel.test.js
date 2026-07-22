@@ -72,4 +72,14 @@ describe('modelFamilies', () => {
     expect(modelFamilies([])).toEqual([]);
     expect(modelFamilies([g('iPad Pro 11')]).map((f) => f.family)).toEqual(['iPad']);
   });
+  it('sorts numeric models above letter-led models (X/XS/XR/SE) within a family', () => {
+    const groups = [g('iPhone X'), g('iPhone 17 Pro'), g('iPhone XS Max'), g('iPhone 7')];
+    const fams = modelFamilies(groups);
+    expect(fams[0].models.map((m) => m.label)).toEqual(['iPhone 17 Pro', 'iPhone 7', 'iPhone XS Max', 'iPhone X']);
+  });
+  it('keeps an unknown family instead of dropping it, after the fixed order', () => {
+    const groups = [g('Watch Ultra 2'), g('iPhone 16')];
+    const fams = modelFamilies(groups);
+    expect(fams.map((f) => f.family)).toEqual(['iPhone', 'Watch']);
+  });
 });

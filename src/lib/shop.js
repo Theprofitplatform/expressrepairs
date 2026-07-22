@@ -91,10 +91,15 @@ export const modelFamilies = (groups) => {
     const family = gm.label.split(' ')[0];
     by.set(family, [...(by.get(family) ?? []), gm]);
   }
-  return FAMILY_ORDER.filter((f) => by.has(f)).map((family) => ({
+  const families = [
+    ...FAMILY_ORDER.filter((f) => by.has(f)),
+    ...[...by.keys()].filter((f) => !FAMILY_ORDER.includes(f)),
+  ];
+  const numeric = (m) => /^\d/.test(m.label.split(' ')[1] ?? '');
+  return families.map((family) => ({
     family,
-    models: [...by.get(family)].sort((a, b) =>
-      b.label.localeCompare(a.label, undefined, { numeric: true }),
+    models: [...by.get(family)].sort(
+      (a, b) => numeric(b) - numeric(a) || b.label.localeCompare(a.label, undefined, { numeric: true }),
     ),
   }));
 };
