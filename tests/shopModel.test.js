@@ -1,6 +1,6 @@
 import { describe, it, expect } from 'vitest';
 import { readFileSync } from 'node:fs';
-import { deviceModel, modelGroups } from '../src/lib/shop.js';
+import { deviceModel, modelGroups, modelFamilies } from '../src/lib/shop.js';
 
 describe('deviceModel', () => {
   it.each([
@@ -13,6 +13,7 @@ describe('deviceModel', () => {
     ['Samsung Galaxy Z Fold 7 VividSilk Cover - Black', 'galaxy-z-fold-7', 'Galaxy Z Fold 7'],
     ['Samsung Galaxy A15 5G Flip Wallet', 'galaxy-a15-5g', 'Galaxy A15 5G'],
     ['Samsung Galaxy Note 20 Ultra Case', 'galaxy-note-20-ultra', 'Galaxy Note 20 Ultra'],
+    ['Samsung Galaxy Note 10+ BLACKTECH Case - Black', 'galaxy-note-10-plus', 'Galaxy Note 10 Plus'],
     ['Google Pixel 8 Pro Privacy Glass', 'pixel-8-pro', 'Pixel 8 Pro'],
     ['Pixel 7a Clear Case', 'pixel-7a', 'Pixel 7a'],
     ['iPad Pro 11 2024 LITO D20 Tempered Glass Screen Protector', 'ipad-pro-11', 'iPad Pro 11'],
@@ -54,5 +55,31 @@ describe('modelGroups', () => {
       { key: 'iphone-16-pro', label: 'iPhone 16 Pro', count: 5 },
       { key: 'galaxy-s24-ultra', label: 'Galaxy S24 Ultra', count: 3 },
     ]);
+  });
+});
+
+describe('modelFamilies', () => {
+  const g = (label, count = 5) => ({ key: label.toLowerCase().replace(/[^a-z0-9]+/g, '-'), label, count });
+  it('groups by family in fixed order, models newest-first (numeric-aware)', () => {
+    const groups = [
+      g('Galaxy S24 Ultra'), g('iPhone 7'), g('iPhone 16 Pro'), g('Pixel 8'), g('Galaxy A15'), g('iPhone 16'),
+    ];
+    const fams = modelFamilies(groups);
+    expect(fams.map((f) => f.family)).toEqual(['iPhone', 'Galaxy', 'Pixel']);
+    expect(fams[0].models.map((m) => m.label)).toEqual(['iPhone 16 Pro', 'iPhone 16', 'iPhone 7']);
+  });
+  it('omits empty families and returns [] for no groups', () => {
+    expect(modelFamilies([])).toEqual([]);
+    expect(modelFamilies([g('iPad Pro 11')]).map((f) => f.family)).toEqual(['iPad']);
+  });
+  it('sorts numeric models above letter-led models (X/XS/XR/SE) within a family', () => {
+    const groups = [g('iPhone X'), g('iPhone 17 Pro'), g('iPhone XS Max'), g('iPhone 7')];
+    const fams = modelFamilies(groups);
+    expect(fams[0].models.map((m) => m.label)).toEqual(['iPhone 17 Pro', 'iPhone 7', 'iPhone XS Max', 'iPhone X']);
+  });
+  it('keeps an unknown family instead of dropping it, after the fixed order', () => {
+    const groups = [g('Watch Ultra 2'), g('iPhone 16')];
+    const fams = modelFamilies(groups);
+    expect(fams.map((f) => f.family)).toEqual(['iPhone', 'Watch']);
   });
 });

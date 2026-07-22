@@ -553,6 +553,12 @@ input, select, textarea { font-family: inherit; font-size: inherit; color: inher
 .acc-grid { display:grid; grid-template-columns: repeat(3, 1fr); gap: 20px; }
 @media (max-width: 900px) { .acc-grid { grid-template-columns: repeat(2, 1fr); } }
 @media (max-width: 560px) { .acc-grid { grid-template-columns: 1fr; } }
+
+/* Dense product grid for shop browsing pages (landing/homepage keep base). */
+.acc-grid--dense { grid-template-columns: repeat(auto-fill, minmax(230px, 1fr)); gap: 16px; }
+@media (max-width: 560px) { .acc-grid--dense { grid-template-columns: repeat(2, 1fr); gap: 12px; } }
+.acc-grid--dense .acc-body { padding: 12px 14px 16px; }
+.acc-grid--dense .acc-title { font-size: 14.5px; font-weight: 600; }
 .acc-card {
   background: var(--surface); border: 1px solid var(--border); border-radius: 20px; overflow:hidden;
   transition: all .2s ease; display:flex; flex-direction:column;
@@ -574,6 +580,28 @@ input, select, textarea { font-family: inherit; font-size: inherit; color: inher
 .acc-title { font-size: 17px; font-weight: 700; }
 .acc-desc { font-size: 14px; color: var(--text-muted); }
 .acc-price { margin-top: 10px; font-weight: 700; color: var(--brand-700); font-size: 15px; }
+
+/* ============ Shop filter bar (category/model pages) ============ */
+.model-nav { margin-top: 20px; display: flex; flex-direction: column; gap: 8px; }
+.model-group { border: 1px solid var(--border); border-radius: 12px; background: var(--surface); }
+.model-group summary {
+  cursor: pointer; padding: 10px 16px; font-weight: 700; font-size: 15px; list-style: none;
+}
+.model-group summary::-webkit-details-marker { display: none; }
+.model-group summary::after { content: "▾"; float: right; opacity: .5; transition: transform .15s ease; }
+.model-group[open] summary::after { transform: rotate(180deg); }
+.model-group .model-count { font-weight: 500; color: var(--text-muted); font-size: 13px; }
+.model-group .chip-row { padding: 4px 12px 14px; }
+.chip-row { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
+.filter-toolbar {
+  display: flex; flex-wrap: wrap; gap: 12px; align-items: center; margin-top: 16px;
+}
+.filter-toolbar input[type="search"] {
+  flex: 1 1 260px; min-width: 220px; box-sizing: border-box; padding: 10px 14px; font-size: 16px;
+  border: 1px solid var(--border); border-radius: 10px;
+}
+.filter-label { display: flex; align-items: center; gap: 6px; font-size: 0.9rem; white-space: nowrap; }
+.filter-label select { padding: 9px 10px; border: 1px solid var(--border); border-radius: 8px; max-width: 190px; }
 
 /* ============ Brands ============ */
 .brand-strip {

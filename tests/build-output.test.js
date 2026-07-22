@@ -127,6 +127,8 @@ describe('shop pages', () => {
     const category = readFileSync(`dist/shop/c/${slug}/index.html`, 'utf8');
     expect(category).toContain(p.name);
     expect(category).toContain('Page 1 of');
+    expect(category).toContain('acc-grid acc-grid--dense');
+    expect(category).toContain('section-tight');
   });
 
   it('builds device-model landing pages with a 4-level breadcrumb (skips pre-sync)', async () => {
@@ -144,7 +146,6 @@ describe('shop pages', () => {
     expect(html).toContain(group.label);
     const crumbs = jsonLdBlocks(html).find((b) => b['@type'] === 'BreadcrumbList');
     expect(crumbs.itemListElement).toHaveLength(4);
-    // Every product on the page belongs to the bucket.
     expect(html).toContain('Page 1 of');
   });
 });

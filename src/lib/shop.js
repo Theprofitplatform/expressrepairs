@@ -23,12 +23,18 @@ export const crossSells = (cartIds, all, n = 4) => {
     .slice(0, n);
 };
 
-// Same category, same-brand first (stable), never the product itself.
-export const relatedProducts = (p, all, n = 4) =>
-  all
+// Same category; same device model first, then same brand (stable), never
+// the product itself. deviceModel is memoized, so the catalog-wide scan per
+// product page stays cheap at build time.
+export const relatedProducts = (p, all, n = 4) => {
+  const model = deviceModel(p.name)?.key;
+  const rank = (x) =>
+    (model && deviceModel(x.name)?.key === model ? 2 : 0) + (x.brand === p.brand ? 1 : 0);
+  return all
     .filter((x) => x.category === p.category && x.id !== p.id)
-    .sort((x, y) => (y.brand === p.brand) - (x.brand === p.brand))
+    .sort((x, y) => rank(y) - rank(x))
     .slice(0, n);
+};
 
 // Leading device-model extractor. DXPOS names lead with the device
 // ("iPhone 16 Pro BLACKTECH Soft Case - Black"); multi-model items
@@ -53,7 +59,7 @@ export const deviceModel = (name) => {
   for (const [re, family] of MODEL_RES) {
     const m = name.match(re);
     if (!m) continue;
-    const label = `${family} ${(m[1] + (m[2] || '')).replace(/\s+/g, ' ').trim()}`;
+    const label = `${family} ${(m[1] + (m[2] || '')).replace(/\+/g, ' Plus').replace(/\s+/g, ' ').trim()}`;
     result = { key: slugifyCategory(label), label };
     break;
   }
@@ -74,4 +80,26 @@ export const modelGroups = (products, min = 4) => {
   return [...groups.values()]
     .filter((g) => g.count >= min)
     .sort((a, b) => b.count - a.count || a.key.localeCompare(b.key));
+};
+
+// Display grouping for the model-chip nav: 90 flat chips read as noise, so
+// bucket modelGroups() output into device families, newest models first.
+const FAMILY_ORDER = ['iPhone', 'Galaxy', 'Pixel', 'iPad'];
+export const modelFamilies = (groups) => {
+  const by = new Map();
+  for (const gm of groups) {
+    const family = gm.label.split(' ')[0];
+    by.set(family, [...(by.get(family) ?? []), gm]);
+  }
+  const families = [
+    ...FAMILY_ORDER.filter((f) => by.has(f)),
+    ...[...by.keys()].filter((f) => !FAMILY_ORDER.includes(f)),
+  ];
+  const numeric = (m) => /^\d/.test(m.label.split(' ')[1] ?? '');
+  return families.map((family) => ({
+    family,
+    models: [...by.get(family)].sort(
+      (a, b) => numeric(b) - numeric(a) || b.label.localeCompare(a.label, undefined, { numeric: true }),
+    ),
+  }));
 };
