@@ -18,6 +18,24 @@ describe('hocoCategory', () => {
     expect(hocoCategory('Hoco CA118 Magnetic Car Holder')).toBe('Mounts & Holders');
     expect(hocoCategory('Hoco UT10 32-in-1 gadget')).toBe('Accessories');
   });
+
+  it('maps leading case-brand names to Cases & Covers', () => {
+    expect(hocoCategory('Hanman | Samsung A27')).toBe('Cases & Covers');
+    expect(hocoCategory('Coco MSafe Anti Shock | iPhone 17 Pro Max')).toBe('Cases & Covers');
+    expect(hocoCategory('Otterbox Defender MagSafe | iPhone 17e')).toBe('Cases & Covers');
+    expect(hocoCategory('Speck Presidio MagSafe | iPhone 14 Plus/15 Plus - Gold Glitter')).toBe('Cases & Covers');
+    expect(hocoCategory('Raptic Military 600D Aramid Fibre Magsafe | Samsung Galaxy Fold7')).toBe('Cases & Covers');
+    expect(hocoCategory('X-doria Raptic Shield Msafe | Samsung S25 Ultra - Red')).toBe('Cases & Covers');
+  });
+
+  it('maps bare glass/dome protector names to Screen Protection', () => {
+    expect(hocoCategory('Korean Whitestone UV Dome Glass | Samsung S24')).toBe('Screen Protection');
+    expect(hocoCategory('Dragon Glass | Samsung A57')).toBe('Screen Protection');
+  });
+
+  it('keeps genuine hoco. gadgets in Accessories', () => {
+    expect(hocoCategory('hoco. HP52 Shoulder and neck massager')).toBe('Accessories');
+  });
 });
 
 describe('transformHoco', () => {
@@ -40,6 +58,7 @@ describe('transformHoco', () => {
       row({ id: 2, name: 'MaAnt D2 Grinding Pen for CPU polishing' }),
       row({ id: 3, name: '[PACK 10] Bull W Full Edge Thick Glass | Samsung S26' }),
       row({ id: 4, name: '2UUL DA51 OCA Glue Remover' }),
+      row({ id: 5, name: '[PACK of 10] Dragon Glass | Samsung A57' }),
     ];
     expect(transformHoco(rows)).toEqual([]);
   });

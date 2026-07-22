@@ -18,7 +18,7 @@ import { thumbUrl } from './sync-products.mjs';
 export const HOCO_EXCLUDE_PATTERNS = [
   /\b(MaAnt|Sunshine|2UUL|Mr Yang|Mechanic|Qianli|Relife|Aixun|JCID|TBK)\b/i, // tool brands
   /\b(OCA|separator|soldering|rework station|microscope|glue remover|reballing|test board|programmer)\b/i,
-  /\[PACK \d+\]/i, // bulk trade packs
+  /\[PACK (of )?\d+\]/i, // bulk trade packs
   /\bBull W\b/i, // bulk-glass trade brand
 ];
 
@@ -28,7 +28,12 @@ export const HOCO_EXCLUDE_PATTERNS = [
 // AirPods/tablet/watch case splits).
 const CATEGORY_RULES = [
   [/tempered glass|screen protector|privacy glass|matte glass|hydrogel|camera (lens |)?(protector|glass|guard)/i, 'Screen Protection'],
+  [/\bglass\b|\bdome\b|screen guard/i, 'Screen Protection'], // bare "Dragon Glass" / "UV Dome Glass" names, no other keyword
   [/\bcase\b|\bcover\b|\bfolio\b|\bpouch\b|ring stand/i, 'Cases & Covers'],
+  // known case-brand names with no other keyword ("Hanman | Samsung A27"); kept
+  // after the protector rules so glass-bundle names above still win. speck/
+  // raptic/x-doria added after measuring 50+ leftover Accessories rows each.
+  [/^(hanman|coco(\s?tech)?|otterbox|uag|goospery|speck|raptic|x-doria)\b/i, 'Cases & Covers'],
   [/\bcable\b|charger|charging|power bank|powerbank|\badapter\b|\badaptor\b|\bdock\b|car charge/i, 'Cables & Charging'],
   [/earbud|earphone|headphone|headset|speaker|microphone|\bmic\b/i, 'Audio'],
   [/holder|mount|\bstand\b|tripod|selfie stick/i, 'Mounts & Holders'],
