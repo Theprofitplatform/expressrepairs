@@ -92,6 +92,8 @@ describe('transformHoco', () => {
       row({ id: 11, name: 'SY10A Cashier Desk (L800xD550xH1000mm)' }),
       row({ id: 12, name: 'Hoco A1 Metal Hook Shelf (L1200xD300xH2400mm)' }),
       row({ id: 13, name: 'HOCO G100 | Intelligent film cutting machine' }),
+      row({ id: 14, name: 'Touch Digitizer | iPad 10 (10.9) HQ' }),
+      row({ id: 15, name: 'Best BST-501 opening tools with spudger' }),
     ];
     expect(transformHoco(rows)).toEqual([]);
   });

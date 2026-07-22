@@ -22,6 +22,7 @@ export const HOCO_EXCLUDE_PATTERNS = [
   /\bBull W\b/i, // bulk-glass trade brand
   /^\[(TOL\d|PT-)/i, // warehouse tool/part codes: [TOL2-2] pry tools & ESD tweezers, [PT-116] LCDs/digitizers
   /cashier desk|hook shelf|film cutting machine/i, // shop fixtures, not products
+  /touch digitizer|opening tool|spudger/i, // repair parts/tools without warehouse codes
 ];
 
 // Keyword -> existing site category. Order matters: protectors before cases
