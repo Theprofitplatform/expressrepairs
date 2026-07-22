@@ -81,3 +81,20 @@ export const modelGroups = (products, min = 4) => {
     .filter((g) => g.count >= min)
     .sort((a, b) => b.count - a.count || a.key.localeCompare(b.key));
 };
+
+// Display grouping for the model-chip nav: 90 flat chips read as noise, so
+// bucket modelGroups() output into device families, newest models first.
+const FAMILY_ORDER = ['iPhone', 'Galaxy', 'Pixel', 'iPad'];
+export const modelFamilies = (groups) => {
+  const by = new Map();
+  for (const gm of groups) {
+    const family = gm.label.split(' ')[0];
+    by.set(family, [...(by.get(family) ?? []), gm]);
+  }
+  return FAMILY_ORDER.filter((f) => by.has(f)).map((family) => ({
+    family,
+    models: [...by.get(family)].sort((a, b) =>
+      b.label.localeCompare(a.label, undefined, { numeric: true }),
+    ),
+  }));
+};

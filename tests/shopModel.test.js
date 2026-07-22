@@ -1,6 +1,6 @@
 import { describe, it, expect } from 'vitest';
 import { readFileSync } from 'node:fs';
-import { deviceModel, modelGroups } from '../src/lib/shop.js';
+import { deviceModel, modelGroups, modelFamilies } from '../src/lib/shop.js';
 
 describe('deviceModel', () => {
   it.each([
@@ -55,5 +55,21 @@ describe('modelGroups', () => {
       { key: 'iphone-16-pro', label: 'iPhone 16 Pro', count: 5 },
       { key: 'galaxy-s24-ultra', label: 'Galaxy S24 Ultra', count: 3 },
     ]);
+  });
+});
+
+describe('modelFamilies', () => {
+  const g = (label, count = 5) => ({ key: label.toLowerCase().replace(/[^a-z0-9]+/g, '-'), label, count });
+  it('groups by family in fixed order, models newest-first (numeric-aware)', () => {
+    const groups = [
+      g('Galaxy S24 Ultra'), g('iPhone 7'), g('iPhone 16 Pro'), g('Pixel 8'), g('Galaxy A15'), g('iPhone 16'),
+    ];
+    const fams = modelFamilies(groups);
+    expect(fams.map((f) => f.family)).toEqual(['iPhone', 'Galaxy', 'Pixel']);
+    expect(fams[0].models.map((m) => m.label)).toEqual(['iPhone 16 Pro', 'iPhone 16', 'iPhone 7']);
+  });
+  it('omits empty families and returns [] for no groups', () => {
+    expect(modelFamilies([])).toEqual([]);
+    expect(modelFamilies([g('iPad Pro 11')]).map((f) => f.family)).toEqual(['iPad']);
   });
 });
