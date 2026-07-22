@@ -10,6 +10,9 @@ describe('specRows', () => {
     expect(rows.SKU).toBe('SKU9');
     expect(rows.Dispatch).toMatch(/1–2 business days/);
   });
+  it('HOCO-supplied products (H- ids) quote 2–3 business days', () => {
+    expect(Object.fromEntries(specRows({ ...p, id: 'H-8250' })).Dispatch).toMatch(/2–3 business days/);
+  });
   it('omits empty fields', () => {
     expect(Object.fromEntries(specRows({ ...p, brand: '', sku: '' })).Brand).toBeUndefined();
   });

@@ -183,7 +183,9 @@ export async function onRequest({ request, env }) {
       pickup
         ? 'Pickup: Riverwood Plaza, 257 Belmore Rd, Riverwood — we\'ll have it ready for you.'
         : `Delivery to: ${shipTo}`,
-      'Orders are dispatched in 1–2 business days.',
+      // Stripe line items don't carry our product ids, so the email can't know
+      // the supplier mix — quote the range that is true for every order.
+      'Orders are dispatched in 1–3 business days.',
       '',
       'Questions? Call us on 0415 303 300.',
       '',

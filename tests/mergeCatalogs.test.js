@@ -77,4 +77,18 @@ describe('mergeCatalogs', () => {
     const m = mergeCatalogs([dxJ170], [ho()]); // ho() is 'hoco. J170 Starlight 22.5W 10000mAh power bank'
     expect(m.map((p) => p.id)).toEqual(['X-09999']);
   });
+
+  it('keeps a base model when DXPOS only has the Pro tier (CW63 vs CW63 Pro)', () => {
+    const dxPro = dx({ id: 'X-44444', name: 'hoco. CW63 Pro Fast Qi2.2 25W magnetic wireless fast charger - White' });
+    const hoBase = ho({ id: 'H-6', name: 'hoco. CW63 Fast Qi2 magnetic wireless fast charger' });
+    const m = mergeCatalogs([dxPro], [hoBase]);
+    expect(m).toHaveLength(2);
+  });
+
+  it('keeps a base model when DXPOS only has a bundle with a variant qualifier (K24 vs K24 + Mini Tripod)', () => {
+    const dxBundle = dx({ id: 'X-55555', name: 'hoco. K24 with LED Fill Light Built in Mini Tripod Support 3-axis smart gimbal' });
+    const hoBase = ho({ id: 'H-7', name: 'hoco. K24 Support 3-axis smart gimbal' });
+    const m = mergeCatalogs([dxBundle], [hoBase]);
+    expect(m).toHaveLength(2);
+  });
 });

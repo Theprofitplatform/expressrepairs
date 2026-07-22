@@ -123,6 +123,12 @@ describe('shop pages', () => {
     expect(detail).toContain('data-add-to-cart');
     expect(detail).toContain('In stock — dispatched in 1-2 business days');
 
+    const hoco = JSON.parse(readFileSync('src/data/hoco-products.json', 'utf8'));
+    if (hoco.length) {
+      const hp = readFileSync(`dist/shop/${hoco[0].id}/index.html`, 'utf8');
+      expect(hp).toContain('In stock — dispatched in 2-3 business days');
+    }
+
     const slug = p.category.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '');
     const category = readFileSync(`dist/shop/c/${slug}/index.html`, 'utf8');
     expect(category).toContain(p.name);

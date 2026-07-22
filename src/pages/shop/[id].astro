@@ -4,7 +4,7 @@ import SiteNav from '../../components/SiteNav.astro';
 import SiteFooter from '../../components/SiteFooter.astro';
 import { PRODUCTS, fmtPrice } from '../../data/products.js';
 import { breadcrumbSchema, productSchema } from '../../lib/seo.js';
-import { specRows, slugifyCategory, relatedProducts, deviceModel, modelGroups } from '../../lib/shop.js';
+import { specRows, slugifyCategory, relatedProducts, deviceModel, modelGroups, isHocoSupplied } from '../../lib/shop.js';
 import { SITE } from '../../data/site.js';
 
 export function getStaticPaths() {
@@ -59,7 +59,7 @@ const schema = [
         <div>
           <h1 style="font-size: clamp(28px, 3.2vw, 38px); font-weight: 800;">{p.name}</h1>
           <p style="font-size: 1.6rem; font-weight: 700; color: var(--brand-700); margin-top: 12px;">{fmtPrice(p.priceCents)}</p>
-          <p class="acc-desc" style="margin-top: 6px; color: var(--brand-700); font-weight: 600;">In stock — dispatched in 1-2 business days</p>
+          <p class="acc-desc" style="margin-top: 6px; color: var(--brand-700); font-weight: 600;">In stock — dispatched in {isHocoSupplied(p) ? '2-3' : '1-2'} business days</p>
           {SITE.rating?.count > 0 && (
             <p style="margin-top: 8px; font-size: 0.95rem;">
               <span style="color: var(--brand-700);" aria-hidden="true">★★★★★</span>{' '}

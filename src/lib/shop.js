@@ -3,13 +3,17 @@
 export const slugifyCategory = (name) =>
   name.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '');
 
+// HOCO-supplied products (H- ids) are ordered in from the supplier, so they
+// dispatch in 2-3 business days vs 1-2 for DXPOS stock on hand.
+export const isHocoSupplied = (p) => !!p.id?.startsWith('H-');
+
 // Spec table rows for the product page — real data only, empty fields dropped.
 export const specRows = (p) =>
   [
     ['Brand', p.brand],
     ['Category', p.category],
     ['SKU', p.sku],
-    ['Dispatch', 'Dispatched in 1–2 business days'],
+    ['Dispatch', `Dispatched in ${isHocoSupplied(p) ? '2–3' : '1–2'} business days`],
     ['Shipping', 'Flat $10.95 — free over $99 — free pickup in store'],
     ['GST', 'Included in price'],
   ].filter(([, v]) => v);

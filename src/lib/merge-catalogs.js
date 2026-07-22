@@ -25,10 +25,17 @@ export function mergeCatalogs(dxpos, hoco) {
     .filter((p) => /hoco\./i.test(p.name))
     .map((p) => ({ codes: modelCodes(p.name), tokens: nameTokens(p.name) }))
     .filter((p) => p.codes.size);
+  // A dxpos name whose EXTRA tokens include a tier qualifier is a different
+  // tier of the same model code, not a duplicate (CW63 vs CW63 Pro; K24 vs
+  // the K24 + Mini Tripod bundle) — it must never cover the base model.
+  const TIER_QUALIFIERS = new Set(['pro', 'plus', 'max', 'mini', 'ultra']);
   const covered = (codes, tokens) =>
     codes.size &&
     hocoProducts.some(
-      (p) => [...codes].every((c) => p.codes.has(c)) && [...tokens].every((t) => p.tokens.has(t)),
+      (p) =>
+        [...codes].every((c) => p.codes.has(c)) &&
+        [...tokens].every((t) => p.tokens.has(t)) &&
+        ![...p.tokens].some((t) => TIER_QUALIFIERS.has(t) && !tokens.has(t)),
     );
   const fresh = hoco.filter(
     (p) => !names.has(p.name) && !(/hoco\./i.test(p.name) && covered(modelCodes(p.name), nameTokens(p.name))),
