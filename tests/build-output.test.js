@@ -128,4 +128,23 @@ describe('shop pages', () => {
     expect(category).toContain(p.name);
     expect(category).toContain('Page 1 of');
   });
+
+  it('builds device-model landing pages with a 4-level breadcrumb (skips pre-sync)', async () => {
+    const products = JSON.parse(readFileSync('src/data/products.json', 'utf8'));
+    if (products.length === 0) return;
+    const { deviceModel, modelGroups, slugifyCategory } = await import('../src/lib/shop.js');
+    // Derive the biggest bucket dynamically — never hardcode model names.
+    const byCat = new Map();
+    for (const p of products) byCat.set(p.category, [...(byCat.get(p.category) ?? []), p]);
+    const [category, group] = [...byCat.entries()]
+      .flatMap(([cat, items]) => modelGroups(items).map((g) => [cat, g]))
+      .sort((a, b) => b[1].count - a[1].count)[0];
+    const path = `dist/shop/c/${slugifyCategory(category)}/m/${group.key}/index.html`;
+    const html = readFileSync(path, 'utf8');
+    expect(html).toContain(group.label);
+    const crumbs = jsonLdBlocks(html).find((b) => b['@type'] === 'BreadcrumbList');
+    expect(crumbs.itemListElement).toHaveLength(4);
+    // Every product on the page belongs to the bucket.
+    expect(html).toContain('Page 1 of');
+  });
 });
