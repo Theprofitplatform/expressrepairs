@@ -1,0 +1,68 @@
+import { describe, it, expect } from 'vitest';
+import { transformHoco, hocoCategory, HOCO_EXCLUDE_PATTERNS } from '../scripts/import-hoco.mjs';
+
+const row = (over = {}) => ({
+  id: 8250,
+  name: 'Hoco G9 Tempered Glass | iPhone 15 Pro',
+  rrpCents: 1990,
+  image: 'https://www.hoco.com.au/web/image/product.template/8250/image_1024',
+  ...over,
+});
+
+describe('hocoCategory', () => {
+  it('maps by name keywords', () => {
+    expect(hocoCategory('Hoco G9 Tempered Glass | iPhone 15')).toBe('Screen Protection');
+    expect(hocoCategory('COCO Ring Stand Crystal Case | Samsung Flip8')).toBe('Cases & Covers');
+    expect(hocoCategory('Hoco X101 60W USB-C to USB-C cable')).toBe('Cables & Charging');
+    expect(hocoCategory('Hoco EW60 True Wireless Earbuds')).toBe('Audio');
+    expect(hocoCategory('Hoco CA118 Magnetic Car Holder')).toBe('Mounts & Holders');
+    expect(hocoCategory('Hoco UT10 32-in-1 gadget')).toBe('Accessories');
+  });
+});
+
+describe('transformHoco', () => {
+  it('produces schema-shaped products with H- ids and hoco sku', () => {
+    const [p] = transformHoco([row()]);
+    expect(p).toMatchObject({
+      id: 'H-8250',
+      sku: '8250',
+      priceCents: 1990,
+      inStock: true,
+      category: 'Screen Protection',
+      image: 'https://www.hoco.com.au/web/image/product.template/8250/image_1024',
+      thumb: 'https://www.hoco.com.au/web/image/product.template/8250/image_256',
+    });
+  });
+
+  it('excludes repair tooling and bulk trade packs', () => {
+    const rows = [
+      row({ id: 1, name: 'Sunshine LS3 Plus LCD Screen Separator 220V' }),
+      row({ id: 2, name: 'MaAnt D2 Grinding Pen for CPU polishing' }),
+      row({ id: 3, name: '[PACK 10] Bull W Full Edge Thick Glass | Samsung S26' }),
+      row({ id: 4, name: '2UUL DA51 OCA Glue Remover' }),
+    ];
+    expect(transformHoco(rows)).toEqual([]);
+  });
+
+  it('drops rows with no usable image or price', () => {
+    expect(transformHoco([row({ image: '' })])).toEqual([]);
+    expect(transformHoco([row({ rrpCents: 0 })])).toEqual([]);
+  });
+
+  it('applies the shared name fixes (hoco casing)', () => {
+    const [p] = transformHoco([row({ name: 'hoco G9 Tempered Glass | iPhone 15' })]);
+    expect(p.name).toContain('hoco.');
+  });
+});
+
+describe('HOCO_EXCLUDE_PATTERNS', () => {
+  it('does not match ordinary consumer products', () => {
+    for (const name of [
+      'Hoco J170 22.5W 10000mAh power bank',
+      'COCO Camera Stand Case | Samsung Z Fold8',
+      'Hanman Wallet Case | Samsung A27',
+    ]) {
+      expect(HOCO_EXCLUDE_PATTERNS.some((p) => p.test(name))).toBe(false);
+    }
+  });
+});
