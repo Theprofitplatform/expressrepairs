@@ -4,8 +4,9 @@ import SiteNav from '../../../../components/SiteNav.astro';
 import SiteFooter from '../../../../components/SiteFooter.astro';
 import MobileCta from '../../../../components/MobileCta.astro';
 import ShopSearch from '../../../../components/ShopSearch.astro';
+import ShopFilters from '../../../../components/ShopFilters.astro';
 import { PRODUCTS, fmtPrice } from '../../../../data/products.js';
-import { slugifyCategory } from '../../../../lib/shop.js';
+import { slugifyCategory, modelGroups } from '../../../../lib/shop.js';
 import { breadcrumbSchema } from '../../../../lib/seo.js';
 
 export function getStaticPaths({ paginate }) {
@@ -30,9 +31,12 @@ const schema = breadcrumbSchema([
   { name: category, path: `/shop/c/${categorySlug}/` },
 ]);
 
-// ponytail: brand filter is client-side over the 48 rendered cards only — no
-// per-brand routes; add /b/<brand>/ sub-routes if cross-page filtering matters.
-const brands = [...new Set(page.data.map((p) => p.brand).filter(Boolean))].sort();
+// True whole-category brand counts (the old chips counted only this page's 48).
+const inCat = PRODUCTS.filter((p) => p.category === category);
+const brandCounts = [...new Set(inCat.map((p) => p.brand).filter(Boolean))]
+  .sort()
+  .map((name) => ({ name, count: inCat.filter((p) => p.brand === name).length }));
+const models = modelGroups(inCat);
 ---
 <Layout
   title={`${category} | Express Repairs Shop`}
@@ -57,26 +61,7 @@ const brands = [...new Set(page.data.map((p) => p.brand).filter(Boolean))].sort(
 
       <ShopSearch placeholder="Search accessories" />
 
-      <div style="margin-top: 20px; max-width: 520px;">
-        <input
-          id="model-filter"
-          type="search"
-          placeholder="Filter by your model — e.g. iPhone 15 Pro, S24 Ultra"
-          aria-label="Filter this category by device model"
-          autocomplete="off"
-          style="width: 100%; box-sizing: border-box; padding: 10px 14px; font-size: 16px; border: 1px solid var(--border, #d0d5dd); border-radius: 10px;"
-        />
-      </div>
-      <p id="model-filter-status" class="hero-sub" style="margin-top: 12px;" hidden></p>
-
-      {brands.length > 1 && (
-        <div id="brand-filter" style="display: flex; flex-wrap: wrap; gap: 8px; margin-top: 20px;" aria-label="Filter by brand">
-          <button class="btn btn-primary btn-sm" data-brand="">All brands</button>
-          {brands.map((b) => (
-            <button class="btn btn-ghost btn-sm" data-brand={b}>{b}</button>
-          ))}
-        </div>
-      )}
+      <ShopFilters category={category} categorySlug={categorySlug} brands={brandCounts} models={models} />
 
       <div class="acc-grid" data-category={category} style="margin-top: 24px;">
         {page.data.map((p) => (
@@ -112,70 +97,5 @@ const brands = [...new Set(page.data.map((p) => p.brand).filter(Boolean))].sort(
 
   <SiteFooter />
   <MobileCta />
-  <script>
-    import { searchProducts } from '../../../../shop/search-core.js';
-
-    const bar = document.getElementById('brand-filter');
-    bar?.addEventListener('click', (e) => {
-      const btn = e.target.closest('button[data-brand]');
-      if (!btn) return;
-      const brand = btn.dataset.brand;
-      for (const b of bar.querySelectorAll('button[data-brand]'))
-        b.className = `btn btn-sm ${b === btn ? 'btn-primary' : 'btn-ghost'}`;
-      for (const card of document.querySelectorAll('.acc-card[data-brand]'))
-        card.style.display = !brand || card.dataset.brand === brand ? '' : 'none';
-    });
-
-    // Model filter: searches the WHOLE category (not just this page's 48
-    // cards) via the search index, replacing the grid; clearing it restores
-    // the server-rendered page. Same matcher as site search, so "s24ultra"
-    // and "iphone15" work.
-    const grid = document.querySelector('.acc-grid');
-    const input = document.getElementById('model-filter');
-    const status = document.getElementById('model-filter-status');
-    const pagination = document.getElementById('pagination');
-    const fmtPrice = (c) => (c % 100 === 0 ? `$${c / 100}` : `$${(c / 100).toFixed(2)}`);
-    const esc = (s) => s.replace(/[&<>"']/g, (ch) => `&#${ch.charCodeAt(0)};`);
-    let orig = null;
-    let indexP = null;
-
-    const run = async () => {
-      const q = input.value.trim();
-      if (!q) {
-        if (orig !== null) { grid.innerHTML = orig; pagination.style.display = ''; status.hidden = true; }
-        return;
-      }
-      orig ??= grid.innerHTML;
-      indexP ??= fetch('/shop/search-index.json').then((r) => r.json());
-      const cat = grid.dataset.category;
-      const { hits, total } = searchProducts((await indexP).filter((p) => p.category === cat), q, 500);
-      status.hidden = false;
-      status.textContent = total
-        ? `${total} match${total === 1 ? '' : 'es'} for “${q}” in ${cat}`
-        : `No matches for “${q}” in ${cat} — try the site-wide search above.`;
-      grid.innerHTML = hits.map((p) => `
-        <a href="/shop/${esc(p.id)}/" class="acc-card" data-brand="${esc(p.brand)}">
-          <div class="acc-visual">
-            <img
-              src="https://img.expressrepairs.com.au/products/${esc(p.id)}.webp"
-              alt="${esc(p.name)}"
-              loading="lazy"
-              decoding="async"
-              width="400"
-              height="300"
-              style="width: 100%; height: auto; aspect-ratio: 4 / 3; object-fit: contain; background: #fff; padding: 12px; box-sizing: border-box;"
-            />
-          </div>
-          <div class="acc-body">
-            <div class="acc-title">${esc(p.name)}</div>
-            <div class="acc-price">${fmtPrice(p.priceCents)}</div>
-          </div>
-        </a>`).join('');
-      pagination.style.display = 'none';
-    };
-
-    let timer;
-    input?.addEventListener('input', () => { clearTimeout(timer); timer = setTimeout(run, 200); });
-  </script>
   <script src="../../../../shop/cart-count.js"></script>
 </Layout>

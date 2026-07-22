@@ -1,0 +1,152 @@
+---
+// Filter bar for category and model pages. Server renders model link-chips
+// (static SEO links to /m/<model>/ pages) and brand/price/sort controls with
+// TRUE whole-scope counts. The script filters over search-index.json via
+// filterProducts — never just the 48 server-rendered cards.
+const { category, categorySlug, model = '', brands = [], models = [] } = Astro.props;
+---
+<div id="shop-filters" data-category={category} data-model={model}>
+  {models.length > 0 && (
+    <nav aria-label="Shop by model" style="display: flex; flex-wrap: wrap; gap: 8px; margin-top: 20px;">
+      {models.map((m) => (
+        <a href={`/shop/c/${categorySlug}/m/${m.key}/`} class="btn btn-ghost btn-sm">
+          {m.label} <span style="opacity:.6">({m.count})</span>
+        </a>
+      ))}
+    </nav>
+  )}
+
+  <div style="margin-top: 20px; max-width: 520px;">
+    <input
+      id="model-filter"
+      type="search"
+      placeholder="Filter by your model — e.g. iPhone 15 Pro, S24 Ultra"
+      aria-label="Filter this list by device model or keyword"
+      autocomplete="off"
+      style="width: 100%; box-sizing: border-box; padding: 10px 14px; font-size: 16px; border: 1px solid var(--border, #d0d5dd); border-radius: 10px;"
+    />
+  </div>
+
+  {brands.length > 1 && (
+    <div data-facet="brand" style="display: flex; flex-wrap: wrap; gap: 8px; margin-top: 16px;" aria-label="Filter by brand">
+      <button class="btn btn-primary btn-sm" data-value="">All brands</button>
+      {brands.map((b) => (
+        <button class="btn btn-ghost btn-sm" data-value={b.name}>{b.name} <span style="opacity:.6">({b.count})</span></button>
+      ))}
+    </div>
+  )}
+
+  <div style="display: flex; flex-wrap: wrap; gap: 8px; margin-top: 12px; align-items: center;">
+    <div data-facet="price" style="display: flex; gap: 8px;" aria-label="Filter by price">
+      <button class="btn btn-primary btn-sm" data-value="">Any price</button>
+      <button class="btn btn-ghost btn-sm" data-value="under-20">Under $20</button>
+      <button class="btn btn-ghost btn-sm" data-value="20-50">$20–$50</button>
+      <button class="btn btn-ghost btn-sm" data-value="over-50">Over $50</button>
+    </div>
+    <label style="margin-left: auto; font-size: 0.9rem;">
+      Sort
+      <select id="sort-select" style="margin-left: 6px; padding: 8px 10px; border: 1px solid var(--border, #d0d5dd); border-radius: 8px;">
+        <option value="">Featured</option>
+        <option value="price-asc">Price: low to high</option>
+        <option value="price-desc">Price: high to low</option>
+      </select>
+    </label>
+  </div>
+
+  <p id="filter-status" class="hero-sub" style="margin-top: 12px;" hidden></p>
+</div>
+
+<script>
+  import { filterProducts } from '../shop/filter-core.js';
+
+  const root = document.getElementById('shop-filters');
+  const grid = document.querySelector('.acc-grid');
+  const pagination = document.getElementById('pagination');
+  const status = document.getElementById('filter-status');
+  const input = document.getElementById('model-filter');
+  const sortSel = document.getElementById('sort-select');
+  const { category, model } = root.dataset;
+
+  const fmtPrice = (c) => (c % 100 === 0 ? `$${c / 100}` : `$${(c / 100).toFixed(2)}`);
+  const esc = (s) => s.replace(/[&<>"']/g, (ch) => `&#${ch.charCodeAt(0)};`);
+  // ponytail: render cap keeps a filter-only view of a 2,400-product category
+  // from creating thousands of DOM nodes; raise if anyone ever pages past it.
+  const CAP = 500;
+
+  const state = { brand: '', price: '', sort: '', q: '' };
+  let orig = null;
+  let indexP = null;
+
+  const card = (p) => `
+    <a href="/shop/${esc(p.id)}/" class="acc-card" data-brand="${esc(p.brand)}">
+      <div class="acc-visual">
+        <img src="https://img.expressrepairs.com.au/products/${esc(p.id)}.webp" alt="${esc(p.name)}"
+          loading="lazy" decoding="async" width="400" height="300"
+          style="width: 100%; height: auto; aspect-ratio: 4 / 3; object-fit: contain; background: #fff; padding: 12px; box-sizing: border-box;" />
+      </div>
+      <div class="acc-body">
+        <div class="acc-title">${esc(p.name)}</div>
+        <div class="acc-price">${fmtPrice(p.priceCents)}</div>
+      </div>
+    </a>`;
+
+  const syncUrl = () => {
+    const params = new URLSearchParams();
+    for (const [k, v] of Object.entries(state)) if (v) params.set(k, v);
+    const qs = params.toString();
+    history.replaceState(null, '', location.pathname + (qs ? `?${qs}` : ''));
+  };
+
+  const apply = async () => {
+    syncUrl();
+    if (!state.brand && !state.price && !state.sort && !state.q) {
+      if (orig !== null) { grid.innerHTML = orig; pagination.style.display = ''; status.hidden = true; }
+      return;
+    }
+    orig ??= grid.innerHTML;
+    indexP ??= fetch('/shop/search-index.json').then((r) => r.json());
+    const hits = filterProducts(await indexP, { category, model, ...state });
+    status.hidden = false;
+    status.textContent = hits.length
+      ? `${hits.length} product${hits.length === 1 ? '' : 's'}${hits.length > CAP ? ` — showing first ${CAP}` : ''}`
+      : 'No products match those filters — clear one and try again.';
+    grid.innerHTML = hits.slice(0, CAP).map(card).join('');
+    pagination.style.display = 'none';
+  };
+
+  for (const facet of ['brand', 'price']) {
+    const bar = root.querySelector(`[data-facet="${facet}"]`);
+    bar?.addEventListener('click', (e) => {
+      const btn = e.target.closest('button[data-value]');
+      if (!btn) return;
+      state[facet] = btn.dataset.value;
+      for (const b of bar.querySelectorAll('button[data-value]'))
+        b.className = `btn btn-sm ${b === btn ? 'btn-primary' : 'btn-ghost'}`;
+      apply();
+    });
+  }
+  sortSel?.addEventListener('change', () => { state.sort = sortSel.value; apply(); });
+  let timer;
+  input?.addEventListener('input', () => {
+    clearTimeout(timer);
+    timer = setTimeout(() => { state.q = input.value.trim(); apply(); }, 200);
+  });
+
+  // Restore shareable/back-button state from the URL.
+  const params = new URLSearchParams(location.search);
+  let dirty = false;
+  for (const k of Object.keys(state)) {
+    const v = params.get(k);
+    if (!v) continue;
+    state[k] = v;
+    dirty = true;
+    if (k === 'q') input && (input.value = v);
+    if (k === 'sort') sortSel && (sortSel.value = v);
+    if (k === 'brand' || k === 'price') {
+      const bar = root.querySelector(`[data-facet="${k}"]`);
+      for (const b of bar?.querySelectorAll('button[data-value]') ?? [])
+        b.className = `btn btn-sm ${b.dataset.value === v ? 'btn-primary' : 'btn-ghost'}`;
+    }
+  }
+  if (dirty) apply();
+</script>

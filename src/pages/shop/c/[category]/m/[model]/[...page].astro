@@ -4,6 +4,7 @@ import SiteNav from '../../../../../../components/SiteNav.astro';
 import SiteFooter from '../../../../../../components/SiteFooter.astro';
 import MobileCta from '../../../../../../components/MobileCta.astro';
 import ShopSearch from '../../../../../../components/ShopSearch.astro';
+import ShopFilters from '../../../../../../components/ShopFilters.astro';
 import { PRODUCTS, fmtPrice } from '../../../../../../data/products.js';
 import { slugifyCategory, deviceModel, modelGroups } from '../../../../../../lib/shop.js';
 import { breadcrumbSchema } from '../../../../../../lib/seo.js';
@@ -25,6 +26,13 @@ export function getStaticPaths({ paginate }) {
 
 const { page, category, modelLabel } = Astro.props;
 const { category: categorySlug, model: modelKey } = Astro.params;
+
+const bucket = PRODUCTS.filter(
+  (p) => p.category === category && deviceModel(p.name)?.key === modelKey,
+);
+const brandCounts = [...new Set(bucket.map((p) => p.brand).filter(Boolean))]
+  .sort()
+  .map((name) => ({ name, count: bucket.filter((p) => p.brand === name).length }));
 
 const navLinks = [
   { label: 'Repairs', href: '/repairs/' },
@@ -65,6 +73,8 @@ const schema = breadcrumbSchema([
       <p class="hero-sub">{page.total} products for {modelLabel} — same stock as our counter at Riverwood Plaza.</p>
 
       <ShopSearch placeholder="Search accessories" />
+
+      <ShopFilters category={category} categorySlug={categorySlug} model={modelKey} brands={brandCounts} />
 
       <div class="acc-grid" style="margin-top: 24px;">
         {page.data.map((p) => (
