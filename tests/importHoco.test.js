@@ -26,6 +26,19 @@ describe('hocoCategory', () => {
     expect(hocoCategory('Speck Presidio MagSafe | iPhone 14 Plus/15 Plus - Gold Glitter')).toBe('Cases & Covers');
     expect(hocoCategory('Raptic Military 600D Aramid Fibre Magsafe | Samsung Galaxy Fold7')).toBe('Cases & Covers');
     expect(hocoCategory('X-doria Raptic Shield Msafe | Samsung S25 Ultra - Red')).toBe('Cases & Covers');
+    expect(hocoCategory('Mercury SF Jelly | Samsung S24')).toBe('Cases & Covers');
+  });
+
+  it('strips a leading SKU bracket code before matching', () => {
+    expect(hocoCategory('[FW3-08] Hanman | iPhone 16')).toBe('Cases & Covers');
+    expect(hocoCategory('[BWS3-11] Pelican Ranger | iPhone 13 Pro')).toBe('Cases & Covers');
+  });
+
+  it('maps additional case-line prefixes found in the stripped-name recount', () => {
+    expect(hocoCategory('Editor Transparent Capsule | Samsung S24')).toBe('Cases & Covers');
+    expect(hocoCategory('Korean Editor Super Colors Fit SF Jelly | Samsung S24')).toBe('Cases & Covers');
+    expect(hocoCategory('Lifeproof FRE | iPhone 15')).toBe('Cases & Covers');
+    expect(hocoCategory('Redpepper Waterproof | iPhone 15')).toBe('Cases & Covers');
   });
 
   it('maps bare glass/dome protector names to Screen Protection', () => {
@@ -59,6 +72,8 @@ describe('transformHoco', () => {
       row({ id: 3, name: '[PACK 10] Bull W Full Edge Thick Glass | Samsung S26' }),
       row({ id: 4, name: '2UUL DA51 OCA Glue Remover' }),
       row({ id: 5, name: '[PACK of 10] Dragon Glass | Samsung A57' }),
+      row({ id: 6, name: '[Pack of 10pcs $1/unit] iRoo Tiger W5' }),
+      row({ id: 7, name: '[PACK20] backing leather' }),
     ];
     expect(transformHoco(rows)).toEqual([]);
   });

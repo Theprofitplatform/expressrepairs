@@ -18,7 +18,7 @@ import { thumbUrl } from './sync-products.mjs';
 export const HOCO_EXCLUDE_PATTERNS = [
   /\b(MaAnt|Sunshine|2UUL|Mr Yang|Mechanic|Qianli|Relife|Aixun|JCID|TBK)\b/i, // tool brands
   /\b(OCA|separator|soldering|rework station|microscope|glue remover|reballing|test board|programmer)\b/i,
-  /\[PACK (of )?\d+\]/i, // bulk trade packs
+  /\[pack[^\]]*\d[^\]]*\]/i, // bulk trade packs: [PACK 10], [Pack of 10pcs $1/unit], [PACK20]
   /\bBull W\b/i, // bulk-glass trade brand
 ];
 
@@ -32,14 +32,21 @@ const CATEGORY_RULES = [
   [/\bcase\b|\bcover\b|\bfolio\b|\bpouch\b|ring stand/i, 'Cases & Covers'],
   // known case-brand names with no other keyword ("Hanman | Samsung A27"); kept
   // after the protector rules so glass-bundle names above still win. speck/
-  // raptic/x-doria added after measuring 50+ leftover Accessories rows each.
-  [/^(hanman|coco(\s?tech)?|otterbox|uag|goospery|speck|raptic|x-doria)\b/i, 'Cases & Covers'],
+  // raptic/x-doria/mercury/pelican/lifeproof/redpepper/editor/korean added
+  // after measuring leftover Accessories rows on bracket-stripped names (see
+  // report — mercury/pelican/editor/korean clear 50, lifeproof/redpepper
+  // don't but are unambiguous case brands, so kept anyway).
+  [/^(hanman|coco(\s?tech)?|otterbox|uag|goospery|speck|raptic|x-doria|mercury|pelican|lifeproof|redpepper|editor|korean)\b/i, 'Cases & Covers'],
   [/\bcable\b|charger|charging|power bank|powerbank|\badapter\b|\badaptor\b|\bdock\b|car charge/i, 'Cables & Charging'],
   [/earbud|earphone|headphone|headset|speaker|microphone|\bmic\b/i, 'Audio'],
   [/holder|mount|\bstand\b|tripod|selfie stick/i, 'Mounts & Holders'],
 ];
-export const hocoCategory = (name) =>
-  CATEGORY_RULES.find(([re]) => re.test(name))?.[1] || 'Accessories';
+export const hocoCategory = (name) => {
+  // strip one leading SKU bracket code ("[FW3-08] Hanman | ...") so the
+  // ^-anchored case-brand rule (and every other rule) sees the real name.
+  const n = name.replace(/^\[[^\]]*\]\s*/, '');
+  return CATEGORY_RULES.find(([re]) => re.test(n))?.[1] || 'Accessories';
+};
 
 // Pure transform: catalogue snapshot rows -> productSchema-shaped entries.
 // applyCatalogFixes gives us the shared name repairs, brand inference, the
