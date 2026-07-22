@@ -4,7 +4,7 @@ import SiteNav from '../../components/SiteNav.astro';
 import SiteFooter from '../../components/SiteFooter.astro';
 import { PRODUCTS, fmtPrice } from '../../data/products.js';
 import { breadcrumbSchema, productSchema } from '../../lib/seo.js';
-import { specRows, slugifyCategory, relatedProducts } from '../../lib/shop.js';
+import { specRows, slugifyCategory, relatedProducts, deviceModel, modelGroups } from '../../lib/shop.js';
 import { SITE } from '../../data/site.js';
 
 export function getStaticPaths() {
@@ -12,6 +12,10 @@ export function getStaticPaths() {
 }
 const { p } = Astro.props;
 const related = relatedProducts(p, PRODUCTS);
+// Link to the model landing page only when Task 3 actually built one (>= 4 products).
+const model = deviceModel(p.name);
+const hasModelPage =
+  model && modelGroups(PRODUCTS.filter((x) => x.category === p.category)).some((g) => g.key === model.key);
 // Store-level Google rating only — never emitted as Product aggregateRating.
 const googleProfile = (SITE.sameAs || []).find((u) => u.includes('g.page') || u.includes('google'));
 
@@ -69,6 +73,13 @@ const schema = [
             <button class="btn btn-primary btn-lg" data-add-to-cart data-id={p.id} data-name={p.name} data-price={p.priceCents}>Add to cart</button>
           </div>
           <p style="margin-top: 16px;"><a href="/shop/cart/">View cart (<span data-cart-count>0</span>)</a></p>
+          {hasModelPage && (
+            <p style="margin-top: 12px;">
+              <a href={`/shop/c/${slugifyCategory(p.category)}/m/${model.key}/`} class="btn btn-ghost btn-sm">
+                More {p.category} for {model.label} →
+              </a>
+            </p>
+          )}
           <p class="hero-sub" style="margin-top: 20px;">GST included. Flat $10.95 shipping — free over $99 — or free pickup in store at Riverwood Plaza.</p>
           <dl style="margin-top: 24px; display: grid; grid-template-columns: max-content 1fr; gap: 8px 20px; font-size: 0.95rem;">
             {specRows(p).map(([label, value]) => (

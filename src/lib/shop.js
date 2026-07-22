@@ -23,12 +23,18 @@ export const crossSells = (cartIds, all, n = 4) => {
     .slice(0, n);
 };
 
-// Same category, same-brand first (stable), never the product itself.
-export const relatedProducts = (p, all, n = 4) =>
-  all
+// Same category; same device model first, then same brand (stable), never
+// the product itself. deviceModel is memoized, so the catalog-wide scan per
+// product page stays cheap at build time.
+export const relatedProducts = (p, all, n = 4) => {
+  const model = deviceModel(p.name)?.key;
+  const rank = (x) =>
+    (model && deviceModel(x.name)?.key === model ? 2 : 0) + (x.brand === p.brand ? 1 : 0);
+  return all
     .filter((x) => x.category === p.category && x.id !== p.id)
-    .sort((x, y) => (y.brand === p.brand) - (x.brand === p.brand))
+    .sort((x, y) => rank(y) - rank(x))
     .slice(0, n);
+};
 
 // Leading device-model extractor. DXPOS names lead with the device
 // ("iPhone 16 Pro BLACKTECH Soft Case - Black"); multi-model items
