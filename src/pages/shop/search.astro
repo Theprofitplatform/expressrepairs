@@ -50,7 +50,7 @@ const schema = breadcrumbSchema([
         <button type="submit" class="btn btn-primary btn-sm">Search</button>
       </form>
 
-      <p id="search-status" class="hero-sub" style="margin-top: 20px;">Type to search 3,000+ accessories.</p>
+      <p id="search-status" class="hero-sub" style="margin-top: 20px;">Type to search 7,000+ accessories.</p>
 
       <div id="search-results" class="acc-grid" style="margin-top: 16px;"></div>
 
@@ -61,7 +61,7 @@ const schema = breadcrumbSchema([
   <SiteFooter />
   <MobileCta />
   <script>
-    import { searchProducts } from '../../shop/search-core.js';
+    import { searchProducts, thumbSrc } from '../../shop/search-core.js';
 
     const input = document.getElementById('q');
     const status = document.getElementById('search-status');
@@ -78,20 +78,21 @@ const schema = breadcrumbSchema([
 
     const run = async () => {
       const q = input.value.trim();
-      if (!q) { status.textContent = 'Type to search 3,000+ accessories.'; results.innerHTML = ''; return; }
+      if (!q) { status.textContent = 'Type to search 7,000+ accessories.'; results.innerHTML = ''; return; }
       const { hits, total, partial } = searchProducts(await load(), q, 50);
       status.textContent = hits.length
         ? partial
           ? `No exact matches for “${q}” — showing ${total} closest result${total === 1 ? '' : 's'}`
           : `${total} result${total === 1 ? '' : 's'}${total > 50 ? ', showing first 50' : ''}`
         : `No results for “${q}” — try fewer words, or call us on 0415 303 300.`;
-      // Every product image is mirrored to R2 keyed by id, so the thumb URL is
-      // derived here instead of bloating the search index with 3,500 URLs.
+      // DXPOS images are mirrored to R2 keyed by id; HOCO products (H- ids)
+      // have no R2 copy, so the thumb URL is derived here per-id instead of
+      // bloating the search index with a URL per product.
       results.innerHTML = hits.slice(0, 50).map((p) => `
         <a href="/shop/${esc(p.id)}/" class="acc-card">
           <div class="acc-visual">
             <img
-              src="https://img.expressrepairs.com.au/products/${esc(p.id)}.webp"
+              src="${esc(thumbSrc(p.id))}"
               alt="${esc(p.name)}"
               loading="lazy"
               decoding="async"

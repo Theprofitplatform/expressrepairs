@@ -58,6 +58,7 @@ const { category, categorySlug, model = '', brands = [], models = [] } = Astro.p
 
 <script>
   import { filterProducts } from '../shop/filter-core.js';
+  import { thumbSrc } from '../shop/search-core.js';
 
   const root = document.getElementById('shop-filters');
   const grid = document.querySelector('.acc-grid');
@@ -80,7 +81,7 @@ const { category, categorySlug, model = '', brands = [], models = [] } = Astro.p
   const card = (p) => `
     <a href="/shop/${esc(p.id)}/" class="acc-card" data-brand="${esc(p.brand)}">
       <div class="acc-visual">
-        <img src="https://img.expressrepairs.com.au/products/${esc(p.id)}.webp" alt="${esc(p.name)}"
+        <img src="${esc(thumbSrc(p.id))}" alt="${esc(p.name)}"
           loading="lazy" decoding="async" width="400" height="300"
           style="width: 100%; height: auto; aspect-ratio: 4 / 3; object-fit: contain; background: #fff; padding: 12px; box-sizing: border-box;" />
       </div>

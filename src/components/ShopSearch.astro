@@ -81,7 +81,7 @@ const { placeholder = 'Search accessories — e.g. iPhone 15 case' } = Astro.pro
 </style>
 
 <script>
-  import { searchProducts } from '../shop/search-core.js';
+  import { searchProducts, thumbSrc } from '../shop/search-core.js';
 
   const fmtPrice = (c) => (c % 100 === 0 ? `$${c / 100}` : `$${(c / 100).toFixed(2)}`);
   const esc = (s) => s.replace(/[&<>"']/g, (ch) => `&#${ch.charCodeAt(0)};`);
@@ -108,7 +108,7 @@ const { placeholder = 'Search accessories — e.g. iPhone 15 case' } = Astro.pro
       box.innerHTML =
         hits.slice(0, 6).map((p) => `
           <a href="/shop/${esc(p.id)}/" role="option">
-            <img src="https://img.expressrepairs.com.au/products/${esc(p.id)}.webp" alt="" loading="lazy" width="44" height="44" />
+            <img src="${esc(thumbSrc(p.id))}" alt="" loading="lazy" width="44" height="44" />
             <span class="s-name">${esc(p.name)}</span>
             <span class="s-price">${fmtPrice(p.priceCents)}</span>
           </a>`).join('') +

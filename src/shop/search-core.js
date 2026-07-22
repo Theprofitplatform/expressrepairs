@@ -4,6 +4,14 @@
 // ponytail: normalized-substring scoring, no search library — revisit only if
 // relevance complaints survive this.
 
+// Thumbnail URL for a search-index entry's id. DXPOS products (X-<n>) mirror
+// their photo to R2; HOCO products (H-<n>) have no R2 copy, only hoco.com.au's
+// own small render.
+export const thumbSrc = (id) =>
+  id.startsWith('H-')
+    ? `https://www.hoco.com.au/web/image/product.template/${id.slice(2)}/image_256`
+    : `https://img.expressrepairs.com.au/products/${id}.webp`;
+
 // One-way is enough where products only ever use one spelling.
 const SYN = {
   cover: ['case'], case: ['cover'],
