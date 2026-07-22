@@ -36,15 +36,16 @@ const CATEGORY_RULES = [
   // after measuring leftover Accessories rows on bracket-stripped names (see
   // report — mercury/pelican/editor/korean clear 50, lifeproof/redpepper
   // don't but are unambiguous case brands, so kept anyway).
-  [/^(hanman|coco(\s?tech)?|otterbox|uag|goospery|speck|raptic|x-doria|mercury|pelican|lifeproof|redpepper|editor|korean)\b/i, 'Cases & Covers'],
+  [/^(hanman|coco(\s?tech)?|otterbox|uag|goospery|speck|raptic|x-doria|mercury|pelican|lifeproof|redpepper|editor|korean|iface|caseology)\b/i, 'Cases & Covers'],
   [/\bcable\b|charger|charging|power bank|powerbank|\badapter\b|\badaptor\b|\bdock\b|car charge/i, 'Cables & Charging'],
   [/earbud|earphone|headphone|headset|speaker|microphone|\bmic\b/i, 'Audio'],
   [/holder|mount|\bstand\b|tripod|selfie stick/i, 'Mounts & Holders'],
 ];
 export const hocoCategory = (name) => {
-  // strip one leading SKU bracket code ("[FW3-08] Hanman | ...") so the
-  // ^-anchored case-brand rule (and every other rule) sees the real name.
-  const n = name.replace(/^\[[^\]]*\]\s*/, '');
+  // strip repeated leading SKU bracket codes ("[FW3-08] Hanman | ..." or
+  // "[FW9-6][BWF5-08] Pelican Ranger | ...") so the ^-anchored case-brand
+  // rule (and every other rule) sees the real name.
+  const n = name.replace(/^(\[[^\]]*\]\s*)+/, '');
   return CATEGORY_RULES.find(([re]) => re.test(n))?.[1] || 'Accessories';
 };
 

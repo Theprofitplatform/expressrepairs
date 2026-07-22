@@ -34,6 +34,12 @@ describe('hocoCategory', () => {
     expect(hocoCategory('[BWS3-11] Pelican Ranger | iPhone 13 Pro')).toBe('Cases & Covers');
   });
 
+  it('strips repeated leading SKU bracket codes before matching', () => {
+    expect(hocoCategory('[FW9-6][BWF5-08] Pelican Ranger | Samsung S22 Plus')).toBe('Cases & Covers');
+    expect(hocoCategory('[FW1-24][FW8-07] iFace mall | Samsung S22 Ultra - Black')).toBe('Cases & Covers');
+    expect(hocoCategory('[FW7-31][FW7-28] Caseology Dual Layer Heavy Duty | iPhone 7 Plus/6 Plus')).toBe('Cases & Covers');
+  });
+
   it('maps additional case-line prefixes found in the stripped-name recount', () => {
     expect(hocoCategory('Editor Transparent Capsule | Samsung S24')).toBe('Cases & Covers');
     expect(hocoCategory('Korean Editor Super Colors Fit SF Jelly | Samsung S24')).toBe('Cases & Covers');
