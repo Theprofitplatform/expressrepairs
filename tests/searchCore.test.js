@@ -11,7 +11,12 @@ describe('searchProducts', () => {
     const { hits, partial } = searchProducts(INDEX, 'iphone15 case');
     expect(partial).toBe(false);
     expect(hits.length).toBeGreaterThan(10);
-    expect(hits[0].name).toMatch(/iPhone 15/);
+    // Top hits tie on score, so don't pin an exact #1 — a HOCO multi-model
+    // name ("iPhone 13/14/15") can tie-break ahead of a single-model one
+    // now that leading SKU bracket codes no longer pad HOCO names. Assert
+    // the digit-letter-boundary match actually surfaces an iPhone 15 product
+    // near the top instead.
+    expect(hits.slice(0, 3).some((h) => /iPhone 15\b/.test(h.name))).toBe(true);
   });
 
   it('matches "s24ultra" against "S24 Ultra" names', () => {

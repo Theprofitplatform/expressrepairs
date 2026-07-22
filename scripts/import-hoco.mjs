@@ -20,6 +20,8 @@ export const HOCO_EXCLUDE_PATTERNS = [
   /\b(OCA|separator|soldering|rework station|microscope|glue remover|reballing|test board|programmer)\b/i,
   /\[pack[^\]]*\d[^\]]*\]/i, // bulk trade packs: [PACK 10], [Pack of 10pcs $1/unit], [PACK20]
   /\bBull W\b/i, // bulk-glass trade brand
+  /^\[(TOL\d|PT-)/i, // warehouse tool/part codes: [TOL2-2] pry tools & ESD tweezers, [PT-116] LCDs/digitizers
+  /cashier desk|hook shelf|film cutting machine/i, // shop fixtures, not products
 ];
 
 // Keyword -> existing site category. Order matters: protectors before cases
@@ -61,17 +63,23 @@ export function transformHoco(rows) {
           r.image &&
           !HOCO_EXCLUDE_PATTERNS.some((p) => p.test(r.name)),
       )
-      .map((r) => ({
-        id: `H-${r.id}`,
-        name: r.name,
-        category: hocoCategory(r.name),
-        brand: '', // fixBrand infers from the name (hoco./COCO/Hanman/platform)
-        priceCents: r.rrpCents,
-        image: r.image,
-        thumb: thumbUrl(r.image),
-        inStock: true,
-        sku: String(r.id),
-      })),
+      .map((r) => {
+        // Strip leading SKU bracket codes ("[FW3-08] Hanman | ...") from the
+        // display name itself — same regex hocoCategory uses — so pages,
+        // search, and feeds never show a warehouse code to a shopper.
+        const name = r.name.replace(/^(\[[^\]]*\]\s*)+/, '');
+        return {
+          id: `H-${r.id}`,
+          name,
+          category: hocoCategory(name),
+          brand: '', // fixBrand infers from the name (hoco./COCO/Hanman/platform)
+          priceCents: r.rrpCents,
+          image: r.image,
+          thumb: thumbUrl(r.image),
+          inStock: true,
+          sku: String(r.id),
+        };
+      }),
   );
 }
 

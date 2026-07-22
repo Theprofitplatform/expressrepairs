@@ -84,6 +84,18 @@ describe('transformHoco', () => {
     expect(transformHoco(rows)).toEqual([]);
   });
 
+  it('excludes [TOL...]-coded tools, [PT...]-coded parts, and shop fixtures', () => {
+    const rows = [
+      row({ id: 8, name: '[TOL3-2] BST-129 Large Double Bend Head Plastic Pry Tools' }),
+      row({ id: 9, name: '[TOL1-4] SUGON 3005D 220V Adjustable Digital DC Power Supply AU Plug' }),
+      row({ id: 10, name: '[PT-B01] OEM Touch Digitizer | iPad 9 (10.2) - Black' }),
+      row({ id: 11, name: 'SY10A Cashier Desk (L800xD550xH1000mm)' }),
+      row({ id: 12, name: 'Hoco A1 Metal Hook Shelf (L1200xD300xH2400mm)' }),
+      row({ id: 13, name: 'HOCO G100 | Intelligent film cutting machine' }),
+    ];
+    expect(transformHoco(rows)).toEqual([]);
+  });
+
   it('drops rows with no usable image or price', () => {
     expect(transformHoco([row({ image: '' })])).toEqual([]);
     expect(transformHoco([row({ rrpCents: 0 })])).toEqual([]);
@@ -93,6 +105,17 @@ describe('transformHoco', () => {
     const [p] = transformHoco([row({ name: 'hoco G9 Tempered Glass | iPhone 15' })]);
     expect(p.name).toContain('hoco.');
   });
+
+  it('strips leading SKU bracket codes from the display name', () => {
+    const [p] = transformHoco([row({ name: '[FW3-08] Hanman | Samsung A27' })]);
+    expect(p.name).toBe('Hanman | Samsung A27');
+    expect(p.category).toBe('Cases & Covers');
+  });
+
+  it('strips repeated leading SKU bracket codes from the display name', () => {
+    const [p] = transformHoco([row({ name: '[FW9-6][BWF5-08] Pelican Ranger | Samsung S22 Plus' })]);
+    expect(p.name).toBe('Pelican Ranger | Samsung S22 Plus');
+  });
 });
 
 describe('HOCO_EXCLUDE_PATTERNS', () => {
@@ -101,6 +124,7 @@ describe('HOCO_EXCLUDE_PATTERNS', () => {
       'Hoco J170 22.5W 10000mAh power bank',
       'COCO Camera Stand Case | Samsung Z Fold8',
       'Hanman Wallet Case | Samsung A27',
+      '[FW3-08] Hanman | Samsung A27', // ordinary case-line SKU bracket, not a TOL/PT warehouse code
     ]) {
       expect(HOCO_EXCLUDE_PATTERNS.some((p) => p.test(name))).toBe(false);
     }
