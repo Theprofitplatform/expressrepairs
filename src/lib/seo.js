@@ -78,26 +78,48 @@ export function businessRef(site) {
   return { '@type': 'LocalBusiness', '@id': BUSINESS_ID, name: site.name };
 }
 
+// Shared product description: meta description + Product/feed JSON-LD. Tag
+// labels make it unique per product where the bare name template was not.
+export function productDescription(p, tagLabels = []) {
+  const features = tagLabels.slice(0, 3).join(', ');
+  return `Buy ${p.name}${features ? ` — ${features}` : ''} (${p.category.toLowerCase()}) online. Ship Australia-wide or free pickup at Express Repairs, Riverwood Plaza.`;
+}
+
 // Product JSON-LD for shop pages. Deliberately NO aggregateRating/review —
 // the only real rating is the store-level Google one (see localBusinessSchema).
-export function productSchema(p) {
+export function productSchema(p, description = '') {
   return {
     '@context': 'https://schema.org',
     '@type': 'Product',
     name: p.name,
     image: [p.image],
+    description: description || undefined,
     sku: p.sku || undefined,
     mpn: p.sku || undefined,
     brand: p.brand ? { '@type': 'Brand', name: p.brand } : undefined,
     offers: {
       '@type': 'Offer',
-      url: `https://www.expressrepairs.com.au/shop/${p.id}/`,
+      url: `${SITE_URL}/shop/${p.id}/`,
       price: (p.priceCents / 100).toFixed(2),
       priceCurrency: 'AUD',
-      availability: 'https://schema.org/InStock',
+      availability: p.inStock === false ? 'https://schema.org/OutOfStock' : 'https://schema.org/InStock',
       itemCondition: 'https://schema.org/NewCondition',
       seller: { '@type': 'Organization', name: 'Express Repairs' },
     },
+  };
+}
+
+// ItemList JSON-LD for a paginated listing page (Astro paginate() page object).
+export function itemListSchema(page) {
+  return {
+    '@context': 'https://schema.org',
+    '@type': 'ItemList',
+    numberOfItems: page.total,
+    itemListElement: page.data.map((p, i) => ({
+      '@type': 'ListItem',
+      position: page.start + i + 1,
+      url: canonical(`/shop/${p.id}/`),
+    })),
   };
 }
 

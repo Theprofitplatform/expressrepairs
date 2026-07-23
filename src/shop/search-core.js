@@ -9,6 +9,8 @@
 // (run it after any catalog import so new ids exist before this URL is hit).
 export const thumbSrc = (id) => `https://img.expressrepairs.com.au/products/${id}.webp`;
 
+import { tagsFor } from '../lib/tags.js';
+
 // One-way is enough where products only ever use one spelling.
 const SYN = {
   cover: ['case'], case: ['cover'],
@@ -46,7 +48,7 @@ export function searchProducts(index, q, limit = 50) {
   const scored = [];
   for (const p of index) {
     p._name ??= norm(p.name);
-    p._all ??= norm(`${p.name} ${p.brand} ${p.category}`);
+    p._all ??= norm(`${p.name} ${p.brand} ${p.category} ${tagsFor(p).join(' ')}`);
     let matched = 0;
     let score = 0;
     for (const t of tokens) {

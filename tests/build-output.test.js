@@ -137,6 +137,41 @@ describe('shop pages', () => {
     expect(category).toContain('section-tight');
   });
 
+  it('paginated category pages canonicalize to themselves, not page 1', async () => {
+    const { PRODUCTS } = await import('../src/data/products.js');
+    const { slugifyCategory } = await import('../src/lib/shop.js');
+    const byCat = new Map();
+    for (const p of PRODUCTS) byCat.set(p.category, (byCat.get(p.category) ?? 0) + 1);
+    const big = [...byCat.entries()].find(([, n]) => n > 48)[0];
+    const page2 = readFileSync(`dist/shop/c/${slugifyCategory(big)}/2/index.html`, 'utf8');
+    expect(page2).toContain(`rel="canonical" href="https://expressrepairs.com.au/shop/c/${slugifyCategory(big)}/2/"`);
+  });
+
+  it('product pages ship their own og:image, description, and stock-true schema', async () => {
+    const { PRODUCTS } = await import('../src/data/products.js');
+    const p = PRODUCTS[0];
+    const detail = readFileSync(`dist/shop/${p.id}/index.html`, 'utf8');
+    expect(detail).toContain(`property="og:image" content="${p.image}"`);
+    const product = jsonLdBlocks(detail).find((b) => b['@type'] === 'Product');
+    expect(product.description).toContain(p.name);
+    expect(product.offers.url).toBe(`https://expressrepairs.com.au/shop/${p.id}/`);
+  });
+
+  it('builds curated tag landing pages with ItemList schema, listed in the sitemap', async () => {
+    const { CURATED_TAGS } = await import('../src/lib/tags.js');
+    const { PRODUCTS } = await import('../src/data/products.js');
+    const [biggest] = CURATED_TAGS
+      .map((t) => [t.tag, PRODUCTS.filter((p) => p.tags.includes(t.tag)).length])
+      .sort((a, b) => b[1] - a[1])[0];
+    const html = readFileSync(`dist/shop/t/${biggest}/index.html`, 'utf8');
+    expect(html).toContain('Page 1 of');
+    const list = jsonLdBlocks(html).find((b) => b['@type'] === 'ItemList');
+    expect(list.numberOfItems).toBeGreaterThan(0);
+    const sm = readFileSync('dist/sitemap-0.xml', 'utf8');
+    expect(sm).toContain(`/shop/t/${biggest}/`);
+    expect(sm).not.toContain('/shop/search/');
+  });
+
   it('builds device-model landing pages with a 4-level breadcrumb (skips pre-sync)', async () => {
     const products = JSON.parse(readFileSync('src/data/products.json', 'utf8'));
     if (products.length === 0) return;

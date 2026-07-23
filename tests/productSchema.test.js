@@ -15,4 +15,12 @@ describe('productSchema', () => {
   it('omits brand when empty', () => {
     expect(productSchema({ ...p, brand: '' }).brand).toBeUndefined();
   });
+  it('reflects real stock state and canonical apex host', () => {
+    expect(productSchema({ ...p, inStock: false }).offers.availability).toBe('https://schema.org/OutOfStock');
+    expect(productSchema(p).offers.url).toBe('https://expressrepairs.com.au/shop/T-1/');
+  });
+  it('passes a description through to the schema', () => {
+    expect(productSchema(p, 'A great case.').description).toBe('A great case.');
+    expect(productSchema(p).description).toBeUndefined();
+  });
 });

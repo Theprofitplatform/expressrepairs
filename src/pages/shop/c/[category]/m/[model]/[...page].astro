@@ -7,7 +7,7 @@ import ShopSearch from '../../../../../../components/ShopSearch.astro';
 import ShopFilters from '../../../../../../components/ShopFilters.astro';
 import { PRODUCTS, fmtPrice } from '../../../../../../data/products.js';
 import { slugifyCategory, deviceModel, modelGroups } from '../../../../../../lib/shop.js';
-import { breadcrumbSchema } from '../../../../../../lib/seo.js';
+import { breadcrumbSchema, itemListSchema } from '../../../../../../lib/seo.js';
 
 export function getStaticPaths({ paginate }) {
   const categories = [...new Set(PRODUCTS.map((p) => p.category))];
@@ -39,17 +39,20 @@ const navLinks = [
   { label: 'Shop', href: '/shop/' },
 ];
 
-const schema = breadcrumbSchema([
-  { name: 'Home', path: '/' },
-  { name: 'Shop', path: '/shop/' },
-  { name: category, path: `/shop/c/${categorySlug}/` },
-  { name: modelLabel, path: `/shop/c/${categorySlug}/m/${modelKey}/` },
-]);
+const schema = [
+  breadcrumbSchema([
+    { name: 'Home', path: '/' },
+    { name: 'Shop', path: '/shop/' },
+    { name: category, path: `/shop/c/${categorySlug}/` },
+    { name: modelLabel, path: `/shop/c/${categorySlug}/m/${modelKey}/` },
+  ]),
+  itemListSchema(page),
+];
 ---
 <Layout
   title={`${modelLabel} ${category} | Express Repairs Shop`}
   description={`Shop ${category.toLowerCase()} for ${modelLabel} — ship Australia-wide (free over $99) or free pickup at Express Repairs, Riverwood Plaza.`}
-  path={`/shop/c/${categorySlug}/m/${modelKey}/`}
+  path={page.url.current}
   schema={schema}
   htmlAttrs={{ 'data-palette': 'electric-blue', 'data-fontpair': 'jakarta', 'data-dark': 'false' }}
 >

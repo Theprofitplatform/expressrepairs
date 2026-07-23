@@ -4,10 +4,19 @@
 // TRUE whole-scope counts. The script filters over search-index.json via
 // filterProducts — never just the 48 server-rendered cards.
 import { modelFamilies } from '../lib/shop.js';
-const { category, categorySlug, model = '', brands = [], models = [] } = Astro.props;
+const { category, categorySlug, model = '', tag = '', brands = [], models = [], tags = [] } = Astro.props;
 const families = modelFamilies(models);
 ---
-<div id="shop-filters" data-category={category} data-model={model}>
+<div id="shop-filters" data-category={category} data-model={model} data-tag={tag}>
+  {tags.length > 0 && (
+    <nav aria-label="Shop by type" class="chip-row" style="margin-top: 12px;">
+      {tags.map((t) => (
+        <a href={`/shop/t/${t.tag}/`} class="btn btn-ghost btn-sm">
+          {t.label} <span style="opacity:.6">({t.count})</span>
+        </a>
+      ))}
+    </nav>
+  )}
   {families.length > 0 && (
     <nav aria-label="Shop by model" class="model-nav">
       {families.map(({ family, models: fam }) => (
@@ -74,7 +83,7 @@ const families = modelFamilies(models);
   const input = document.getElementById('model-filter');
   const sortSel = document.getElementById('sort-select');
   const brandSel = document.getElementById('brand-select');
-  const { category, model } = root.dataset;
+  const { category, model, tag } = root.dataset;
 
   const fmtPrice = (c) => (c % 100 === 0 ? `$${c / 100}` : `$${(c / 100).toFixed(2)}`);
   const esc = (s) => s.replace(/[&<>"']/g, (ch) => `&#${ch.charCodeAt(0)};`);
@@ -114,7 +123,7 @@ const families = modelFamilies(models);
     }
     orig ??= grid.innerHTML;
     indexP ??= fetch('/shop/search-index.json').then((r) => r.json());
-    const hits = filterProducts(await indexP, { category, model, ...state });
+    const hits = filterProducts(await indexP, { category, model, tag, ...state });
     status.hidden = false;
     status.textContent = hits.length
       ? `${hits.length} product${hits.length === 1 ? '' : 's'}${hits.length > CAP ? ` — showing first ${CAP}` : ''}`
