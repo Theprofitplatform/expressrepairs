@@ -47,14 +47,19 @@ const CATEGORY_RULES = [
   [/tempered glass|screen protector|privacy glass|matte glass|hydrogel|camera (lens |)?(protector|glass|guard)/i, 'Screen Protection'],
   [/\bglass\b|\bdome\b|screen guard/i, 'Screen Protection'], // bare "Dragon Glass" / "UV Dome Glass" names, no other keyword
   [/\bcase\b|\bcover\b|\bfolio\b|\bpouch\b|ring stand/i, 'Cases & Covers'],
+  // cables/chargers BEFORE the bare case-brand rule: "Coco Usb Cable" and
+  // "OtterBox GaN Wall Charger" are cables/chargers, not cases. Real cases
+  // with charging wording ("Wireless Charging Compatible") are safe — they
+  // all carry a case keyword and match the rule above first.
+  [/\bcable\b|charger|charging|power bank|powerbank|\badapter\b|\badaptor\b|\bdock\b|car charge/i, 'Cables & Charging'],
   // known case-brand names with no other keyword ("Hanman | Samsung A27"); kept
-  // after the protector rules so glass-bundle names above still win. speck/
+  // after the protector rules so glass-bundle names above still win, and above
+  // audio/holders so "Coco Survivor /w stylus holder" cases stay cases. speck/
   // raptic/x-doria/mercury/pelican/lifeproof/redpepper/editor/korean added
   // after measuring leftover Accessories rows on bracket-stripped names (see
   // report — mercury/pelican/editor/korean clear 50, lifeproof/redpepper
   // don't but are unambiguous case brands, so kept anyway).
   [/^(hanman|coco(\s?tech)?|otterbox|uag|goospery|speck|raptic|x-doria|mercury|pelican|lifeproof|redpepper|editor|korean|iface|caseology)\b/i, 'Cases & Covers'],
-  [/\bcable\b|charger|charging|power bank|powerbank|\badapter\b|\badaptor\b|\bdock\b|car charge/i, 'Cables & Charging'],
   [/earbud|earphone|headphone|headset|speaker|microphone|\bmic\b/i, 'Audio'],
   [/holder|mount|\bstand\b|tripod|selfie stick/i, 'Mounts & Holders'],
 ];
