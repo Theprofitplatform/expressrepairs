@@ -1,4 +1,6 @@
 import { PRODUCTS } from '../../data/products.js';
+import { SITE_URL } from '../../lib/seo.js';
+import { CURATED_TAGS, tagLabel } from '../../lib/tags.js';
 
 // Google Merchant Center product feed (RSS 2.0). Meta Commerce Manager reads
 // the same URL. Free-over-$99 shipping is a Merchant Center account rule, not
@@ -8,6 +10,7 @@ const xmlEsc = (s) =>
 
 const item = (p) => {
   const price = (p.priceCents / 100).toFixed(2);
+  const curated = (p.tags || []).find((t) => CURATED_TAGS.some((c) => c.tag === t));
   return [
     '<item>',
     `<g:id>${xmlEsc(p.id)}</g:id>`,
@@ -16,10 +19,11 @@ const item = (p) => {
     // from name + category. Never `brand` — it's the supplier's category.name and
     // may be internal jargon (see productSchema).
     `<description>${xmlEsc(p.name)} — ${xmlEsc(p.category)} from Express Repairs, Riverwood. Ships Australia-wide, or free pickup in store.</description>`,
-    `<link>https://www.expressrepairs.com.au/shop/${xmlEsc(p.id)}/</link>`,
+    `<link>${SITE_URL}/shop/${xmlEsc(p.id)}/</link>`,
     `<g:image_link>${xmlEsc(p.image)}</g:image_link>`,
     `<g:price>${price} AUD</g:price>`,
-    '<g:availability>in_stock</g:availability>',
+    `<g:availability>${p.inStock === false ? 'out_of_stock' : 'in_stock'}</g:availability>`,
+    `<g:product_type>${xmlEsc(curated ? `${p.category} > ${tagLabel(curated)}` : p.category)}</g:product_type>`,
     '<g:condition>new</g:condition>',
     p.brand ? `<g:brand>${xmlEsc(p.brand)}</g:brand>` : '',
     p.sku ? `<g:mpn>${xmlEsc(p.sku)}</g:mpn>` : '',
@@ -35,7 +39,7 @@ export function GET() {
     '<rss version="2.0" xmlns:g="http://base.google.com/ns/1.0">' +
     '<channel>' +
     '<title>Express Repairs Accessories</title>' +
-    '<link>https://www.expressrepairs.com.au/shop/</link>' +
+    `<link>${SITE_URL}/shop/</link>` +
     '<description>Phone accessories — ship Australia-wide or free pickup at Riverwood Plaza.</description>' +
     PRODUCTS.map(item).join('') +
     '</channel></rss>';

@@ -109,4 +109,7 @@ export const productSchema = z.object({
   thumb: z.string(),
   inStock: z.boolean(),
   sku: z.string(),
+  // Derived at build time from name+category (src/lib/tags.js) — never stored
+  // in products.json, so syncs can't wipe it.
+  tags: z.array(z.string()).default([]),
 });

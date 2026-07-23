@@ -3,8 +3,9 @@ import Layout from '../../layouts/Layout.astro';
 import SiteNav from '../../components/SiteNav.astro';
 import SiteFooter from '../../components/SiteFooter.astro';
 import { PRODUCTS, fmtPrice } from '../../data/products.js';
-import { breadcrumbSchema, productSchema } from '../../lib/seo.js';
+import { breadcrumbSchema, productSchema, productDescription } from '../../lib/seo.js';
 import { specRows, slugifyCategory, relatedProducts, deviceModel, modelGroups, isHocoSupplied } from '../../lib/shop.js';
+import { CURATED_TAGS, tagLabel } from '../../lib/tags.js';
 import { SITE } from '../../data/site.js';
 
 export function getStaticPaths() {
@@ -24,18 +25,23 @@ const navLinks = [
   { label: 'Shop', href: '/shop/' },
 ];
 
+// Curated tags only get chips — every chip links to a real landing page.
+const curated = (p.tags || []).filter((t) => CURATED_TAGS.some((c) => c.tag === t));
+const description = productDescription(p, (p.tags || []).map(tagLabel));
+
 const schema = [
   breadcrumbSchema([
     { name: 'Home', path: '/' },
     { name: 'Shop', path: '/shop/' },
     { name: p.name, path: `/shop/${p.id}/` },
   ]),
-  productSchema(p),
+  productSchema(p, description),
 ];
 ---
 <Layout
   title={`${p.name} | Express Repairs`}
-  description={`Buy ${p.name} online — ship Australia-wide or free pickup at Express Repairs, Riverwood Plaza.`}
+  description={description}
+  image={p.image}
   path={`/shop/${p.id}/`}
   schema={schema}
   htmlAttrs={{ 'data-palette': 'electric-blue', 'data-fontpair': 'jakarta', 'data-dark': 'false' }}
@@ -79,6 +85,13 @@ const schema = [
                 More {p.category} for {model.label} →
               </a>
             </p>
+          )}
+          {curated.length > 0 && (
+            <nav aria-label="Related collections" class="chip-row" style="margin-top: 16px;">
+              {curated.map((t) => (
+                <a href={`/shop/t/${t}/`} class="btn btn-ghost btn-sm">{tagLabel(t)}</a>
+              ))}
+            </nav>
           )}
           <p class="hero-sub" style="margin-top: 20px;">GST included. Flat $10.95 shipping — free over $99 — or free pickup in store at Riverwood Plaza.</p>
           <dl style="margin-top: 24px; display: grid; grid-template-columns: max-content 1fr; gap: 8px 20px; font-size: 0.95rem;">
