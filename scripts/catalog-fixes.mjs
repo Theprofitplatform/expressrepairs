@@ -28,6 +28,7 @@ export const HIDE_IDS = new Set([
 const MOVES = {};
 const move = (cat, ids) => ids.forEach((id) => (MOVES[id] = cat));
 move('Audio', [
+  'H-6603', // hoco. EW51 earbuds — "/w Wireless Charging Case" trips the case keyword
   'X-02004', // Apple EarPods USB-C
   'X-05284', 'X-03510', // lavalier / wireless microphones
   'X-03621', // external sound card
@@ -44,6 +45,8 @@ move('Accessories', [
   'X-02011', 'X-02008', 'X-02626', 'X-04919',
 ]);
 move('Mounts & Holders', [
+  'H-7922', // hoco. H93 phone screen holder — "magnetic case" trips the case keyword
+  'H-3112', // Coco windscreen/dash car holder — "Coco" trips the case-brand rule
   // car holders
   'X-02072', 'X-02060', 'X-06667', 'X-06684', 'X-06101', 'X-06104', 'X-05106',
   'X-05229', 'X-03623', 'X-04913', 'X-04890', 'X-04895', 'X-04894', 'X-04889',
