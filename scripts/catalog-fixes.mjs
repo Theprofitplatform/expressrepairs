@@ -141,11 +141,40 @@ const PLATFORM_PREFIX = [
   [/^(google )?pixel/i, 'Google'],
   [/^oppo/i, 'OPPO'],
 ];
+// Fallback for maker-first names ("Speck Presidio | iPhone 14") that neither
+// PLATFORM_PREFIX nor MAKERS caught — whitelist mined from the HOCO import's
+// 1,626 blank-brand rows (every entry verified as a real maker prefix, not a
+// product word). Checked only when everything above yields ''.
+const MAKER_FALLBACK = [
+  [/\bspeck\b/i, 'Speck'], [/\bcoco\b/i, 'Coco'], [/x-?doria/i, 'X-doria'],
+  [/otter\s?box/i, 'OtterBox'], [/case-?mate/i, 'Case-Mate'], [/\braptic\b/i, 'Raptic'],
+  [/\biroo\b/i, 'iRoo'], [/\bmercury\b/i, 'Mercury'], [/\bpelican\b/i, 'Pelican'],
+  [/\beditor\b/i, 'Editor'], [/life\s?proof/i, 'LifeProof'], [/\bnico\b/i, 'Nico'],
+  [/dragon glass/i, 'Dragon Glass'], [/whitestone/i, 'Whitestone'], [/red\s?pepper/i, 'Redpepper'],
+  [/tech\s?21/i, 'Tech21'], [/\biface\b/i, 'iFace'], [/\bmous\b/i, 'MOUS'],
+  [/\bstarrf\b/i, 'Starrf'], [/3sixt/i, '3SIXT'], [/\bremax\b/i, 'REMAX'],
+  [/\btrident\b/i, 'Trident'], [/\bkoosh\b/i, 'Koosh'], [/\bawei\b/i, 'AWEI'],
+  [/\broar\b/i, 'Roar'], [/8ware/i, '8Ware'], [/\bakg\b/i, 'AKG'],
+  [/australian mobile/i, 'Australian Mobile'], [/\bdisney\b/i, 'Disney'], [/ugly rubber/i, 'Ugly Rubber'],
+];
+// Last resort: pipe-form names carry the device after the maker ("Heavy Duty
+// Liquid Silicone | iPhone 16 Pro") — brand the device platform, matching the
+// PLATFORM_PREFIX convention for device-specific products.
+const PLATFORM_ANYWHERE = [
+  [/iphone|ipad|airpods|iwatch|apple watch/i, 'Apple'],
+  [/samsung|galaxy/i, 'Samsung'],
+  [/pixel/i, 'Google'],
+  [/\boppo\b/i, 'OPPO'],
+];
 export function fixBrand(brand, name) {
   if (PLATFORM_BRANDS.has(brand)) return brand;
   const platform = PLATFORM_PREFIX.find(([re]) => re.test(name));
   if (platform) return platform[1];
-  return MAKERS.find((m) => name.includes(m)) || '';
+  const maker = MAKERS.find((m) => name.includes(m));
+  if (maker) return maker;
+  const fallback = MAKER_FALLBACK.find(([re]) => re.test(name));
+  if (fallback) return fallback[1];
+  return PLATFORM_ANYWHERE.find(([re]) => re.test(name))?.[1] || '';
 }
 
 function fixCategory(p, name) {
