@@ -17,7 +17,12 @@
 import { writeFileSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
 import sharp from 'sharp';
-import PRODUCTS from '../src/data/products.json' with { type: 'json' };
+import DXPOS from '../src/data/products.json' with { type: 'json' };
+import HOCO from '../src/data/hoco-products.json' with { type: 'json' };
+
+// Both supplier catalogs mirror into the same bucket/manifest; H- ids come
+// from the HOCO import (scripts/import-hoco.mjs), X- ids from the DXPOS sync.
+const PRODUCTS = [...DXPOS, ...HOCO];
 
 const ACCOUNT = process.env.CLOUDFLARE_ACCOUNT_ID;
 const TOKEN = process.env.CLOUDFLARE_API_TOKEN;

@@ -56,6 +56,9 @@ jobs:
             echo "R2_API_TOKEN secret not set — skipping image mirror (supplier URLs still work)."
           else
             node scripts/upload-images-r2.mjs
+            # Regenerate the HOCO import so newly mirrored H- ids switch from
+            # hoco.com.au URLs to the R2 copies in the committed data.
+            node scripts/import-hoco.mjs
           fi
 
       - name: Validate synced data
@@ -64,7 +67,7 @@ jobs:
       - name: Commit if changed
         id: commit
         run: |
-          git add src/data/products.json src/data/r2-images.json
+          git add src/data/products.json src/data/r2-images.json src/data/hoco-products.json
           if git diff --cached --quiet; then
             echo "No product changes."
             echo "changed=false" >> "$GITHUB_OUTPUT"

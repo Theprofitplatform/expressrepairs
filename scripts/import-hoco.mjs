@@ -10,7 +10,14 @@
 import { readFileSync, writeFileSync } from 'node:fs';
 import { fileURLToPath, pathToFileURL } from 'node:url';
 import { applyCatalogFixes } from './catalog-fixes.mjs';
-import { thumbUrl } from './sync-products.mjs';
+import { thumbUrl, R2_BASE } from './sync-products.mjs';
+import R2_MANIFEST from '../src/data/r2-images.json' with { type: 'json' };
+
+// Same R2 mirroring scheme as the DXPOS sync: ids present in the manifest
+// (written by scripts/upload-images-r2.mjs) serve our own 800px WebP;
+// anything not yet mirrored keeps its hoco.com.au URL so a freshly imported
+// product is never imageless.
+const R2_IDS = new Set(R2_MANIFEST);
 
 // B2B lines that must not appear in a consumer shop: repair machines/tooling
 // brands and bulk trade packs. Owner: add a pattern to hide a class, or
@@ -55,7 +62,7 @@ export const hocoCategory = (name) => {
 // Pure transform: catalogue snapshot rows -> productSchema-shaped entries.
 // applyCatalogFixes gives us the shared name repairs, brand inference, the
 // cases/protectors category refinements, and exact-name dedupe for free.
-export function transformHoco(rows) {
+export function transformHoco(rows, r2Ids = R2_IDS) {
   return applyCatalogFixes(
     rows
       .filter(
@@ -69,14 +76,16 @@ export function transformHoco(rows) {
         // display name itself — same regex hocoCategory uses — so pages,
         // search, and feeds never show a warehouse code to a shopper.
         const name = r.name.replace(/^(\[[^\]]*\]\s*)+/, '');
+        const id = `H-${r.id}`;
+        const hosted = r2Ids.has(id) ? `${R2_BASE}/products/${id}.webp` : '';
         return {
-          id: `H-${r.id}`,
+          id,
           name,
           category: hocoCategory(name),
           brand: '', // fixBrand infers from the name (hoco./COCO/Hanman/platform)
           priceCents: r.rrpCents,
-          image: r.image,
-          thumb: thumbUrl(r.image),
+          image: hosted || r.image,
+          thumb: hosted || thumbUrl(r.image),
           inStock: true,
           sku: String(r.id),
         };

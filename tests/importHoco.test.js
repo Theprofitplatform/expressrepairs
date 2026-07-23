@@ -58,8 +58,8 @@ describe('hocoCategory', () => {
 });
 
 describe('transformHoco', () => {
-  it('produces schema-shaped products with H- ids and hoco sku', () => {
-    const [p] = transformHoco([row()]);
+  it('produces schema-shaped products with H- ids and hoco sku (supplier URLs when not in R2)', () => {
+    const [p] = transformHoco([row()], new Set());
     expect(p).toMatchObject({
       id: 'H-8250',
       sku: '8250',
@@ -69,6 +69,12 @@ describe('transformHoco', () => {
       image: 'https://www.hoco.com.au/web/image/product.template/8250/image_1024',
       thumb: 'https://www.hoco.com.au/web/image/product.template/8250/image_256',
     });
+  });
+
+  it('uses the R2 mirror for image and thumb when the id is in the manifest', () => {
+    const [p] = transformHoco([row()], new Set(['H-8250']));
+    expect(p.image).toBe('https://img.expressrepairs.com.au/products/H-8250.webp');
+    expect(p.thumb).toBe('https://img.expressrepairs.com.au/products/H-8250.webp');
   });
 
   it('excludes repair tooling and bulk trade packs', () => {
