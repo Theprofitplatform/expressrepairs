@@ -100,8 +100,27 @@ describe('transformHoco', () => {
       row({ id: 13, name: 'HOCO G100 | Intelligent film cutting machine' }),
       row({ id: 14, name: 'Touch Digitizer | iPad 10 (10.9) HQ' }),
       row({ id: 15, name: 'Best BST-501 opening tools with spudger' }),
+      row({ id: 16, name: 'SIM Tray for iPhone 16e - Black Ori' }),
+      row({ id: 17, name: 'Charging Port | iPhone 14 Pro Max - Black' }),
+      row({ id: 18, name: 'OEM Battery | Samsung A10s/A20s/A21S Model: EB-BA217ABY' }),
+      row({ id: 19, name: 'Battery for AirPods Pro Ori 2pcs in one set' }),
+      row({ id: 20, name: 'Repair Part | Original Headphone Casing Shell set for AirPods Pro White' }),
+      row({ id: 21, name: 'HQ Back Glass Logo Large Hole /w Adhesive | iPhone 15 - All Colours' }),
+      row({ id: 22, name: 'Samsung S23 Ultra | Original Battery Door with Adhesive - Phantom Black' }),
+      row({ id: 23, name: 'hoco. UT10 32-in-1 screwdriver set' }),
+      row({ id: 24, name: 'Luowei IS-30 Anti-slip Motherboard Layered Tweezer' }),
+      row({ id: 25, name: 'Quick TS-K Solder Iron Tip for Quick TS1200A' }),
     ];
     expect(transformHoco(rows)).toEqual([]);
+  });
+
+  it('keeps consumer products whose names merely mention back glass', () => {
+    const rows = [
+      row({ id: 30, name: 'Original Korean iFace Reflection Back Glass | iPhone 12/12 Pro (6.1) - Red' }),
+      row({ id: 31, name: 'Roar Glasoul Heavy Duty Case /w 0.5mm Back Glass | iPhone 7/8 Plus' }),
+      row({ id: 32, name: 'Metal Back Glass Protector | iPhone 17 Pro' }),
+    ];
+    expect(transformHoco(rows, new Set())).toHaveLength(3);
   });
 
   it('drops rows with no usable image or price', () => {

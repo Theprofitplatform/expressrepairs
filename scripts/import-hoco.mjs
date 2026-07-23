@@ -30,6 +30,13 @@ export const HOCO_EXCLUDE_PATTERNS = [
   /^\[(TOL\d|PT-)/i, // warehouse tool/part codes: [TOL2-2] pry tools & ESD tweezers, [PT-116] LCDs/digitizers
   /cashier desk|hook shelf|film cutting machine/i, // shop fixtures, not products
   /touch digitizer|opening tool|spudger/i, // repair parts/tools without warehouse codes
+  // Replacement parts sold to repairers, never to shoppers (owner directive
+  // 2026-07-23: the shop repairs phones, it does not sell parts).
+  /\brepair\b|sim tray|charging port \||battery door|\b(oem|original) battery\b|battery for airpods/i,
+  // Bench tools and consumables. "Back glass" alone is NOT a part marker —
+  // iFace/Roar glass-back CASES and back-glass protector accessories stay.
+  /tweezer|\bsolder|screwdriver|adhesive glue|safety glasses|magnifier|\bfile set\b/i,
+  /back glass.*(logo large hole|adhesive|\bbezel\b|metal plate)|complete set back glass/i,
 ];
 
 // Keyword -> existing site category. Order matters: protectors before cases
