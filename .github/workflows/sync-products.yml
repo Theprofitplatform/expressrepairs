@@ -43,17 +43,19 @@ jobs:
           POS_PASSWORD: ${{ secrets.POS_PASSWORD }}
 
       # Mirror any not-yet-hosted supplier images into R2 and refresh the
-      # r2-images.json manifest, so new DXPOS products become self-hosted on
-      # the next sync (this run they fall back to the supplier URL). Skips
-      # cleanly until the owner adds an R2-scoped token as the R2_API_TOKEN
-      # repo secret (Cloudflare dashboard → R2 → Manage API Tokens).
+      # r2-images.json manifest, so new products become self-hosted on the
+      # next sync (this run they fall back to the supplier URL). Uses the S3
+      # credentials of an R2 API token (dashboard → R2 → Manage API Tokens,
+      # Object Read & Write on expressrepairs-products), stored as the
+      # R2_ACCESS_KEY_ID / R2_SECRET_ACCESS_KEY repo secrets.
       - name: Mirror new images to R2
         env:
-          CLOUDFLARE_API_TOKEN: ${{ secrets.R2_API_TOKEN }}
+          R2_ACCESS_KEY_ID: ${{ secrets.R2_ACCESS_KEY_ID }}
+          R2_SECRET_ACCESS_KEY: ${{ secrets.R2_SECRET_ACCESS_KEY }}
           CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
         run: |
-          if [ -z "$CLOUDFLARE_API_TOKEN" ]; then
-            echo "R2_API_TOKEN secret not set — skipping image mirror (supplier URLs still work)."
+          if [ -z "$R2_ACCESS_KEY_ID" ]; then
+            echo "R2 secrets not set — skipping image mirror (supplier URLs still work)."
           else
             # Non-fatal: a bad/expired R2 token must not throw away a valid
             # catalog sync — products fall back to supplier image URLs.
@@ -62,7 +64,7 @@ jobs:
               # from hoco.com.au URLs to the R2 copies in the committed data.
               node scripts/import-hoco.mjs
             else
-              echo "::warning::image mirror failed (check R2_API_TOKEN) — continuing without it"
+              echo "::warning::image mirror failed (check R2_* secrets) — continuing without it"
             fi
           fi
 

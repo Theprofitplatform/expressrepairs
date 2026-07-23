@@ -12,11 +12,14 @@
 // scripts/sync-products.mjs uses to emit R2 URLs (supplier URL fallback for
 // anything not yet uploaded). Commit that file after running.
 //
-// Env: CLOUDFLARE_API_TOKEN (R2-write token, or a wrangler OAuth token
-// locally), CLOUDFLARE_ACCOUNT_ID.
+// Env: R2_ACCESS_KEY_ID + R2_SECRET_ACCESS_KEY (an R2 API token's S3
+// credentials, scoped Object Read & Write to this bucket) and
+// CLOUDFLARE_ACCOUNT_ID. Uses R2's S3 API — the REST object endpoints
+// reject R2-UI tokens, the S3 endpoint is what they're issued for.
 import { writeFileSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
 import sharp from 'sharp';
+import { AwsClient } from 'aws4fetch';
 import DXPOS from '../src/data/products.json' with { type: 'json' };
 import HOCO from '../src/data/hoco-products.json' with { type: 'json' };
 
@@ -25,29 +28,31 @@ import HOCO from '../src/data/hoco-products.json' with { type: 'json' };
 const PRODUCTS = [...DXPOS, ...HOCO];
 
 const ACCOUNT = process.env.CLOUDFLARE_ACCOUNT_ID;
-const TOKEN = process.env.CLOUDFLARE_API_TOKEN;
+const KEY_ID = process.env.R2_ACCESS_KEY_ID;
+const SECRET = process.env.R2_SECRET_ACCESS_KEY;
 const BUCKET = 'expressrepairs-products';
-const API = `https://api.cloudflare.com/client/v4/accounts/${ACCOUNT}/r2/buckets/${BUCKET}/objects`;
 const CONCURRENCY = 5; // be polite to the supplier sites
 
-if (!ACCOUNT || !TOKEN) {
-  console.error('Missing CLOUDFLARE_ACCOUNT_ID / CLOUDFLARE_API_TOKEN');
+if (!ACCOUNT || !KEY_ID || !SECRET) {
+  console.error('Missing CLOUDFLARE_ACCOUNT_ID / R2_ACCESS_KEY_ID / R2_SECRET_ACCESS_KEY');
   process.exit(1);
 }
-const auth = { Authorization: `Bearer ${TOKEN}` };
+const S3 = `https://${ACCOUNT}.r2.cloudflarestorage.com/${BUCKET}`;
+const aws = new AwsClient({ accessKeyId: KEY_ID, secretAccessKey: SECRET, service: 's3', region: 'auto' });
 const keyFor = (id) => `products/${id}.webp`;
 
-// One paginated list of the whole bucket up front.
+// One paginated ListObjectsV2 of the whole bucket up front.
+// ponytail: regex over the XML — the S3 list response is flat and stable.
 async function listExisting() {
   const keys = new Set();
-  let cursor = '';
+  let token = '';
   for (;;) {
-    const res = await fetch(`${API}?per_page=1000${cursor ? `&cursor=${cursor}` : ''}`, { headers: auth });
+    const res = await aws.fetch(`${S3}?list-type=2&max-keys=1000${token ? `&continuation-token=${encodeURIComponent(token)}` : ''}`);
     if (!res.ok) throw new Error(`list failed: ${res.status} ${await res.text()}`);
-    const body = await res.json();
-    for (const o of body.result ?? []) keys.add(o.key);
-    if (!body.result_info?.is_truncated) return keys;
-    cursor = encodeURIComponent(body.result_info.cursor);
+    const xml = await res.text();
+    for (const m of xml.matchAll(/<Key>([^<]+)<\/Key>/g)) keys.add(m[1]);
+    token = xml.match(/<NextContinuationToken>([^<]+)<\/NextContinuationToken>/)?.[1] ?? '';
+    if (!token) return keys;
   }
 }
 
@@ -58,9 +63,9 @@ async function uploadOne(p) {
     .resize({ width: 800, height: 800, fit: 'inside', withoutEnlargement: true })
     .webp({ quality: 80 })
     .toBuffer();
-  const put = await fetch(`${API}/${encodeURIComponent(keyFor(p.id))}`, {
+  const put = await aws.fetch(`${S3}/${keyFor(p.id)}`, {
     method: 'PUT',
-    headers: { ...auth, 'Content-Type': 'image/webp' },
+    headers: { 'Content-Type': 'image/webp' },
     body: webp,
   });
   if (!put.ok) throw new Error(`put ${put.status} ${await put.text()}`);
