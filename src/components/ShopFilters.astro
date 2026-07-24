@@ -1,73 +1,94 @@
 ---
-// Filter bar for category and model pages. Server renders model link-chips
-// (static SEO links to /m/<model>/ pages) and brand/price/sort controls with
-// TRUE whole-scope counts. The script filters over search-index.json via
+// Sticky filter toolbar for category/model/tag pages. Server renders the
+// controls plus one collapsed "Browse by model or type" block holding the
+// static SEO links (tag chips + model-family accordions) with TRUE
+// whole-scope counts. The script filters over search-index.json via
 // filterProducts — never just the 48 server-rendered cards.
 import { modelFamilies } from '../lib/shop.js';
 const { category, categorySlug, model = '', tag = '', brands = [], models = [], tags = [] } = Astro.props;
 const families = modelFamilies(models);
 ---
-<div id="shop-filters" data-category={category} data-model={model} data-tag={tag}>
-  {tags.length > 0 && (
-    <nav aria-label="Shop by type" class="chip-row" style="margin-top: 12px;">
-      {tags.map((t) => (
-        <a href={`/shop/t/${t.tag}/`} class="btn btn-ghost btn-sm">
-          {t.label} <span style="opacity:.6">({t.count})</span>
-        </a>
-      ))}
-    </nav>
-  )}
-  {families.length > 0 && (
-    <nav aria-label="Shop by model" class="model-nav">
-      {families.map(({ family, models: fam }) => (
-        <details class="model-group">
-          <summary>{family} <span class="model-count">({fam.length} model{fam.length === 1 ? '' : 's'})</span></summary>
-          <div class="chip-row">
-            {fam.map((m) => (
-              <a href={`/shop/c/${categorySlug}/m/${m.key}/`} class="btn btn-ghost btn-sm">
-                {m.label} <span style="opacity:.6">({m.count})</span>
+<div id="shop-filters" data-category={category} data-category-slug={categorySlug} data-model={model} data-tag={tag}>
+  <div class="filter-bar">
+    <details class="filter-drawer">
+      <summary>Filter &amp; sort</summary>
+      <div class="filter-toolbar">
+        <input
+          id="model-filter"
+          type="search"
+          list="model-options"
+          placeholder="Filter by your model — e.g. iPhone 15 Pro, S24 Ultra"
+          aria-label="Filter this list by device model or keyword"
+          autocomplete="off"
+        />
+        <datalist id="model-options">
+          {models.map((m) => <option value={m.label} data-key={m.key} />)}
+        </datalist>
+        {brands.length > 1 && (
+          <label class="filter-label">
+            Brand
+            <select id="brand-select" aria-label="Filter by brand">
+              <option value="">All brands</option>
+              {brands.map((b) => (
+                <option value={b.name}>{b.name} ({b.count})</option>
+              ))}
+            </select>
+          </label>
+        )}
+        <label class="filter-label">
+          Price
+          <select id="price-select" aria-label="Filter by price">
+            <option value="">Any price</option>
+            <option value="under-20">Under $20</option>
+            <option value="20-50">$20–$50</option>
+            <option value="over-50">Over $50</option>
+          </select>
+        </label>
+        <label class="filter-label">
+          Sort
+          <select id="sort-select">
+            <option value="">Featured</option>
+            <option value="price-asc">Price: low to high</option>
+            <option value="price-desc">Price: high to low</option>
+          </select>
+        </label>
+      </div>
+    </details>
+    <div id="active-filters" class="chip-row" aria-label="Active filters" hidden></div>
+  </div>
+
+  {(tags.length > 0 || families.length > 0) && (
+    <details class="model-group browse-links">
+      <summary>Browse by model or type</summary>
+      <div class="browse-links-body">
+        {tags.length > 0 && (
+          <nav aria-label="Shop by type" class="chip-row">
+            {tags.map((t) => (
+              <a href={`/shop/t/${t.tag}/`} class="btn btn-ghost btn-sm">
+                {t.label} <span style="opacity:.6">({t.count})</span>
               </a>
             ))}
-          </div>
-        </details>
-      ))}
-    </nav>
+          </nav>
+        )}
+        {families.length > 0 && (
+          <nav aria-label="Shop by model" class="model-nav">
+            {families.map(({ family, models: fam }) => (
+              <details class="model-group">
+                <summary>{family} <span class="model-count">({fam.length} model{fam.length === 1 ? '' : 's'})</span></summary>
+                <div class="chip-row">
+                  {fam.map((m) => (
+                    <a href={`/shop/c/${categorySlug}/m/${m.key}/`} class="btn btn-ghost btn-sm">
+                      {m.label} <span style="opacity:.6">({m.count})</span>
+                    </a>
+                  ))}
+                </div>
+              </details>
+            ))}
+          </nav>
+        )}
+      </div>
+    </details>
   )}
-
-  <div class="filter-toolbar">
-    <input
-      id="model-filter"
-      type="search"
-      placeholder="Filter by your model — e.g. iPhone 15 Pro, S24 Ultra"
-      aria-label="Filter this list by device model or keyword"
-      autocomplete="off"
-    />
-    {brands.length > 1 && (
-      <label class="filter-label">
-        Brand
-        <select id="brand-select" aria-label="Filter by brand">
-          <option value="">All brands</option>
-          {brands.map((b) => (
-            <option value={b.name}>{b.name} ({b.count})</option>
-          ))}
-        </select>
-      </label>
-    )}
-    <div data-facet="price" class="chip-row" aria-label="Filter by price">
-      <button class="btn btn-primary btn-sm" data-value="">Any price</button>
-      <button class="btn btn-ghost btn-sm" data-value="under-20">Under $20</button>
-      <button class="btn btn-ghost btn-sm" data-value="20-50">$20–$50</button>
-      <button class="btn btn-ghost btn-sm" data-value="over-50">Over $50</button>
-    </div>
-    <label class="filter-label">
-      Sort
-      <select id="sort-select">
-        <option value="">Featured</option>
-        <option value="price-asc">Price: low to high</option>
-        <option value="price-desc">Price: high to low</option>
-      </select>
-    </label>
-  </div>
 
   <p id="filter-status" class="hero-sub" role="status" style="margin-top: 12px;" hidden></p>
 </div>
@@ -83,7 +104,9 @@ const families = modelFamilies(models);
   const input = document.getElementById('model-filter');
   const sortSel = document.getElementById('sort-select');
   const brandSel = document.getElementById('brand-select');
-  const { category, model, tag } = root.dataset;
+  const priceSel = document.getElementById('price-select');
+  const chipsRow = document.getElementById('active-filters');
+  const { category, categorySlug, model, tag } = root.dataset;
 
   const fmtPrice = (c) => (c % 100 === 0 ? `$${c / 100}` : `$${(c / 100).toFixed(2)}`);
   const esc = (s) => s.replace(/[&<>"']/g, (ch) => `&#${ch.charCodeAt(0)};`);
@@ -92,6 +115,7 @@ const families = modelFamilies(models);
   const CAP = 500;
 
   const state = { brand: '', price: '', sort: '', q: '' };
+  const controls = { q: input, brand: brandSel, price: priceSel, sort: sortSel };
   let orig = null;
   let indexP = null;
 
@@ -122,8 +146,26 @@ const families = modelFamilies(models);
     history.replaceState(null, '', location.pathname + (qs ? `?${qs}` : ''));
   };
 
+  // Human label per active facet — select facets reuse their own option text.
+  const chipLabel = (k, v) =>
+    k === 'q' ? `“${v}”` : controls[k]?.querySelector(`option[value="${CSS.escape(v)}"]`)?.textContent.trim() ?? v;
+
+  const renderChips = () => {
+    const active = Object.entries(state).filter(([, v]) => v);
+    chipsRow.hidden = active.length === 0;
+    chipsRow.innerHTML = active.length
+      ? active
+          .map(([k, v]) => {
+            const label = esc(chipLabel(k, v));
+            return `<button class="btn btn-ghost btn-sm" data-clear="${k}" aria-label="Remove filter: ${label}">${label} ✕</button>`;
+          })
+          .join('') + '<button class="btn btn-ghost btn-sm" data-clear="*">Clear all</button>'
+      : '';
+  };
+
   const apply = async () => {
     syncUrl();
+    renderChips();
     if (!state.brand && !state.price && !state.sort && !state.q) {
       if (orig !== null) { grid.innerHTML = orig; pagination.style.display = ''; status.hidden = true; }
       return;
@@ -139,24 +181,35 @@ const families = modelFamilies(models);
     pagination.style.display = 'none';
   };
 
-  for (const facet of ['price']) {
-    const bar = root.querySelector(`[data-facet="${facet}"]`);
-    bar?.addEventListener('click', (e) => {
-      const btn = e.target.closest('button[data-value]');
-      if (!btn) return;
-      state[facet] = btn.dataset.value;
-      for (const b of bar.querySelectorAll('button[data-value]'))
-        b.className = `btn btn-sm ${b === btn ? 'btn-primary' : 'btn-ghost'}`;
-      apply();
-    });
-  }
+  chipsRow.addEventListener('click', (e) => {
+    const btn = e.target.closest('[data-clear]');
+    if (!btn) return;
+    for (const k of btn.dataset.clear === '*' ? Object.keys(state) : [btn.dataset.clear]) {
+      state[k] = '';
+      if (controls[k]) controls[k].value = '';
+    }
+    apply();
+  });
+
   sortSel?.addEventListener('change', () => { state.sort = sortSel.value; apply(); });
   brandSel?.addEventListener('change', () => { state.brand = brandSel.value; apply(); });
+  priceSel?.addEventListener('change', () => { state.price = priceSel.value; apply(); });
   let timer;
   input?.addEventListener('input', () => {
     clearTimeout(timer);
     timer = setTimeout(() => { state.q = input.value.trim(); apply(); }, 200);
   });
+
+  // Exact (case-insensitive) datalist match → navigate to that model's SEO page.
+  const modelOpts = [...document.querySelectorAll('#model-options option')];
+  const goToModel = () => {
+    if (!categorySlug || !modelOpts.length) return;
+    const v = input.value.trim().toLowerCase();
+    const hit = modelOpts.find((o) => o.value.toLowerCase() === v);
+    if (hit && hit.dataset.key !== model) location.href = `/shop/c/${categorySlug}/m/${hit.dataset.key}/`;
+  };
+  input?.addEventListener('change', goToModel);
+  input?.addEventListener('keydown', (e) => { if (e.key === 'Enter') goToModel(); });
 
   // Restore shareable/back-button state from the URL.
   const params = new URLSearchParams(location.search);
@@ -166,14 +219,7 @@ const families = modelFamilies(models);
     if (!v) continue;
     state[k] = v;
     dirty = true;
-    if (k === 'q') input && (input.value = v);
-    if (k === 'sort') sortSel && (sortSel.value = v);
-    if (k === 'brand') brandSel && (brandSel.value = v);
-    if (k === 'price') {
-      const bar = root.querySelector(`[data-facet="${k}"]`);
-      for (const b of bar?.querySelectorAll('button[data-value]') ?? [])
-        b.className = `btn btn-sm ${b.dataset.value === v ? 'btn-primary' : 'btn-ghost'}`;
-    }
+    if (controls[k]) controls[k].value = v;
   }
   if (dirty) apply();
 </script>

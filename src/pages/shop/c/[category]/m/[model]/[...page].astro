@@ -3,7 +3,6 @@ import Layout from '../../../../../../layouts/Layout.astro';
 import SiteNav from '../../../../../../components/SiteNav.astro';
 import SiteFooter from '../../../../../../components/SiteFooter.astro';
 import MobileCta from '../../../../../../components/MobileCta.astro';
-import ShopSearch from '../../../../../../components/ShopSearch.astro';
 import ShopFilters from '../../../../../../components/ShopFilters.astro';
 import ProductCard from '../../../../../../components/ProductCard.astro';
 import { PRODUCTS } from '../../../../../../data/products.js';
@@ -75,8 +74,6 @@ const schema = [
         {modelLabel} {category}
       </h1>
       <p class="hero-sub">{page.total} products for {modelLabel} — same stock as our counter at Riverwood Plaza.</p>
-
-      <ShopSearch placeholder="Search accessories" />
 
       <ShopFilters category={category} categorySlug={categorySlug} model={modelKey} brands={brandCounts} />
 

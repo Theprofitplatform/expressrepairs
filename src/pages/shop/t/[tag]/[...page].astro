@@ -3,7 +3,6 @@ import Layout from '../../../../layouts/Layout.astro';
 import SiteNav from '../../../../components/SiteNav.astro';
 import SiteFooter from '../../../../components/SiteFooter.astro';
 import MobileCta from '../../../../components/MobileCta.astro';
-import ShopSearch from '../../../../components/ShopSearch.astro';
 import ShopFilters from '../../../../components/ShopFilters.astro';
 import ProductCard from '../../../../components/ProductCard.astro';
 import { PRODUCTS } from '../../../../data/products.js';
@@ -61,8 +60,6 @@ const schema = [
 
       <h1 class="section-title" style="margin-top: 16px; font-size: clamp(28px, 3.2vw, 38px);">{label}</h1>
       <p class="hero-sub">{blurb} {page.total} products — ship Australia-wide (free over $99) or free pickup in store.</p>
-
-      <ShopSearch placeholder="Search accessories" />
 
       <ShopFilters tag={tag} brands={brandCounts} />
 
