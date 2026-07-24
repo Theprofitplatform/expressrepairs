@@ -69,4 +69,13 @@ describe('owner price overrides', () => {
       expect(p.priceCents).toBe(p.category === 'Tablet & iPad Cases' ? 3995 : 2995);
     }
   });
+
+  it('every Korean Simple D case is $29.95, Double Folio $39.95', async () => {
+    const { PRODUCTS } = await import('../src/data/products.js');
+    const simpleD = PRODUCTS.filter((p) => /simple d/i.test(p.name) && /Cases/.test(p.category));
+    expect(simpleD.length).toBeGreaterThan(200);
+    for (const p of simpleD) {
+      expect(p.priceCents).toBe(/double/i.test(p.name) ? 3995 : 2995);
+    }
+  });
 });
