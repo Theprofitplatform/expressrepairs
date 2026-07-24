@@ -1,0 +1,168 @@
+---
+import Layout from '../../layouts/Layout.astro';
+import SiteNav from '../../components/SiteNav.astro';
+import SiteFooter from '../../components/SiteFooter.astro';
+import PageScripts from '../../components/PageScripts.astro';
+import { SITE } from '../../data/site.js';
+import { breadcrumbSchema } from '../../lib/seo.js';
+
+const navLinks = [
+  { label: 'NBN Plans', href: '/nbn/' },
+  { label: 'Repairs', href: '/repairs/' },
+  { label: 'Shop', href: '/shop/' },
+  { label: 'Blog', href: '/blog/' },
+];
+
+const schema = breadcrumbSchema([
+  { name: 'Home', path: '/' },
+  { name: 'Business NBN', path: '/nbn/' },
+  { name: 'Service Terms', path: '/nbn/terms/' },
+]);
+---
+<Layout
+  title="NBN Service Terms | Express Repairs"
+  description="Terms of service for Express Repairs business NBN plans: billing, the TeleChoice customer discount, speeds, fair use, cancellation and complaints."
+  path="/nbn/terms/"
+  schema={schema}
+  htmlAttrs={{ 'data-palette': 'electric-blue', 'data-fontpair': 'jakarta', 'data-dark': 'false' }}
+>
+  <SiteNav links={navLinks} ctaHref="/nbn/#enquire" />
+
+  <main id="main-content">
+    <section class="section">
+      <div class="container-wide terms-wrap">
+        <nav class="breadcrumb" aria-label="Breadcrumb">
+          <a href="/">Home</a>
+          <span class="crumb-sep">/</span>
+          <a href="/nbn/">Business NBN</a>
+          <span class="crumb-sep">/</span>
+          <span class="crumb-current">Service Terms</span>
+        </nav>
+
+        <h1 class="section-title" style="margin-top: 20px;">NBN Service Terms</h1>
+        <p class="terms-updated">Effective 25 July 2026</p>
+
+        <p>
+          These terms cover the NBN internet plans sold by Mertel Pty&nbsp;Ltd (ABN 88&nbsp;644&nbsp;567&nbsp;019),
+          trading as {SITE.name} ("we", "us"), of {SITE.addressShort}. By signing up for an NBN plan with us
+          you agree to these terms. We've kept them in plain English on purpose.
+        </p>
+
+        <h2>1. The service</h2>
+        <p>
+          We sell business-grade broadband delivered over the nbn® network, supplied to us by an established
+          Australian wholesale network provider. We handle your sign-up, billing and account queries; network
+          faults are handled by our wholesale partner's support team, and we'll help you lodge and chase a fault
+          whenever you need us to. Every plan includes unlimited data and one free static IPv4 address.
+        </p>
+
+        <h2>2. Availability and connection</h2>
+        <p>
+          All plans are subject to availability at your address — the nbn network technology at your premises
+          (such as FTTP, FTTC or HFC) determines which speed tiers you can get. We'll confirm what's available
+          before you commit to anything. Some connections need an nbn technician visit or new equipment; if
+          there's any charge for that (for example, a new development fee charged by nbn co), we'll tell you the
+          amount before you go ahead. Any nbn-supplied equipment remains the property of nbn co.
+        </p>
+
+        <h2>3. Speeds</h2>
+        <p>
+          The speeds shown on our plans are <strong>typical business-hour speeds</strong> as measured by our
+          wholesale partner. Your actual speed depends on your nbn technology type, the wiring at your premises,
+          your modem, Wi‑Fi conditions and network congestion. If your connection can't reach the typical speed
+          of the plan you chose, tell us — we'll move you to a cheaper plan that matches what your line can do,
+          or you can cancel without penalty.
+        </p>
+
+        <h2>4. Pricing and billing</h2>
+        <ul>
+          <li>All prices are in Australian dollars and include GST.</li>
+          <li>Plans are billed monthly in advance and are month-to-month — <strong>no lock-in contracts and no exit fees</strong>.</li>
+          <li>If we change a plan's price we'll give you at least 30 days' written notice. You can cancel any time before the new price takes effect.</li>
+          <li>If a bill isn't paid we'll contact you before restricting or suspending the service, and we'll restore it promptly once payment is sorted.</li>
+        </ul>
+
+        <h2>5. TeleChoice customer discount</h2>
+        <ul>
+          <li>Customers with an active TeleChoice mobile service purchased through our store receive 10% off their NBN plan's monthly price — whether the mobile service is new or existing.</li>
+          <li>The discount applies for as long as both services stay active, one discount per NBN service.</li>
+          <li>If the eligible mobile service is cancelled, the NBN plan reverts to its standard price from the next billing cycle. We'll always show both prices up front.</li>
+        </ul>
+
+        <h2>6. Fair use</h2>
+        <p>
+          Unlimited data means we don't meter, cap or charge for usage. In return, the service must be used
+          lawfully and must not be resold or used in a way that damages the network or degrades the service of
+          others. If we believe use is unlawful or abusive we'll contact you before taking any action, except
+          where the law requires otherwise.
+        </p>
+
+        <h2>7. Cancelling</h2>
+        <p>
+          You can cancel any time by calling us on {SITE.phone}, emailing, or dropping into the store. There is
+          no cancellation fee. Your service stays active until the end of the billing period you've already
+          paid for, and we don't charge anything beyond that.
+        </p>
+
+        <h2>8. Faults and support</h2>
+        <p>
+          Call us first on {SITE.phone} — if the fault is in the nbn network we'll lodge it with our wholesale
+          partner and keep you posted. Plans that include an enhanced service level agreement (shown on the
+          plan) receive prioritised fault restoration under our wholesale partner's eSLA terms; we'll give you
+          the current eSLA response targets when you sign up.
+        </p>
+
+        <h2>9. Your consumer rights</h2>
+        <p>
+          Our services come with guarantees that cannot be excluded under the Australian Consumer Law. Nothing
+          in these terms limits those rights, or your rights under the Telecommunications Consumer Protections
+          Code.
+        </p>
+
+        <h2>10. Complaints</h2>
+        <p>
+          If something's wrong, tell us and we'll do our best to fix it quickly — call {SITE.phone} or visit the
+          store and ask for the manager. If you're not happy with how we've handled a complaint, you can contact
+          the Telecommunications Industry Ombudsman (TIO) on
+          <a href="tel:1800062058">1800&nbsp;062&nbsp;058</a> or at
+          <a href="https://www.tio.com.au" rel="noopener">tio.com.au</a>. The TIO is a free and independent
+          dispute-resolution service.
+        </p>
+
+        <h2>11. Privacy</h2>
+        <p>
+          We collect your name, contact details and connection address to check availability, connect your
+          service and bill you. That information is shared with our wholesale partner and nbn co only as needed
+          to deliver the service, and is never sold. You can ask us at any time what we hold about you.
+        </p>
+
+        <h2>12. Changes to these terms</h2>
+        <p>
+          If we change these terms in a way that could disadvantage you, we'll give you at least 30 days'
+          notice, and you can cancel without penalty before the change takes effect. The current version always
+          lives at this page.
+        </p>
+
+        <p class="terms-note">
+          nbn® is a registered trademark of nbn co limited. Questions about these terms? Call
+          <a href={SITE.phoneHref}>{SITE.phone}</a> or visit us at {SITE.addressShort}.
+        </p>
+
+        <a href="/nbn/" class="btn btn-ghost" style="margin-top: 24px;">← Back to NBN plans</a>
+      </div>
+    </section>
+  </main>
+
+  <SiteFooter />
+  <PageScripts />
+</Layout>
+
+<style>
+  .terms-wrap { max-width: 760px; }
+  .terms-wrap h2 { font-size: 22px; margin: 36px 0 12px; }
+  .terms-wrap p, .terms-wrap li { font-size: 16px; line-height: 1.7; color: var(--text-muted); }
+  .terms-wrap ul { padding-left: 22px; margin: 12px 0; display: flex; flex-direction: column; gap: 8px; }
+  .terms-wrap a { color: var(--brand-700); font-weight: 600; }
+  .terms-updated { font-size: 14px; color: var(--text-subtle); margin: 8px 0 28px; }
+  .terms-note { margin-top: 36px; font-size: 14px; }
+</style>
