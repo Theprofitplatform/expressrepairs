@@ -190,3 +190,24 @@ describe('shop pages', () => {
     expect(html).toContain('Page 1 of');
   });
 });
+
+describe('built NBN page', () => {
+  it('renders the displayed plan cards with list and bundle prices', async () => {
+    const { NBN_PLANS } = await import('../src/data/plans.js');
+    const nbn = readFileSync('dist/nbn/index.html', 'utf8');
+    for (const name of ['NBN 50/20', 'NBN 250/100', 'NBN 1000/100', 'NBN 1000/400']) {
+      const p = NBN_PLANS.find((x) => x.name === name);
+      expect(nbn).toContain(p.name);
+      expect(nbn).toContain(`>${p.price}<`); // big list price
+      expect(nbn).toContain('for TeleChoice customers');
+    }
+    expect(nbn).toContain('TeleChoice mobile customers save 10%');
+    expect(nbn).toContain('No lock-in');
+    const sm = readFileSync('dist/sitemap-0.xml', 'utf8');
+    expect(sm).toContain('/nbn/');
+  });
+
+  it('is linked from the homepage nav and footer', () => {
+    expect(html).toContain('href="/nbn/"');
+  });
+});
