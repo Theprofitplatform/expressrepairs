@@ -59,3 +59,14 @@ describe('data integrity', () => {
     }
   });
 });
+
+describe('owner price overrides', () => {
+  it('every Hanman case is $29.95 phone / $39.95 tablet', async () => {
+    const { PRODUCTS } = await import('../src/data/products.js');
+    const hanman = PRODUCTS.filter((p) => /hanman/i.test(p.name) && /Cases/.test(p.category));
+    expect(hanman.length).toBeGreaterThan(300); // DXPOS + HOCO both covered
+    for (const p of hanman) {
+      expect(p.priceCents).toBe(p.category === 'Tablet & iPad Cases' ? 3995 : 2995);
+    }
+  });
+});
