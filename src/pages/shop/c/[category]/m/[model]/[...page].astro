@@ -5,7 +5,8 @@ import SiteFooter from '../../../../../../components/SiteFooter.astro';
 import MobileCta from '../../../../../../components/MobileCta.astro';
 import ShopSearch from '../../../../../../components/ShopSearch.astro';
 import ShopFilters from '../../../../../../components/ShopFilters.astro';
-import { PRODUCTS, fmtPrice } from '../../../../../../data/products.js';
+import ProductCard from '../../../../../../components/ProductCard.astro';
+import { PRODUCTS } from '../../../../../../data/products.js';
 import { slugifyCategory, deviceModel, modelGroups } from '../../../../../../lib/shop.js';
 import { breadcrumbSchema, itemListSchema } from '../../../../../../lib/seo.js';
 
@@ -80,25 +81,7 @@ const schema = [
       <ShopFilters category={category} categorySlug={categorySlug} model={modelKey} brands={brandCounts} />
 
       <div class="acc-grid acc-grid--dense" style="margin-top: 24px;">
-        {page.data.map((p) => (
-          <a href={`/shop/${p.id}/`} class="acc-card" data-brand={p.brand}>
-            <div class="acc-visual">
-              <img
-                src={p.thumb}
-                alt={p.name}
-                loading="lazy"
-                decoding="async"
-                width="400"
-                height="300"
-                style="width: 100%; height: auto; aspect-ratio: 4 / 3; object-fit: contain; background: #fff; padding: 12px; box-sizing: border-box;"
-              />
-            </div>
-            <div class="acc-body">
-              <div class="acc-title">{p.name}</div>
-              <div class="acc-price">{fmtPrice(p.priceCents)}</div>
-            </div>
-          </a>
-        ))}
+        {page.data.map((p) => <ProductCard p={p} />)}
       </div>
 
       <div id="pagination" style="display: flex; align-items: center; justify-content: center; gap: 24px; margin-top: 40px;">

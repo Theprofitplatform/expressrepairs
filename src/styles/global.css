@@ -581,6 +581,19 @@ input, select, textarea { font-family: inherit; font-size: inherit; color: inher
 .acc-desc { font-size: 14px; color: var(--text-muted); }
 .acc-price { margin-top: 10px; font-weight: 700; color: var(--brand-700); font-size: 15px; }
 
+/* Shared ProductCard (category/model/tag grids): link wraps image+title, buy row sits outside it. */
+.acc-card-link { display: flex; flex-direction: column; flex: 1; }
+.acc-brand { font-size: 11px; font-weight: 600; letter-spacing: .06em; text-transform: uppercase; color: var(--text-muted); }
+.acc-card .acc-title {
+  display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;
+}
+.acc-buy { display: flex; align-items: center; justify-content: space-between; gap: 8px; padding: 0 14px 14px; margin-top: auto; }
+.acc-buy .acc-price { margin-top: 0; }
+@media (max-width: 560px) {
+  .acc-buy { flex-wrap: wrap; }
+  .acc-buy [data-add-to-cart] { min-height: 40px; }
+}
+
 /* ============ Shop filter bar (category/model pages) ============ */
 .model-nav { margin-top: 20px; display: flex; flex-direction: column; gap: 8px; }
 .model-group { border: 1px solid var(--border); border-radius: 12px; background: var(--surface); }
