@@ -115,6 +115,43 @@ describe('POST /api/lead', () => {
     expect(payload.subject).toContain('screen-repair');   // at-a-glance inbox triage
   });
 
+  it('counts a delivered lead in KV — attribution only, no customer PII', async () => {
+    okResend();
+    const store = new Map();
+    const env = { ...ENV, ORDERS_KV: { put: async (k, v) => void store.set(k, v) } };
+    await onRequest({
+      request: makeReq({ body: { name: 'Jane', phone: '0400 000 000', email: 'jane@example.com', model: 'iPhone 14', type: 'screen', source: 'landing:screen-repair' } }),
+      env,
+    });
+    expect(store.size).toBe(1);
+    const [key, value] = [...store.entries()][0];
+    expect(key.startsWith('lead:')).toBe(true);
+    expect(key).toMatch(/^lead:\d{4}-\d{2}-\d{2}T/); // prefix-listable by month
+    expect(JSON.parse(value)).toMatchObject({ source: 'landing', campaign: 'screen-repair', type: 'Screen Repair', model: 'iPhone 14' });
+    expect(value).not.toContain('Jane');
+    expect(value).not.toContain('0400');
+    expect(value).not.toContain('jane@example.com');
+  });
+
+  it('does not count an undelivered lead, and a KV failure never breaks delivery', async () => {
+    // Resend down → 503, nothing counted.
+    vi.spyOn(globalThis, 'fetch').mockResolvedValue(new Response('nope', { status: 500 }));
+    const store = new Map();
+    const kv = { put: async (k, v) => void store.set(k, v) };
+    const failed = await onRequest({ request: makeReq({ body: { name: 'Jane', phone: '0400' } }), env: { ...ENV, ORDERS_KV: kv } });
+    expect(failed.status).toBe(503);
+    expect(store.size).toBe(0);
+
+    // KV down but the email went out → still 200, the lead is not lost.
+    vi.restoreAllMocks();
+    okResend();
+    const res = await onRequest({
+      request: makeReq({ body: { name: 'Jane', phone: '0400' } }),
+      env: { ...ENV, ORDERS_KV: { put: async () => { throw new Error('kv down'); } } },
+    });
+    expect(res.status).toBe(200);
+  });
+
   it('a plain contact lead carries no campaign row and stays source "contact"', async () => {
     const fetchSpy = okResend();
     await onRequest({ request: makeReq({ body: { name: 'Jane', phone: '0400' } }), env: ENV });

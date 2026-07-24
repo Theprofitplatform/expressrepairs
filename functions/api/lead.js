@@ -168,5 +168,26 @@ export async function onRequest({ request, env }) {
     return json(503, { ok: false, error: 'Could not send right now.' });
   }
 
+  // Count the lead so traffic can be tied to enquiries (the email is
+  // fire-and-forget — nothing else records that a lead happened). One key per
+  // lead, timestamp-prefixed so `wrangler kv key list --prefix lead:2026-07`
+  // both counts and orders a month. No name/phone/email/details: the shop's
+  // inbox is the record of the customer, this is only the tally + attribution.
+  // ponytail: key-per-lead, not a counter — no read-modify-write race, and
+  // listing is fine at this volume. Aggregate into daily totals if it ever
+  // outgrows one list page (1000 keys).
+  if (env.ORDERS_KV) {
+    try {
+      await env.ORDERS_KV.put(
+        `lead:${new Date().toISOString()}:${crypto.randomUUID().slice(0, 8)}`,
+        JSON.stringify({ source, campaign, type: repairType, model, quote: oneLine(data.quote, 60) }),
+        { expirationTtl: 60 * 60 * 24 * 730 },
+      );
+    } catch (err) {
+      // Never fail a delivered lead over bookkeeping.
+      console.error('ORDERS_KV lead count failed', err);
+    }
+  }
+
   return json(200, { ok: true });
 }

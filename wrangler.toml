@@ -6,7 +6,8 @@ name = "expressrepairs"
 compatibility_date = "2026-04-20"
 pages_build_output_dir = "dist"
 
-# Webhook idempotency store (functions/api/stripe-webhook.js).
+# Webhook idempotency store (functions/api/stripe-webhook.js) + the `lead:*`
+# enquiry counter (functions/api/lead.js).
 [[kv_namespaces]]
 binding = "ORDERS_KV"
 id = "76d87c01303149d5b37f520242b0f335"

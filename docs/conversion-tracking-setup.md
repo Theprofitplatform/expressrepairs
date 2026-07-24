@@ -176,6 +176,34 @@ watch Google Ads "Tag diagnostics" report "Recording conversions" over ~24h.
 
 ---
 
+## Lead counter (first-party, no analytics account needed)
+
+Every lead that `POST /api/lead` actually delivers writes one KV key to
+`ORDERS_KV` (binding declared in `wrangler.toml`, so it applies on every
+deploy). GA4 and the ad platforms each report their own version of a
+conversion; this is the shop's own count, and it's the only one that can't be
+lost to ad blockers or consent banners.
+
+Key: `lead:<ISO timestamp>:<8 hex>` — Value: `{source, campaign, type, model,
+quote}`. No name, phone, email or details; the shop inbox is the record of the
+customer. Keys expire after 2 years.
+
+Read it with the namespace id from `wrangler.toml`:
+
+```bash
+# this month's leads (count = number of keys)
+npx wrangler kv key list --namespace-id 76d87c01303149d5b37f520242b0f335 \
+  --prefix "lead:$(date +%Y-%m)" | jq length
+
+# what a single lead was attributed to
+npx wrangler kv key get --namespace-id 76d87c01303149d5b37f520242b0f335 "<key>"
+```
+
+Nothing exposes this over HTTP — a public lead count is a public business
+metric, and an authed endpoint is more moving parts than a CLI call.
+
+---
+
 ## Definition of done
 
 - [ ] `googleAdsId` + both labels filled in `src/data/tracking.js`.
