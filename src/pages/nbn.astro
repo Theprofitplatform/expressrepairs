@@ -1,0 +1,146 @@
+---
+import Layout from '../layouts/Layout.astro';
+import SiteNav from '../components/SiteNav.astro';
+import SiteFooter from '../components/SiteFooter.astro';
+import MobileCta from '../components/MobileCta.astro';
+import PageScripts from '../components/PageScripts.astro';
+import NbnForm from '../components/NbnForm.jsx';
+import { SITE } from '../data/site.js';
+import { NBN_PLANS } from '../data/plans.js';
+import { breadcrumbSchema } from '../lib/seo.js';
+
+const navLinks = [
+  { label: 'Repairs', href: '/repairs/' },
+  { label: 'Shop', href: '/shop/' },
+  { label: 'Mobile Plans', href: '/#plans' },
+  { label: 'Blog', href: '/blog/' },
+];
+
+// Curated storefront: four speed tiers. The rest stay in NBN_PLANS (and the
+// enquiry form's dropdown) for customers who ask.
+const DISPLAY = ['NBN 50/20', 'NBN 250/100', 'NBN 1000/100', 'NBN 1000/400'];
+const shown = DISPLAY.map((name) => NBN_PLANS.find((p) => p.name === name));
+
+const money = (n) => (n % 1 ? n.toFixed(2) : String(n));
+
+const schema = breadcrumbSchema([
+  { name: 'Home', path: '/' },
+  { name: 'Business NBN', path: '/nbn/' },
+]);
+---
+<Layout
+  title="Business NBN Plans — No Lock-in, Unlimited Data & Static IP | Express Repairs"
+  description="Business-grade NBN with no lock-in contracts: unlimited data, free static IP, speeds up to 2000/500. TeleChoice mobile customers save 10%. Local support from our Riverwood store."
+  path="/nbn/"
+  schema={schema}
+  htmlAttrs={{ 'data-palette': 'electric-blue', 'data-fontpair': 'jakarta', 'data-dark': 'false' }}
+>
+  <SiteNav links={navLinks} ctaHref="#enquire" />
+
+  <main id="main-content">
+    <section class="hero" style="padding-bottom: 24px;">
+      <div class="hero-bg"></div>
+      <div class="container-wide" style="position: relative; z-index: 1;">
+        <nav class="breadcrumb" aria-label="Breadcrumb">
+          <a href="/">Home</a>
+          <span class="crumb-sep">/</span>
+          <span class="crumb-current">Business NBN</span>
+        </nav>
+        <span class="hero-badge">
+          <span class="hero-badge-pill">New</span>
+          <span>Business NBN · No lock-in · Free static IP</span>
+        </span>
+        <h1 class="hero-title" style="font-size: clamp(38px, 5.2vw, 62px); max-width: 760px;">
+          Business NBN, <em>without the lock-in</em>.
+        </h1>
+        <p class="hero-sub">
+          Month-to-month business-grade NBN with unlimited data and a free static IP on every plan — and a local team you can actually call. Tell us your address and we'll confirm the fastest plan available.
+        </p>
+        <div class="hero-ctas">
+          <a href="#plans" class="btn btn-primary btn-lg">See plans</a>
+          <a href="#enquire" class="btn btn-ghost btn-lg">Check my address</a>
+        </div>
+      </div>
+    </section>
+
+    <section class="section" id="plans" style="background: var(--bg-soft);">
+      <div class="container-wide">
+        <span class="eyebrow">Business NBN Plans</span>
+        <h2 class="section-title" style="margin-top: 14px;">Pick your speed. Everything else is included.</h2>
+        <p class="section-lede">Every plan is month-to-month — no lock-in, no exit fees. Prices per month inc. GST.</p>
+
+        <div class="nbn-bundle-banner">
+          <strong>TeleChoice mobile customers save 10%</strong> on any NBN plan — new or existing. Grab a SIM in-store and the discount applies from day one.
+        </div>
+
+        <div class="plan-grid nbn-grid" style="margin-top: 32px;">
+          {shown.map((p) => (
+            <div class={`plan ${p.featured ? 'featured' : ''}`}>
+              {p.featured && <div class="plan-tag">Most popular</div>}
+              <div class="plan-name">{p.name}</div>
+              <div class="plan-price">
+                <span class="dollar">$</span>
+                <span class="num">{p.price}</span>
+                <span class="per">/month</span>
+              </div>
+              <div class="nbn-bundle-price">${money(p.bundle)}/mth for TeleChoice customers</div>
+              <div class="plan-data">Typical business-hour speed {p.typical}</div>
+              <ul class="plan-features">
+                {p.features.map((f) => <li>{f}</li>)}
+              </ul>
+              <p class="nbn-blurb">{p.blurb}</p>
+              <a href={`?plan=${encodeURIComponent(p.name)}#enquire`} class={`btn ${p.featured ? 'btn-primary' : 'btn-ghost'} btn-block`}>
+                Choose {p.name}
+              </a>
+            </div>
+          ))}
+        </div>
+
+        <p class="plan-footer-note">
+          Need 2 Gbps, upload-heavy speeds or something in between? We have more plans in-store — call <a href={SITE.phoneHref} style="color: var(--brand-700); font-weight: 700;">{SITE.phone}</a>.
+          Typical business-hour speeds shown; actual speeds depend on your NBN technology and address.
+        </p>
+      </div>
+    </section>
+
+    <section class="section" id="enquire">
+      <div class="container-wide" style="max-width: 720px;">
+        <span class="eyebrow">Get connected</span>
+        <h2 class="section-title" style="margin-top: 14px;">Check availability at your address.</h2>
+        <p class="section-lede">We'll confirm what your address supports and call you back — usually within one business day.</p>
+        <div style="margin-top: 32px;">
+          <NbnForm client:visible />
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <SiteFooter />
+  <MobileCta />
+  <PageScripts />
+</Layout>
+
+<style>
+  .nbn-bundle-banner {
+    margin-top: 24px;
+    padding: 14px 18px;
+    border-radius: 12px;
+    background: color-mix(in oklab, var(--brand-500, #2563eb) 10%, transparent);
+    border: 1px solid color-mix(in oklab, var(--brand-500, #2563eb) 25%, transparent);
+    font-size: 15px;
+  }
+  .nbn-grid { grid-template-columns: repeat(4, 1fr); }
+  @media (max-width: 1100px) { .nbn-grid { grid-template-columns: repeat(2, 1fr); } }
+  @media (max-width: 620px) { .nbn-grid { grid-template-columns: 1fr; } }
+  .nbn-bundle-price {
+    font-size: 14px;
+    font-weight: 700;
+    color: var(--brand-700);
+    margin: 2px 0 12px;
+  }
+  .nbn-blurb {
+    font-size: 14px;
+    color: var(--text-subtle, #6b7280);
+    margin: 0 0 16px;
+  }
+</style>

@@ -37,6 +37,16 @@ export const planSchema = z.object({
   features: z.array(z.string()).min(1),
 });
 
+export const nbnPlanSchema = z.object({
+  name: z.string(),
+  typical: z.string(), // supplier's "Typical Business Hour Speed", verbatim
+  price: z.number(), // list $/month inc GST, month-to-month (no lock-in)
+  bundle: z.number(), // TeleChoice mobile customer price = price × 0.9
+  featured: z.boolean().optional(),
+  blurb: z.string(),
+  features: z.array(z.string()).min(1),
+});
+
 export const accessorySchema = z.object({
   title: z.string(),
   desc: z.string(),
