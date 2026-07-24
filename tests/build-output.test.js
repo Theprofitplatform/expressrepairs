@@ -210,4 +210,15 @@ describe('built NBN page', () => {
   it('is linked from the homepage nav and footer', () => {
     expect(html).toContain('href="/nbn/"');
   });
+
+  it('builds the NBN service terms with the legal entity, TIO and discount conditions', () => {
+    const terms = readFileSync('dist/nbn/terms/index.html', 'utf8');
+    expect(terms).toContain('Mertel Pty');
+    expect(terms).toContain('644'); // ABN 88 644 567 019 (nbsp-separated in markup)
+    expect(terms).toContain('Telecommunications Industry Ombudsman');
+    expect(terms).toContain('TeleChoice customer discount');
+    expect(terms).toContain('no exit fees');
+    const nbn = readFileSync('dist/nbn/index.html', 'utf8');
+    expect(nbn).toContain('href="/nbn/terms/"');
+  });
 });
