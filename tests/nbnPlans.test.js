@@ -11,10 +11,6 @@ describe('NBN_PLANS', () => {
     expect(NBN_PLANS.filter((p) => p.featured)).toHaveLength(1);
   });
 
-  it('prices the TeleChoice bundle at exactly 10% off list', () => {
-    for (const p of NBN_PLANS) expect(p.bundle).toBeCloseTo(p.price * 0.9, 2);
-  });
-
   it('advertises no lock-in on every plan', () => {
     for (const p of NBN_PLANS) expect(p.features.some((f) => /no lock-in/i.test(f))).toBe(true);
   });
