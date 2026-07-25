@@ -221,4 +221,13 @@ describe('built NBN page', () => {
     const nbn = readFileSync('dist/nbn/index.html', 'utf8');
     expect(nbn).toContain('href="/nbn/terms/"');
   });
+
+  it('advertises the VoIP inclusion and guards the emergency-call warning', () => {
+    const nbn = readFileSync('dist/nbn/index.html', 'utf8');
+    expect(nbn).toContain('Free business phone number');
+    expect(nbn).toContain('Unlimited Call Pack');
+    const terms = readFileSync('dist/nbn/terms/index.html', 'utf8');
+    expect(terms).toContain('calls to 000');
+    expect(terms).toContain('$10/mth');
+  });
 });
