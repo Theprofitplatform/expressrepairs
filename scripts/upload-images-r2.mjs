@@ -22,10 +22,15 @@ import sharp from 'sharp';
 import { AwsClient } from 'aws4fetch';
 import DXPOS from '../src/data/products.json' with { type: 'json' };
 import HOCO from '../src/data/hoco-products.json' with { type: 'json' };
+import MOBILEMALL from '../src/data/mobilemall-products.json' with { type: 'json' };
+import { mergeSupplier } from '../src/lib/merge-catalogs.js';
 
-// Both supplier catalogs mirror into the same bucket/manifest; H- ids come
-// from the HOCO import (scripts/import-hoco.mjs), X- ids from the DXPOS sync.
-const PRODUCTS = [...DXPOS, ...HOCO];
+// All three catalogs mirror into the same bucket/manifest; H- ids come from
+// the HOCO import (scripts/import-hoco.mjs), M- ids from the MobileMall import
+// (scripts/import-mobilemall.mjs), X- ids from the DXPOS sync. mergeSupplier
+// drops the ~3.5k MobileMall rows DXPOS already carries — mirroring those
+// would upload the same photo twice under two ids and serve neither.
+const PRODUCTS = [...mergeSupplier(DXPOS, MOBILEMALL), ...HOCO];
 
 const ACCOUNT = process.env.CLOUDFLARE_ACCOUNT_ID;
 const KEY_ID = process.env.R2_ACCESS_KEY_ID;
