@@ -7,3 +7,6 @@ dist/
 .astro/
 .gstack/
 _worker.bundle
+
+# SDD scratch workspace (subagent-driven-development)
+.superpowers/

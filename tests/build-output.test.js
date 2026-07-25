@@ -191,6 +191,18 @@ describe('shop pages', () => {
   });
 });
 
+describe('built shop thanks page', () => {
+  const thanks = () => readFileSync('dist/shop/thanks/index.html', 'utf8');
+
+  it('does not promise a Stripe receipt (payments are not enabled)', () => {
+    expect(thanks()).not.toContain('Stripe receipt');
+  });
+
+  it('tells the customer we will call to confirm and take payment', () => {
+    expect(thanks()).toContain('call you to confirm');
+  });
+});
+
 describe('built NBN page', () => {
   it('renders the displayed plan cards with list prices', async () => {
     const { NBN_PLANS } = await import('../src/data/plans.js');

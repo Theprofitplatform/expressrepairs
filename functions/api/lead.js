@@ -41,6 +41,10 @@ const MAX_FIELD_LEN = 2000;
 const MAX_DETAILS_LEN = 5000;
 
 import { json, sameSite } from '../_shared.js';
+import { PRODUCTS, SHOP, fmtPrice } from '../../src/data/products.js';
+import { orderTotals } from '../../src/lib/orderRequest.js';
+
+const byId = Object.fromEntries(PRODUCTS.map((p) => [p.id, p]));
 
 const esc = (s) =>
   String(s ?? '')
@@ -102,7 +106,17 @@ export async function onRequest({ request, env }) {
   const rawSource = oneLine(data.source, 60);
   const isLanding = rawSource.startsWith('landing:');
   const campaign = isLanding ? rawSource.slice('landing:'.length) : '';
-  const source = rawSource === 'booking' ? 'booking' : isLanding ? 'landing' : 'contact';
+  const isOrder = rawSource === 'order';
+  const source = isOrder
+    ? 'order'
+    : rawSource === 'booking'
+      ? 'booking'
+      : isLanding
+        ? 'landing'
+        : 'contact';
+  // Delivery address may contain newlines; capped like details.
+  const address = String(data.address ?? '').trim().slice(0, 500);
+  const fulfilment = oneLine(data.fulfilment, 20);
   const repairType = REPAIR_LABELS[data.type] || (data.type ? oneLine(data.type) : '');
 
   if (!name || !phone) {
@@ -112,6 +126,14 @@ export async function onRequest({ request, env }) {
     return json(400, { ok: false, error: 'Email looks invalid.' });
   }
 
+  // Order requests carry a cart. Prices and names are resolved from the
+  // catalogue here — a client-sent price is ignored (see orderRequest.js).
+  let order = null;
+  if (isOrder) {
+    order = orderTotals(data.items, byId, fulfilment, SHOP);
+    if (order.error) return json(400, { ok: false, error: order.error });
+  }
+
   const apiKey = env.RESEND_API_KEY;
   if (!apiKey) {
     // Not configured yet — fail loudly so the form shows the call-us fallback
@@ -119,15 +141,36 @@ export async function onRequest({ request, env }) {
     return json(503, { ok: false, error: 'Lead delivery not configured.' });
   }
 
-  const heading = source === 'booking' ? 'New booking request' : 'New quote request';
+  const heading = isOrder
+    ? 'New order request'
+    : source === 'booking'
+      ? 'New booking request'
+      : 'New quote request';
+
+  // The html renderer turns \n into <br>, so a multi-line value is fine here.
+  const orderRows = order
+    ? [
+        ['Fulfilment', fulfilment === 'pickup'
+          ? 'Pickup in store — Riverwood Plaza'
+          : 'Delivery (AusPost)'],
+        ['Address', address],
+        ['Items', order.lines.map((l) => `${l.qty} × ${l.name} — ${fmtPrice(l.lineTotalCents)}`).join('\n')],
+        ['Subtotal', fmtPrice(order.subtotalCents)],
+        ['Shipping', order.shippingCents === 0 ? 'Free' : fmtPrice(order.shippingCents)],
+        ['Total', fmtPrice(order.totalCents)],
+      ]
+    : [
+        ['Device', model],
+        ['Repair', repairType],
+        ['Quote', data.quote ? oneLine(data.quote, 60) : ''],
+        ['Campaign', campaign],
+      ];
+
   const rows = [
     ['Name', name],
     ['Phone', phone],
     ['Email', email],
-    ['Device', model],
-    ['Repair', repairType],
-    ['Quote', data.quote ? oneLine(data.quote, 60) : ''],
-    ['Campaign', campaign],
+    ...orderRows,
     ['Details', details],
   ].filter(([, v]) => v);
 
@@ -139,7 +182,9 @@ export async function onRequest({ request, env }) {
   const payload = {
     from: env.LEAD_FROM_EMAIL || DEFAULT_FROM,
     to: [env.LEAD_TO_EMAIL || DEFAULT_TO],
-    subject: `${heading}: ${name}${model ? ` — ${model}` : ''}${campaign ? ` [${campaign}]` : ''}`,
+    subject: order
+      ? `${heading}: ${name} — ${order.lines.length} item${order.lines.length === 1 ? '' : 's'}, ${fmtPrice(order.totalCents)}`
+      : `${heading}: ${name}${model ? ` — ${model}` : ''}${campaign ? ` [${campaign}]` : ''}`,
     text,
     html,
   };
@@ -180,7 +225,11 @@ export async function onRequest({ request, env }) {
     try {
       await env.ORDERS_KV.put(
         `lead:${new Date().toISOString()}:${crypto.randomUUID().slice(0, 8)}`,
-        JSON.stringify({ source, campaign, type: repairType, model, quote: oneLine(data.quote, 60) }),
+        JSON.stringify(
+          order
+            ? { source, items: order.lines.length, value: order.totalCents }
+            : { source, campaign, type: repairType, model, quote: oneLine(data.quote, 60) },
+        ),
         { expirationTtl: 60 * 60 * 24 * 730 },
       );
     } catch (err) {
