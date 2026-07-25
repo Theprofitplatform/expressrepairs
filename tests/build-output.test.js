@@ -190,3 +190,16 @@ describe('shop pages', () => {
     expect(html).toContain('Page 1 of');
   });
 });
+
+describe('built shop thanks page', () => {
+  const thanks = () => readFileSync('dist/shop/thanks/index.html', 'utf8');
+
+  it('does not promise a Stripe receipt (payments are not enabled)', () => {
+    expect(thanks()).not.toContain('Stripe receipt');
+  });
+
+  it('tells the customer we will call to confirm and take payment', () => {
+    expect(thanks()).toContain('call you to confirm');
+  });
+
+});
