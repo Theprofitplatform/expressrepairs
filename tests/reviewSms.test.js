@@ -1,5 +1,6 @@
 import { describe, it, expect, beforeEach, vi } from 'vitest';
 import { normalizeAuMobile, buildReviewMessage, onRequest } from '../functions/api/review-sms.js';
+import { PIN_MAX_FAILS } from '../functions/_shared.js';
 
 describe('normalizeAuMobile', () => {
   it('normalises common AU mobile formats to E.164', () => {
@@ -37,7 +38,7 @@ describe('buildReviewMessage', () => {
 });
 
 const ORIGIN = 'https://expressrepairs.com.au';
-const PIN = 'test-pin-abc123'; // >= MIN_PIN_LENGTH (10)
+const PIN = 'test-pin-abc123'; // >= MIN_PIN_LENGTH (6)
 const FULL_ENV = {
   CLICKSEND_USERNAME: 'u',
   CLICKSEND_API_KEY: 'k',
@@ -193,5 +194,80 @@ describe('POST /api/review-sms', () => {
       env: FULL_ENV,
     });
     expect(res.status).toBe(503);
+  });
+});
+
+// Fake KV — same Map-backed shape used in tests/supplierOrderApi.test.js.
+function makeFakeKv(initial = {}) {
+  const store = new Map(Object.entries(initial));
+  return {
+    async get(key) {
+      return store.has(key) ? store.get(key) : null;
+    },
+    async put(key, value) {
+      store.set(key, String(value));
+    },
+    async delete(key) {
+      store.delete(key);
+    },
+  };
+}
+
+function reqFrom(ip, opts) {
+  const request = makeReq(opts);
+  request.headers.set('CF-Connecting-IP', ip);
+  return request;
+}
+
+describe('POST /api/review-sms — PIN rate limiting', () => {
+  beforeEach(() => vi.restoreAllMocks());
+
+  it('accepts a 6-character PIN (used to 503 under the old 10-char floor)', async () => {
+    const spy = clickSendOk();
+    const shortPin = '654321';
+    const res = await onRequest({
+      request: reqFrom('20.0.0.1', { body: { pin: shortPin, mobile: '0412345678', name: 'Sam' } }),
+      env: { ...FULL_ENV, REVIEW_SMS_PIN: shortPin, ORDERS_KV: makeFakeKv() },
+    });
+    expect(res.status).toBe(200);
+    expect(spy).toHaveBeenCalledTimes(1);
+  });
+
+  it('the 6th failure from one IP returns 429 before pinEqual runs (correct PIN still 429)', async () => {
+    const spy = clickSendOk();
+    const kv = makeFakeKv();
+    const ip = '20.0.0.2';
+    const envFor = { ...FULL_ENV, ORDERS_KV: kv };
+    for (let i = 0; i < PIN_MAX_FAILS; i++) {
+      const res = await onRequest({
+        request: reqFrom(ip, { body: { pin: 'wrong-pin-000000', mobile: '0412345678' } }),
+        env: envFor,
+      });
+      expect(res.status).toBe(401);
+    }
+    const res = await onRequest({
+      request: reqFrom(ip, { body: { pin: PIN, mobile: '0412345678' } }),
+      env: envFor,
+    });
+    expect(res.status).toBe(429);
+    expect(await res.json()).toEqual({ ok: false, error: 'Too many attempts. Wait 15 minutes.' });
+    expect(spy).not.toHaveBeenCalled();
+  });
+
+  it('a correct PIN clears that IP counter', async () => {
+    const spy = clickSendOk();
+    const kv = makeFakeKv();
+    const ip = '20.0.0.3';
+    const envFor = { ...FULL_ENV, ORDERS_KV: kv };
+    await onRequest({ request: reqFrom(ip, { body: { pin: 'wrong-pin-000000', mobile: '0412345678' } }), env: envFor });
+    expect(await kv.get(`pinfail:${ip}`)).toBe('1');
+
+    const res = await onRequest({
+      request: reqFrom(ip, { body: { pin: PIN, mobile: '0412345678', name: 'Sam' } }),
+      env: envFor,
+    });
+    expect(res.status).toBe(200);
+    expect(await kv.get(`pinfail:${ip}`)).toBeNull();
+    expect(spy).toHaveBeenCalledTimes(1);
   });
 });
