@@ -31,8 +31,8 @@ export function orderTotals(items, byId, fulfilment, shop) {
     if (item === null || typeof item !== 'object' || Array.isArray(item)) {
       return { error: 'An item in your cart is no longer available.' };
     }
+    if (!Object.hasOwn(byId, item.id)) return { error: 'An item in your cart is no longer available.' };
     const p = byId[item.id];
-    if (!p) return { error: 'An item in your cart is no longer available.' };
     const qty = Number(item.qty);
     if (!Number.isInteger(qty) || qty < 1 || qty > MAX_QTY) {
       return { error: 'Invalid quantity.' };

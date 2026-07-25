@@ -79,4 +79,11 @@ describe('orderTotals', () => {
     expect(orderTotals([{ id: 'a', qty: 1 }], byId, 'teleport', SHOP).error)
       .toBe('Please choose pickup or delivery.');
   });
+
+  it('rejects prototype pollution attempts (constructor, __proto__, toString, valueOf)', () => {
+    for (const id of ['constructor', '__proto__', 'toString', 'valueOf']) {
+      expect(orderTotals([{ id, qty: 1 }], byId, 'pickup', SHOP).error)
+        .toBe('An item in your cart is no longer available.');
+    }
+  });
 });
