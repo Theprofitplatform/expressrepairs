@@ -223,7 +223,7 @@ git commit -m "feat: extract supplier catalogues (cost data stays gitignored)"
 - Test: `tests/supplierCatalog.test.js`
 
 **Interfaces:**
-- Consumes: `.supplier-data/*.json` (Task 2 shapes), `src/data/hoco-products.json` (`{id:'H-1001',category,...}`), `src/data/products.json` (`{name,...}`).
+- Consumes: `.supplier-data/*.json` (Task 2 shapes), `src/data/hoco-products.json` (`{id:'H-8250',category,...}`), `src/data/products.json` (`{name,...}`).
 - Produces: exported `normName(s)`, `buildHocoRows(raw, hocoProducts)`, `buildMobilemallRows(raw, shopProducts)` returning the Catalogue-row shape from Global Constraints; KV keys `supplier-catalog:hoco` / `supplier-catalog:mobilemall` holding `JSON.stringify(rows)`.
 
 - [ ] **Step 1: Write the failing tests**
@@ -240,10 +240,11 @@ describe('normName', () => {
   });
 });
 
-// NOTE: every fixture value below is FABRICATED on purpose. This repo is
-// public — a real supplier id paired with its real cost/RRP must never be
-// committed. Do not "correct" these to real catalogue values.
 describe('buildHocoRows', () => {
+  // Fixture values are fabricated to avoid real supplier cost data in a public repo.
+  // Do NOT replace these with actual SKU/cost/RRP values; cost prices must never
+  // be committed. The test verifies id-join, cents conversion, category lookup, and
+  // unmatched-row handling — any fabricated values that exercise these paths work.
   const raw = [
     { id: 1001, name: 'Fabricated Ring Stand', cost: 9.99, rrp: 24.99 },
     { id: 9999, name: 'Unlisted Thing', cost: 2, rrp: null },
@@ -390,6 +391,8 @@ Append to `tests/supplierOrderApi.test.js`:
 const { onRequest } = await import('../functions/api/supplier-catalog.js');
 
 const PIN = 'secret-pin-123456';
+// Fabricated test data: sku/name/costCents do not correspond to real supplier rows.
+// The repo is public, so cost prices must never leak in committed test fixtures.
 const HOCO_ROWS = '[{"sku":"1001","name":"Fabricated Ring Stand","costCents":999}]';
 const kv = { get: async (k) => (k === 'supplier-catalog:hoco' ? HOCO_ROWS : null) };
 const env = { STAFF_PIN: PIN, ORDERS_KV: kv };

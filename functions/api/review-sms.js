@@ -15,9 +15,7 @@
 // Note: the shared sameSite also allows *.pages.dev (preview deploys), which
 // the old local copy here did not. Acceptable widening: the PIN below is the
 // real gate — Origin/Referer are forgeable off-browser regardless.
-import { json, sameSite } from '../_shared.js';
-
-const MAX_BODY_BYTES = 16 * 1024;
+import { json, sameSite, pinEqual, MIN_PIN_LENGTH, readJsonBody } from '../_shared.js';
 
 // Single-line, length-capped value — strips CR/LF and other control chars.
 const oneLine = (s, max = 200) => {
@@ -55,55 +53,13 @@ export function buildReviewMessage(name, reviewLink) {
   );
 }
 
-// Length-safe PIN comparison (avoids a trivial early-exit timing signal).
-const pinEqual = (a, b) => {
-  if (typeof a !== 'string' || typeof b !== 'string' || a.length !== b.length) return false;
-  let diff = 0;
-  for (let i = 0; i < a.length; i++) diff |= a.charCodeAt(i) ^ b.charCodeAt(i);
-  return diff === 0;
-};
-
-// The PIN is the sole barrier for a scripted client (Origin/Referer are
-// forgeable off-browser) to a paid outbound SMS. Reject a too-short configured
-// PIN as misconfiguration so a weak secret can't ship and be brute-forced.
-const MIN_PIN_LENGTH = 10;
-
 export async function onRequest({ request, env }) {
   if (request.method !== 'POST') return json(405, { ok: false, error: 'Method not allowed.' });
   if (!sameSite(request, env)) return json(403, { ok: false, error: 'Forbidden.' });
 
-  // Cheap early-reject on the declared length so we don't buffer a huge body;
-  // the real received-byte count is still checked below (Content-Length can be
-  // spoofed or omitted, so it is not trustworthy on its own).
-  if (Number(request.headers.get('content-length') || 0) > MAX_BODY_BYTES) {
-    return json(413, { ok: false, error: 'Request too large.' });
-  }
-
-  // Enforce the size cap on real received bytes.
-  let raw;
-  try {
-    raw = await request.arrayBuffer();
-  } catch {
-    return json(400, { ok: false, error: 'Invalid request body.' });
-  }
-  if (raw.byteLength > MAX_BODY_BYTES) {
-    return json(413, { ok: false, error: 'Request too large.' });
-  }
-
-  let data;
-  try {
-    data = JSON.parse(new TextDecoder().decode(raw));
-  } catch {
-    return json(400, { ok: false, error: 'Invalid request body.' });
-  }
-  // A bare JSON scalar (null, a string, a number) parses fine but has no
-  // fields; reject it so the field reads below can't throw an uncaught
-  // TypeError (which would surface as an opaque 5xx, not our JSON).
-  if (typeof data !== 'object' || data === null) {
-    return json(400, { ok: false, error: 'Invalid request body.' });
-  }
-  // (A JSON array passes the check above, but its field reads are undefined and
-  // degrade to a 401 — no crash, so this is still safe.)
+  const parsed = await readJsonBody(request);
+  if (!parsed.ok) return json(parsed.status, { ok: false, error: parsed.error });
+  const data = parsed.data;
 
   // PIN gate. Unset OR too short → unconfigured (never an open endpoint).
   const pinSecret = env.REVIEW_SMS_PIN;
