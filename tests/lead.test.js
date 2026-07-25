@@ -160,3 +160,132 @@ describe('POST /api/lead', () => {
     expect(payload.text).not.toContain('Campaign:');
   });
 });
+
+describe('POST /api/lead — order requests', () => {
+  // Two real catalogue ids/prices are read at test time so the assertions
+  // can't drift from the synced catalogue.
+  let a, b, price;
+  beforeEach(async () => {
+    const { PRODUCTS, fmtPrice } = await import('../src/data/products.js');
+    [a, b] = PRODUCTS.filter((p) => p.inStock !== false).slice(0, 2);
+    price = fmtPrice;
+  });
+
+  const orderBody = (over = {}) => ({
+    source: 'order',
+    name: 'Jane Smith',
+    phone: '0400 000 000',
+    fulfilment: 'pickup',
+    items: [{ id: a.id, qty: 2 }],
+    ...over,
+  });
+
+  it('sends an order email with catalogue prices, ignoring a client-sent price', async () => {
+    const fetchSpy = okResend();
+    const res = await onRequest({
+      request: makeReq({ body: orderBody({ items: [{ id: a.id, qty: 2, priceCents: 1 }] }) }),
+      env: ENV,
+    });
+    expect(res.status).toBe(200);
+    const sent = JSON.parse(fetchSpy.mock.calls[0][1].body);
+    expect(sent.subject).toContain('New order request');
+    expect(sent.subject).toContain('Jane Smith');
+    // Catalogue price × 2, never the client's 1 cent.
+    expect(sent.text).toContain(price(a.priceCents * 2));
+    expect(sent.text).not.toContain('$0.02');
+    expect(sent.text).toContain(a.name);
+  });
+
+  it('labels pickup as free shipping and delivery as charged below the threshold', async () => {
+    const fetchSpy = okResend();
+    await onRequest({ request: makeReq({ body: orderBody({ items: [{ id: a.id, qty: 1 }] }) }), env: ENV });
+    expect(JSON.parse(fetchSpy.mock.calls[0][1].body).text).toContain('Pickup in store');
+    expect(JSON.parse(fetchSpy.mock.calls[0][1].body).text).toContain('Free');
+
+    const fetchSpy2 = okResend();
+    await onRequest({
+      request: makeReq({ body: orderBody({ fulfilment: 'delivery', items: [{ id: a.id, qty: 1 }] }) }),
+      env: ENV,
+    });
+    const deliveryText = JSON.parse(fetchSpy2.mock.calls[0][1].body).text;
+    expect(deliveryText).toContain('Delivery (AusPost)');
+    expect(deliveryText).toContain('$10.95');
+  });
+
+  it('labels fulfilment consistently with the shipping charged even with a trailing space (regression)', async () => {
+    const fetchSpy = okResend();
+    await onRequest({
+      request: makeReq({ body: orderBody({ fulfilment: 'pickup ', items: [{ id: a.id, qty: 1 }] }) }),
+      env: ENV,
+    });
+    const text = JSON.parse(fetchSpy.mock.calls[0][1].body).text;
+    expect(text).toContain('Pickup in store — Riverwood Plaza');
+    expect(text).not.toContain('Delivery (AusPost)');
+  });
+
+  it('includes the delivery address when delivery is chosen', async () => {
+    const fetchSpy = okResend();
+    await onRequest({
+      request: makeReq({ body: orderBody({ fulfilment: 'delivery', address: '1 Test St, Riverwood NSW 2210' }) }),
+      env: ENV,
+    });
+    expect(JSON.parse(fetchSpy.mock.calls[0][1].body).text).toContain('1 Test St, Riverwood NSW 2210');
+  });
+
+  it('rejects an unknown product id with 400 and sends nothing', async () => {
+    const fetchSpy = okResend();
+    const res = await onRequest({ request: makeReq({ body: orderBody({ items: [{ id: 'no-such-id', qty: 1 }] }) }), env: ENV });
+    expect(res.status).toBe(400);
+    expect((await res.json()).error).toBe('An item in your cart is no longer available.');
+    expect(fetchSpy).not.toHaveBeenCalled();
+  });
+
+  it('rejects a bad quantity with 400', async () => {
+    const res = await onRequest({ request: makeReq({ body: orderBody({ items: [{ id: a.id, qty: 21 }] }) }), env: ENV });
+    expect(res.status).toBe(400);
+    expect((await res.json()).error).toBe('Invalid quantity.');
+  });
+
+  it('rejects an empty cart with 400', async () => {
+    const res = await onRequest({ request: makeReq({ body: orderBody({ items: [] }) }), env: ENV });
+    expect(res.status).toBe(400);
+    expect((await res.json()).error).toBe('Cart is empty.');
+  });
+
+  it('rejects a missing fulfilment choice with 400', async () => {
+    const res = await onRequest({ request: makeReq({ body: orderBody({ fulfilment: undefined }) }), env: ENV });
+    expect(res.status).toBe(400);
+    expect((await res.json()).error).toBe('Please choose pickup or delivery.');
+  });
+
+  it('still requires name and phone for an order', async () => {
+    const res = await onRequest({ request: makeReq({ body: orderBody({ phone: '' }) }), env: ENV });
+    expect(res.status).toBe(400);
+  });
+
+  it('escapes HTML in an order email (no injection into the shop inbox)', async () => {
+    const fetchSpy = okResend();
+    await onRequest({ request: makeReq({ body: orderBody({ name: '<script>x</script>' }) }), env: ENV });
+    const sent = JSON.parse(fetchSpy.mock.calls[0][1].body);
+    expect(sent.html).not.toContain('<script>x</script>');
+    expect(sent.html).toContain('&lt;script&gt;');
+  });
+
+  it('records the order in KV with item count and value, and no customer PII', async () => {
+    okResend();
+    const put = vi.fn().mockResolvedValue(undefined);
+    const res = await onRequest({
+      request: makeReq({ body: orderBody({ items: [{ id: a.id, qty: 1 }, { id: b.id, qty: 1 }] }) }),
+      env: { ...ENV, ORDERS_KV: { put } },
+    });
+    expect(res.status).toBe(200);
+    const [key, value] = put.mock.calls[0];
+    expect(key).toMatch(/^lead:/);
+    const rec = JSON.parse(value);
+    expect(rec.source).toBe('order');
+    expect(rec.items).toBe(2);
+    expect(rec.value).toBe(a.priceCents + b.priceCents);
+    expect(value).not.toContain('Jane Smith');
+    expect(value).not.toContain('0400 000 000');
+  });
+});

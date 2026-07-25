@@ -7,10 +7,15 @@ const navLinks = [
   { label: 'Repairs', href: '/repairs/' },
   { label: 'Shop', href: '/shop/' },
 ];
+// This page is also functions/api/checkout.js's Stripe success_url
+// (/shop/thanks/?session_id=…), currently unused since checkout is disabled.
+// If Stripe is re-enabled: the copy below assumes no payment has been taken
+// yet ("we'll call you... and take payment") and the script fires no
+// `Purchase` pixel event — both need revisiting for a real paid order.
 ---
 <Layout
   title="Order Received | Express Repairs"
-  description="Thanks for your order — we'll pack it and let you know when it ships or is ready for pickup."
+  description="Thanks for your order request — we'll call you to confirm and arrange pickup or delivery."
   path="/shop/thanks/"
   noindex
   htmlAttrs={{ 'data-palette': 'electric-blue', 'data-fontpair': 'jakarta', 'data-dark': 'false' }}
@@ -20,8 +25,9 @@ const navLinks = [
   <main id="main-content" class="section">
     <div class="container">
       <div class="form-success" role="status" style="max-width: 560px; font-size: 16px; padding: 20px 24px;">
-        Order received — thank you! You'll get a Stripe receipt by email; we'll pack your order and
-        email/text when it ships (or when it's ready for pickup).
+        Order received — thank you! We&rsquo;ll call you to confirm your order and take payment,
+        then pack it for pickup at Riverwood Plaza or send it out. If you need us sooner,
+        call (02) 9533 3300.
       </div>
       <p style="margin-top: 24px;"><a href="/shop/">← Back to shop</a></p>
     </div>
@@ -31,16 +37,9 @@ const navLinks = [
 
   <script>
     import { clearCart } from '../../shop/cart-store.js';
+    // The order request has been emailed to the shop; the cart's job is done.
+    // No Purchase event fires here — no payment has been taken. The cart form
+    // fires Meta `Lead` on submit, which is what actually happened.
     clearCart();
-    // Purchase value was stashed by the cart page just before the Stripe
-    // redirect. Fire only when it exists (never invent a value), then clear
-    // it so a page reload can't double-count.
-    try {
-      const value = Number(sessionStorage.getItem('er-checkout-value'));
-      if (value > 0) {
-        window.fbq?.('track', 'Purchase', { currency: 'AUD', value });
-        sessionStorage.removeItem('er-checkout-value');
-      }
-    } catch {}
   </script>
 </Layout>
