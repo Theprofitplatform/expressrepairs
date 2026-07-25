@@ -8,7 +8,7 @@ import { NBN_PLANS } from '../data/plans.js';
 // connection address in `details`, and source 'landing:nbn' surfaces as
 // campaign "nbn" in the shop inbox.
 export default function NbnForm() {
-  const [form, setForm] = useState({ name: '', phone: '', email: '', plan: '', address: '', company: '' });
+  const [form, setForm] = useState({ name: '', phone: '', email: '', plan: '', address: '', callPack: false, company: '' });
   const [errors, setErrors] = useState({});
   const [sent, setSent] = useState(false);
   const [sending, setSending] = useState(false);
@@ -39,7 +39,7 @@ export default function NbnForm() {
       phone: form.phone,
       email: form.email,
       model: form.plan || 'NBN — not sure yet',
-      details: `Connection address: ${form.address}`,
+      details: `Connection address: ${form.address}${form.callPack ? ' | Wants unlimited call pack ($10/mth)' : ''}`,
       company: form.company,
     });
     setSending(false);
@@ -88,6 +88,12 @@ export default function NbnForm() {
           <input id="nbn-address" type="text" value={form.address} onChange={(e) => upd('address', e.target.value)} placeholder="Shop 1, 123 Belmore Rd, Riverwood NSW"
             aria-invalid={errors.address ? 'true' : undefined} aria-describedby={errors.address ? 'nbn-address-err' : undefined} />
           {errors.address && <div id="nbn-address-err" className="form-error" role="alert">{errors.address}</div>}
+        </div>
+        <div className="form-field full">
+          <label style={{display:'flex', alignItems:'center', gap:10, cursor:'pointer', fontWeight:500}}>
+            <input type="checkbox" checked={form.callPack} onChange={(e) => upd('callPack', e.target.checked)} style={{width:18, height:18}} />
+            Add the Unlimited Call Pack (+$10/mth) — unlimited local, national &amp; mobile calls
+          </label>
         </div>
         {/* Honeypot — hidden from users, catches bots. */}
         <input type="text" name="company" tabIndex="-1" autoComplete="off" aria-hidden="true"
