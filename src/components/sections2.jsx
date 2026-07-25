@@ -201,6 +201,11 @@ export function Store() {
                     <React.Fragment key={i}>{l}{i < SITE.addressLines.length - 1 && <br/>}</React.Fragment>
                   ))}
                 </div>
+                {/* Wayfinding, not a dealer claim: locals still know this shopfront as
+                    the old Vodafone store, and it's the only query the site ranks for. */}
+                <div className="store-row-body" style={{marginTop:6, color:'var(--text-muted)'}}>
+                  Look for {SITE.storeSub.replace(/^Inside /, '')} — the old Vodafone shopfront at Riverwood Plaza.
+                </div>
                 <a href={`https://maps.google.com/?q=${encodeURIComponent(SITE.mapsQuery)}`} target="_blank" rel="noreferrer" style={{fontSize:13.5, color:'var(--brand-700)', fontWeight:700, marginTop:8, display:'inline-block'}}>Get directions →</a>
               </div>
             </div>
