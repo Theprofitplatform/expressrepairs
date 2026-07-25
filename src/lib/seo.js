@@ -96,6 +96,7 @@ export function productSchema(p, description = '') {
     description: description || undefined,
     sku: p.sku || undefined,
     mpn: p.sku || undefined,
+    gtin: p.gtin || undefined,
     brand: p.brand ? { '@type': 'Brand', name: p.brand } : undefined,
     offers: {
       '@type': 'Offer',

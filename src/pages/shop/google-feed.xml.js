@@ -27,7 +27,8 @@ const item = (p) => {
     '<g:condition>new</g:condition>',
     p.brand ? `<g:brand>${xmlEsc(p.brand)}</g:brand>` : '',
     p.sku ? `<g:mpn>${xmlEsc(p.sku)}</g:mpn>` : '',
-    !p.brand && !p.sku ? '<g:identifier_exists>no</g:identifier_exists>' : '',
+    p.gtin ? `<g:gtin>${xmlEsc(p.gtin)}</g:gtin>` : '',
+    !p.brand && !p.sku && !p.gtin ? '<g:identifier_exists>no</g:identifier_exists>' : '',
     '<g:shipping><g:country>AU</g:country><g:service>Standard</g:service><g:price>10.95 AUD</g:price></g:shipping>',
     '</item>',
   ].filter(Boolean).join('');
