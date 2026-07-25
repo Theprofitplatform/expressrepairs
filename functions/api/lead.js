@@ -116,6 +116,7 @@ export async function onRequest({ request, env }) {
         : 'contact';
   // Delivery address may contain newlines; capped like details.
   const address = String(data.address ?? '').trim().slice(0, 500);
+  const fulfilment = oneLine(data.fulfilment, 20);
   const repairType = REPAIR_LABELS[data.type] || (data.type ? oneLine(data.type) : '');
 
   if (!name || !phone) {
@@ -129,7 +130,7 @@ export async function onRequest({ request, env }) {
   // catalogue here — a client-sent price is ignored (see orderRequest.js).
   let order = null;
   if (isOrder) {
-    order = orderTotals(data.items, byId, oneLine(data.fulfilment, 20), SHOP);
+    order = orderTotals(data.items, byId, fulfilment, SHOP);
     if (order.error) return json(400, { ok: false, error: order.error });
   }
 
@@ -149,7 +150,7 @@ export async function onRequest({ request, env }) {
   // The html renderer turns \n into <br>, so a multi-line value is fine here.
   const orderRows = order
     ? [
-        ['Fulfilment', data.fulfilment === 'pickup'
+        ['Fulfilment', fulfilment === 'pickup'
           ? 'Pickup in store — Riverwood Plaza'
           : 'Delivery (AusPost)'],
         ['Address', address],

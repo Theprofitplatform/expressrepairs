@@ -7,6 +7,11 @@ const navLinks = [
   { label: 'Repairs', href: '/repairs/' },
   { label: 'Shop', href: '/shop/' },
 ];
+// This page is also functions/api/checkout.js's Stripe success_url
+// (/shop/thanks/?session_id=…), currently unused since checkout is disabled.
+// If Stripe is re-enabled: the copy below assumes no payment has been taken
+// yet ("we'll call you... and take payment") and the script fires no
+// `Purchase` pixel event — both need revisiting for a real paid order.
 ---
 <Layout
   title="Order Received | Express Repairs"

@@ -201,6 +201,26 @@ describe('POST /api/lead — order requests', () => {
     await onRequest({ request: makeReq({ body: orderBody({ items: [{ id: a.id, qty: 1 }] }) }), env: ENV });
     expect(JSON.parse(fetchSpy.mock.calls[0][1].body).text).toContain('Pickup in store');
     expect(JSON.parse(fetchSpy.mock.calls[0][1].body).text).toContain('Free');
+
+    const fetchSpy2 = okResend();
+    await onRequest({
+      request: makeReq({ body: orderBody({ fulfilment: 'delivery', items: [{ id: a.id, qty: 1 }] }) }),
+      env: ENV,
+    });
+    const deliveryText = JSON.parse(fetchSpy2.mock.calls[0][1].body).text;
+    expect(deliveryText).toContain('Delivery (AusPost)');
+    expect(deliveryText).toContain('$10.95');
+  });
+
+  it('labels fulfilment consistently with the shipping charged even with a trailing space (regression)', async () => {
+    const fetchSpy = okResend();
+    await onRequest({
+      request: makeReq({ body: orderBody({ fulfilment: 'pickup ', items: [{ id: a.id, qty: 1 }] }) }),
+      env: ENV,
+    });
+    const text = JSON.parse(fetchSpy.mock.calls[0][1].body).text;
+    expect(text).toContain('Pickup in store — Riverwood Plaza');
+    expect(text).not.toContain('Delivery (AusPost)');
   });
 
   it('includes the delivery address when delivery is chosen', async () => {
