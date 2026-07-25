@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { pinEqual, MIN_PIN_LENGTH, PIN_MAX_FAILS, PIN_GLOBAL_MAX_FAILS } from '../functions/_shared.js';
+import { pinEqual, MIN_PIN_LENGTH, PIN_MAX_FAILS, PIN_GLOBAL_MAX_FAILS, PIN_WINDOW_SECONDS } from '../functions/_shared.js';
 
 describe('pinEqual', () => {
   it('matches only exact equal strings', () => {
@@ -15,18 +15,25 @@ describe('pinEqual', () => {
 
 // Fake KV — a Map-backed stand-in honouring the get/put/delete shapes the
 // real ORDERS_KV binding exposes. `initial` seeds keys as plain strings.
+// `putOptions` records the options object each put() was called with, keyed
+// by key, so tests can assert expirationTtl was actually passed through —
+// without this, deleting the TTL from recordPinFailure would pass silently
+// and counters would never expire against the real KV binding.
 function makeFakeKv(initial = {}) {
   const store = new Map(Object.entries(initial));
+  const putOptions = new Map();
   return {
     async get(key) {
       return store.has(key) ? store.get(key) : null;
     },
-    async put(key, value) {
+    async put(key, value, options) {
       store.set(key, String(value));
+      putOptions.set(key, options);
     },
     async delete(key) {
       store.delete(key);
     },
+    putOptions,
   };
 }
 
@@ -114,7 +121,7 @@ describe('PIN rate limiting', () => {
     expect(res.status).toBe(503);
   });
 
-  it('3. a wrong PIN increments the per-IP counter and returns 401', async () => {
+  it('3. a wrong PIN increments the per-IP counter, returns 401, and sets expirationTtl on both counters', async () => {
     const kv = catalogKv();
     const res = await onRequest({
       request: reqFrom('10.0.0.3', { pin: 'nope-nope', supplier: 'hoco' }),
@@ -122,9 +129,13 @@ describe('PIN rate limiting', () => {
     });
     expect(res.status).toBe(401);
     expect(await kv.get('pinfail:10.0.0.3')).toBe('1');
+    // Without a TTL these counters would never expire against real KV — a
+    // handful of typos would lock a staff IP out permanently.
+    expect(kv.putOptions.get('pinfail:10.0.0.3')).toEqual({ expirationTtl: PIN_WINDOW_SECONDS });
+    expect(kv.putOptions.get('pinfail:global')).toEqual({ expirationTtl: PIN_WINDOW_SECONDS });
   });
 
-  it('4. the 6th failure from one IP returns 429 BEFORE pinEqual runs (correct PIN still 429)', async () => {
+  it('4. the 6th failure from one IP returns 429 BEFORE pinEqual runs — for a correct PIN AND a wrong one', async () => {
     const kv = catalogKv();
     const ip = '10.0.0.4';
     const envFor = { STAFF_PIN: SHORT_PIN, ORDERS_KV: kv };
@@ -137,6 +148,30 @@ describe('PIN rate limiting', () => {
     const res = await onRequest({ request: reqFrom(ip, { pin: SHORT_PIN, supplier: 'hoco' }), env: envFor });
     expect(res.status).toBe(429);
     expect(await res.json()).toEqual({ ok: false, error: 'Too many attempts. Wait 15 minutes.' });
+
+    // A WRONG PIN from the same over-limit IP must ALSO be refused unread.
+    // A reordered implementation (pinEqual checked before pinRateLimited)
+    // would answer this 401 instead of 429 — which leaves brute-forcing
+    // completely unthrottled AND leaks a correct-PIN oracle once over the
+    // limit (401 = wrong, 429 = right). This is the assertion that actually
+    // pins the ordering; the correct-PIN case above alone does not.
+    const overLimitWrong = await onRequest({ request: reqFrom(ip, { pin: 'still-wrong', supplier: 'hoco' }), env: envFor });
+    expect(overLimitWrong.status).toBe(429);
+    expect(await kv.get(`pinfail:${ip}`)).toBe(String(PIN_MAX_FAILS)); // must not keep counting past the cap
+  });
+
+  it('4b. PIN_MAX_FAILS - 1 failures still permit the next attempt (off-by-one boundary)', async () => {
+    const kv = catalogKv();
+    const ip = '10.0.0.41';
+    const envFor = { STAFF_PIN: SHORT_PIN, ORDERS_KV: kv };
+    for (let i = 0; i < PIN_MAX_FAILS - 1; i++) {
+      const res = await onRequest({ request: reqFrom(ip, { pin: 'wrong', supplier: 'hoco' }), env: envFor });
+      expect(res.status).toBe(401);
+    }
+    // Still under the cap — the next (correct-PIN) attempt must go through,
+    // catching an implementation that blocks one request early.
+    const res = await onRequest({ request: reqFrom(ip, { pin: SHORT_PIN, supplier: 'hoco' }), env: envFor });
+    expect(res.status).toBe(200);
   });
 
   it('5. two different IPs each get their own budget — IP A locked does not lock IP B', async () => {

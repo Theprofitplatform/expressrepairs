@@ -44,10 +44,10 @@ export const sameSite = (request, env) => {
 // Length-safe PIN comparison (avoids a trivial early-exit timing signal).
 // The PIN is the sole real barrier on staff endpoints — Origin/Referer are
 // forgeable off-browser. MIN_PIN_LENGTH rejects a weak configured secret as
-// misconfiguration so it can't ship and be brute-forced. A short PIN is only
-// defensible once guessing is throttled (see the rate-limit helpers below) —
-// 6 digits (10^6) combined with PIN_GLOBAL_MAX_FAILS puts a full sweep at
-// roughly 100 days; 4 digits would fall in about a day, so 6 is the floor.
+// misconfiguration so it can't ship and be brute-forced. 6 digits (10^6)
+// keeps the PIN typeable for the shop. See the rate-limit block below for
+// what actually throttles guessing — and for why that throttle is a
+// secondary control, not the reason 6 digits is safe.
 export const MIN_PIN_LENGTH = 6;
 export const pinEqual = (a, b) => {
   if (typeof a !== 'string' || typeof b !== 'string' || a.length !== b.length) return false;
@@ -63,8 +63,29 @@ export const pinEqual = (a, b) => {
 // isn't among the bindings Pages Functions support; a Durable Object would be
 // strictly correct but is disproportionate for a two-person shop tool.
 //
+// These counters are DEFENCE-IN-DEPTH ONLY, not the enforcing control. The
+// primary control is the Cloudflare edge WAF rate-limiting rule on
+// POST /api/supplier-catalog and POST /api/review-sms (configured in the
+// Cloudflare dashboard, outside this repo). Do not remove that WAF rule on
+// the assumption this KV layer replaces it — see why below.
+//
 // Two counters, both required: per-IP alone is defeated by rotating IPs
 // (cheap); global alone punishes one staff member's typo.
+//
+// Real ceiling, not the ideal one: `recordPinFailure` is a read-modify-write
+// against a single KV key, and concurrent requests all read the same value
+// before any of them writes — so the effective cap per window is
+// PIN_GLOBAL_MAX_FAILS × (attacker's concurrency), not PIN_GLOBAL_MAX_FAILS.
+// At concurrency 100 that's ~10,000 guesses per 15-minute window, ~960k/day —
+// a 6-digit keyspace (10^6) falls in about a day, not the "~100 days" a
+// single-threaded reading of PIN_GLOBAL_MAX_FAILS alone would suggest.
+//
+// It gets worse under load: Cloudflare KV throttles writes to roughly one
+// per second per key. Above ~1 failed guess/second, `pinfail:global`'s
+// put() starts failing and is swallowed (see recordPinFailure below) — the
+// counter simply stops advancing. Attacking fast is itself the bypass. These
+// counters cannot be relied on alone; they are a speed bump behind the WAF
+// rule, not a substitute for it.
 export const PIN_WINDOW_SECONDS = 900; // 15 min; KV TTL minimum is 60s, so this is safe
 export const PIN_MAX_FAILS = 5; // per IP per window
 export const PIN_GLOBAL_MAX_FAILS = 100; // all IPs per window — real staff never approach this in 15 min
@@ -73,11 +94,13 @@ export const PIN_GLOBAL_MAX_FAILS = 100; // all IPs per window — real staff ne
 // spoofed by the client, so it's safe to trust for rate-limit bucketing.
 export const clientIp = (request) => request.headers.get('CF-Connecting-IP') || 'unknown';
 
-// ponytail: KV is eventually consistent and throttles to roughly one write
-// per second per key, so an attacker firing many parallel requests can
-// overshoot these caps somewhat before the counter catches up. Acceptable
+// ponytail: the overshoot above isn't a fixed "somewhat" — it's proportional
+// to whatever concurrency the attacker chooses to run, and collapses further
+// once they exceed KV's ~1 write/sec/key throttle (see the block comment
+// above). Acceptable as a secondary control sitting behind the edge WAF rule
 // for a two-person shop tool guarding cost prices; upgrade to a Durable
-// Object (strongly consistent, serializes writes) if this ever guards money.
+// Object (strongly consistent, serializes writes) if this ever guards money
+// or the WAF rule is ever removed.
 
 // true when either the per-IP or global cap is already exceeded. Read-only —
 // callers must still call recordPinFailure/clearPinFailures themselves.
@@ -85,9 +108,12 @@ export async function pinRateLimited(kv, ip) {
   try {
     const [ipFails, globalFails] = await Promise.all([kv.get(`pinfail:${ip}`), kv.get('pinfail:global')]);
     return Number(ipFails || 0) >= PIN_MAX_FAILS || Number(globalFails || 0) >= PIN_GLOBAL_MAX_FAILS;
-  } catch {
+  } catch (err) {
     // Fail open: an unavailable counter must not brick the tool — a KV outage
-    // is not a reason to lock every staff member out.
+    // is not a reason to lock every staff member out. Logged (not swallowed
+    // silently) so a disabled throttle — missing ORDERS_KV binding, KV
+    // outage, or write throttling — is visible instead of invisible.
+    console.error('pin rate-limit unavailable', err);
     return false;
   }
 }
@@ -101,8 +127,9 @@ export async function recordPinFailure(kv, ip) {
       kv.put(ipKey, String(Number(ipFails || 0) + 1), { expirationTtl: PIN_WINDOW_SECONDS }),
       kv.put('pinfail:global', String(Number(globalFails || 0) + 1), { expirationTtl: PIN_WINDOW_SECONDS }),
     ]);
-  } catch {
+  } catch (err) {
     // Swallow: a write failure must not block the request or brick the tool.
+    console.error('pin rate-limit unavailable', err);
   }
 }
 
@@ -112,8 +139,9 @@ export async function recordPinFailure(kv, ip) {
 export async function clearPinFailures(kv, ip) {
   try {
     await kv.delete(`pinfail:${ip}`);
-  } catch {
+  } catch (err) {
     // Swallow — same reasoning as recordPinFailure.
+    console.error('pin rate-limit unavailable', err);
   }
 }
 

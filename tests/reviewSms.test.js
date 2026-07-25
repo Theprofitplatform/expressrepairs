@@ -197,19 +197,23 @@ describe('POST /api/review-sms', () => {
   });
 });
 
-// Fake KV — same Map-backed shape used in tests/supplierOrderApi.test.js.
+// Fake KV — same Map-backed shape used in tests/supplierOrderApi.test.js,
+// including putOptions so a test can assert the expirationTtl was passed.
 function makeFakeKv(initial = {}) {
   const store = new Map(Object.entries(initial));
+  const putOptions = new Map();
   return {
     async get(key) {
       return store.has(key) ? store.get(key) : null;
     },
-    async put(key, value) {
+    async put(key, value, options) {
       store.set(key, String(value));
+      putOptions.set(key, options);
     },
     async delete(key) {
       store.delete(key);
     },
+    putOptions,
   };
 }
 
@@ -233,7 +237,7 @@ describe('POST /api/review-sms — PIN rate limiting', () => {
     expect(spy).toHaveBeenCalledTimes(1);
   });
 
-  it('the 6th failure from one IP returns 429 before pinEqual runs (correct PIN still 429)', async () => {
+  it('the 6th failure from one IP returns 429 before pinEqual runs — for a correct PIN AND a wrong one', async () => {
     const spy = clickSendOk();
     const kv = makeFakeKv();
     const ip = '20.0.0.2';
@@ -251,6 +255,18 @@ describe('POST /api/review-sms — PIN rate limiting', () => {
     });
     expect(res.status).toBe(429);
     expect(await res.json()).toEqual({ ok: false, error: 'Too many attempts. Wait 15 minutes.' });
+    expect(spy).not.toHaveBeenCalled();
+
+    // A WRONG PIN from the same over-limit IP must ALSO be refused unread —
+    // this is the assertion that actually pins the ordering (see the
+    // matching case in tests/supplierOrderApi.test.js for why the
+    // correct-PIN case alone doesn't).
+    const overLimitWrong = await onRequest({
+      request: reqFrom(ip, { body: { pin: 'still-wrong-000000', mobile: '0412345678' } }),
+      env: envFor,
+    });
+    expect(overLimitWrong.status).toBe(429);
+    expect(await kv.get(`pinfail:${ip}`)).toBe(String(PIN_MAX_FAILS)); // must not keep counting past the cap
     expect(spy).not.toHaveBeenCalled();
   });
 

@@ -86,6 +86,35 @@ nothing about whether cost data leaked into the public bundle. Run these three c
    ```
    Both should return `0`.
 
+## PIN lockout recovery (break-glass)
+
+`/api/supplier-catalog` and `/api/review-sms` share a KV-backed brute-force
+throttle (`functions/_shared.js`): 5 failed PINs from one IP in 15 minutes
+locks that IP out, and 100 failed PINs from anywhere in 15 minutes locks out
+**every** IP on **both** endpoints — including the owner typing the correct
+PIN wrong a few times, or someone else hammering the page. That global
+lockout is an accepted trade-off of the two-counter design (see the comment
+above `pinRateLimited` in `functions/_shared.js`), and it doesn't clear
+itself for up to 15 minutes. If you need it gone sooner:
+
+```bash
+# Global lockout (blocks everyone on both /staff/order/ and /staff/review-request/):
+npx wrangler kv key delete "pinfail:global" --namespace-id 76d87c01303149d5b37f520242b0f335 --remote
+
+# Per-IP lockout (blocks just one IP) — find the IP from the 429 in Cloudflare
+# Pages Function logs, then:
+npx wrangler kv key delete "pinfail:<ip>" --namespace-id 76d87c01303149d5b37f520242b0f335 --remote
+```
+
+Both commands write to the production `ORDERS_KV` namespace — only run them
+when a real staff member is actually locked out, not preventatively. Deleting
+a key that doesn't exist is a no-op, so it's safe to run either command
+speculatively if you're not sure which counter tripped.
+
+If lockouts happen often, the fix is the Cloudflare edge WAF rate-limiting
+rule on these two routes (the primary control — see README.md), not loosening
+`PIN_MAX_FAILS`/`PIN_GLOBAL_MAX_FAILS`.
+
 ## Troubleshooting
 
 - **"Staff tools not configured"**: Check that `STAFF_PIN` (or `REVIEW_SMS_PIN`)
@@ -93,3 +122,5 @@ nothing about whether cost data leaked into the public bundle. Run these three c
 - **"Catalogue not loaded — run scripts/build-supplier-catalog.mjs"**: Run the
   refresh scripts (above) and wait ~30s for KV to replicate across Cloudflare's
   global edge.
+- **"Too many attempts. Wait 15 minutes."**: See
+  [PIN lockout recovery](#pin-lockout-recovery-break-glass) above.
