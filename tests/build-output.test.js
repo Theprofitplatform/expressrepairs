@@ -192,31 +192,34 @@ describe('shop pages', () => {
 });
 
 describe('built NBN page', () => {
-  it('renders the displayed plan cards with list and bundle prices', async () => {
+  it('renders the displayed plan cards with list prices', async () => {
     const { NBN_PLANS } = await import('../src/data/plans.js');
     const nbn = readFileSync('dist/nbn/index.html', 'utf8');
     for (const name of ['NBN 50/20', 'NBN 250/100', 'NBN 1000/100', 'NBN 1000/400']) {
       const p = NBN_PLANS.find((x) => x.name === name);
       expect(nbn).toContain(p.name);
       expect(nbn).toContain(`>${p.price}<`); // big list price
-      expect(nbn).toContain('for TeleChoice customers');
     }
-    expect(nbn).toContain('TeleChoice mobile customers save 10%');
     expect(nbn).toContain('No lock-in');
+    expect(nbn).toContain('Want an extra 10% off?'); // in-store offer, no brand named
     const sm = readFileSync('dist/sitemap-0.xml', 'utf8');
     expect(sm).toContain('/nbn/');
+  });
+
+  it('never mentions TeleChoice — mobile and NBN are separate products', () => {
+    expect(readFileSync('dist/nbn/index.html', 'utf8')).not.toMatch(/telechoice/i);
+    expect(readFileSync('dist/nbn/terms/index.html', 'utf8')).not.toMatch(/telechoice/i);
   });
 
   it('is linked from the homepage nav and footer', () => {
     expect(html).toContain('href="/nbn/"');
   });
 
-  it('builds the NBN service terms with the legal entity, TIO and discount conditions', () => {
+  it('builds the NBN service terms with the legal entity and TIO details', () => {
     const terms = readFileSync('dist/nbn/terms/index.html', 'utf8');
     expect(terms).toContain('Mertel Pty');
     expect(terms).toContain('644'); // ABN 88 644 567 019 (nbsp-separated in markup)
     expect(terms).toContain('Telecommunications Industry Ombudsman');
-    expect(terms).toContain('TeleChoice customer discount');
     expect(terms).toContain('no exit fees');
     const nbn = readFileSync('dist/nbn/index.html', 'utf8');
     expect(nbn).toContain('href="/nbn/terms/"');
