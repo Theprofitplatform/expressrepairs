@@ -12,6 +12,10 @@ export function getStaticPaths() {
   return PRODUCTS.map((p) => ({ params: { id: p.id }, props: { p } }));
 }
 const { p } = Astro.props;
+// Same test as lib/seo.js productSchema and shop/google-feed.xml.js — the visible
+// page must not say "In stock" while the structured data and product feed say
+// OutOfStock. That mismatch is a Merchant Centre policy problem, not just a UI one.
+const inStock = p.inStock !== false;
 const related = relatedProducts(p, PRODUCTS);
 // Link to the model landing page only when Task 3 actually built one (>= 4 products).
 const model = deviceModel(p.name);
@@ -65,7 +69,9 @@ const schema = [
         <div>
           <h1 style="font-size: clamp(28px, 3.2vw, 38px); font-weight: 800;">{p.name}</h1>
           <p style="font-size: 1.6rem; font-weight: 700; color: var(--brand-700); margin-top: 12px;">{fmtPrice(p.priceCents)}</p>
-          <p class="acc-desc" style="margin-top: 6px; color: var(--brand-700); font-weight: 600;">In stock — dispatched in {isHocoSupplied(p) ? '2-3' : '1-2'} business days</p>
+          {inStock
+            ? <p class="acc-desc" style="margin-top: 6px; color: var(--brand-700); font-weight: 600;">In stock — dispatched in {isHocoSupplied(p) ? '2-3' : '1-2'} business days</p>
+            : <p class="acc-desc" style="margin-top: 6px; color: var(--muted, #555); font-weight: 600;">Out of stock — <a href={SITE.phoneHref}>call us on {SITE.phone}</a> and we&rsquo;ll order it in.</p>}
           {SITE.rating?.count > 0 && (
             <p style="margin-top: 8px; font-size: 0.95rem;">
               <span style="color: var(--brand-700);" aria-hidden="true">★★★★★</span>{' '}
@@ -74,10 +80,12 @@ const schema = [
                 : <span>{SITE.rating.value} rated by {SITE.rating.count}+ local customers on Google</span>}
             </p>
           )}
-          <div style="display: flex; gap: 10px; align-items: center; margin-top: 16px;">
-            <input type="number" min="1" max="20" value="1" data-qty aria-label="Quantity" style="width: 70px; padding: 10px; border: 1px solid var(--border); border-radius: 10px;" />
-            <button class="btn btn-primary btn-lg" data-add-to-cart data-id={p.id} data-name={p.name} data-price={p.priceCents}>Add to cart</button>
-          </div>
+          {inStock && (
+            <div style="display: flex; gap: 10px; align-items: center; margin-top: 16px;">
+              <input type="number" min="1" max="20" value="1" data-qty aria-label="Quantity" style="width: 70px; padding: 10px; border: 1px solid var(--border); border-radius: 10px;" />
+              <button class="btn btn-primary btn-lg" data-add-to-cart data-id={p.id} data-name={p.name} data-price={p.priceCents}>Add to cart</button>
+            </div>
+          )}
           <p style="margin-top: 16px;"><a href="/shop/cart/">View cart (<span data-cart-count>0</span>)</a></p>
           {hasModelPage && (
             <p style="margin-top: 12px;">
@@ -138,6 +146,41 @@ const schema = [
     </div>
   </main>
 
+  {inStock && (
+    <div class="buy-bar" aria-hidden="false">
+      <div class="buy-bar-price">
+        <strong>{fmtPrice(p.priceCents)}</strong>
+        <span>{isHocoSupplied(p) ? '2-3' : '1-2'} business days</span>
+      </div>
+      <button class="btn btn-primary" data-add-to-cart data-id={p.id} data-name={p.name} data-price={p.priceCents}>Add to cart</button>
+    </div>
+  )}
+
   <SiteFooter />
   <script src="../../shop/cart-count.js"></script>
+
+  <!-- ponytail: scoped here, not global.css — this bar exists only on product pages. -->
+  <style>
+    .buy-bar { display: none; }
+    @media (max-width: 720px) {
+      .buy-bar {
+        position: fixed;
+        left: 0; right: 0; bottom: 0;
+        z-index: 40;
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        padding: 10px 16px calc(10px + env(safe-area-inset-bottom));
+        background: var(--surface, #fff);
+        border-top: 1px solid var(--border);
+        box-shadow: 0 -4px 16px rgb(0 0 0 / 8%);
+      }
+      .buy-bar-price { display: flex; flex-direction: column; line-height: 1.2; }
+      .buy-bar-price strong { font-size: 1.15rem; color: var(--brand-700); }
+      .buy-bar-price span { font-size: 0.78rem; color: var(--muted, #555); }
+      .buy-bar .btn { margin-left: auto; }
+      /* Keep the footer clear of the fixed bar. */
+      main { padding-bottom: 76px; }
+    }
+  </style>
 </Layout>

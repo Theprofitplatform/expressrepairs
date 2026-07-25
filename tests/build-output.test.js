@@ -190,3 +190,46 @@ describe('shop pages', () => {
     expect(html).toContain('Page 1 of');
   });
 });
+
+describe('built product page — stock display and buy bar', () => {
+  // Picks a real product from the synced catalogue rather than hardcoding an id,
+  // so a DXPOS/HOCO re-sync can't silently break this test.
+  const somePage = async () => {
+    const { PRODUCTS } = await import('../src/data/products.js');
+    const p = PRODUCTS.find((x) => x.inStock !== false);
+    return { p, html: readFileSync(`dist/shop/${p.id}/index.html`, 'utf8') };
+  };
+
+  it('visible stock text agrees with the page\'s own Product schema', async () => {
+    const { html: page } = await somePage();
+    const offers = jsonLdBlocks(page).find((b) => b['@type'] === 'Product').offers;
+    // The bug this guards: the page hardcoded "In stock" while seo.js and the
+    // Google feed emitted availability from p.inStock, so an out-of-stock item
+    // showed a page contradicting its own structured data and product feed.
+    expect(offers.availability).toBe('https://schema.org/InStock');
+    expect(page).toMatch(/In stock — dispatched in \d-\d business days/);
+    expect(page).not.toContain('Out of stock');
+  });
+
+  it('renders the mobile buy bar with a working add-to-cart button', async () => {
+    const { p, html: page } = await somePage();
+    expect(page).toContain('class="buy-bar"');
+    // Both the in-page button and the sticky bar must carry the hook that
+    // cart-count.js binds with querySelectorAll — a bar that cannot add is worse
+    // than no bar.
+    expect((page.match(/data-add-to-cart/g) || []).length).toBe(2);
+    expect((page.match(new RegExp(`data-id="${p.id}"`, 'g')) || []).length).toBe(2);
+  });
+
+  it('an out-of-stock product hides both add-to-cart buttons', async () => {
+    const { PRODUCTS } = await import('../src/data/products.js');
+    const oos = PRODUCTS.find((x) => x.inStock === false);
+    // The catalogue currently carries no out-of-stock products (DXPOS holds no
+    // stock records), so this asserts the invariant only when one appears.
+    if (!oos) return;
+    const page = readFileSync(`dist/shop/${oos.id}/index.html`, 'utf8');
+    expect(page).not.toContain('data-add-to-cart');
+    expect(page).not.toContain('class="buy-bar"');
+    expect(page).toContain('Out of stock');
+  });
+});
