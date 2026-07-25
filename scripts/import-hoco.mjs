@@ -100,6 +100,9 @@ export function transformHoco(rows, r2Ids = R2_IDS) {
           thumb: hosted || thumbUrl(r.image),
           inStock: true,
           sku: String(r.id),
+          // Supplier GTIN, only where the catalogue export judged it valid
+          // (see extract-hoco-catalogue.py). Feeds Merchant Center + JSON-LD.
+          ...(r.barcode ? { gtin: r.barcode } : {}),
         };
       }),
   );

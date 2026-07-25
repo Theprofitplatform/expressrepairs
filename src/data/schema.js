@@ -118,6 +118,9 @@ export const productSchema = z.object({
   thumb: z.string(),
   inStock: z.boolean(),
   sku: z.string(),
+  // Supplier barcode (GTIN-8/12/13). Present only for HOCO rows whose barcode
+  // passed validation in the catalogue export; DXPOS doesn't sync one yet.
+  gtin: z.string().regex(/^\d{8}$|^\d{12,14}$/).optional(),
   // Derived at build time from name+category (src/lib/tags.js) — never stored
   // in products.json, so syncs can't wipe it.
   tags: z.array(z.string()).default([]),

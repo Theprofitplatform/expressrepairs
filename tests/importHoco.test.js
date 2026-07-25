@@ -1,5 +1,6 @@
 import { describe, it, expect } from 'vitest';
 import { transformHoco, hocoCategory, HOCO_EXCLUDE_PATTERNS } from '../scripts/import-hoco.mjs';
+import HOCO_PRODUCTS from '../src/data/hoco-products.json';
 
 const row = (over = {}) => ({
   id: 8250,
@@ -142,6 +143,23 @@ describe('transformHoco', () => {
   it('strips repeated leading SKU bracket codes from the display name', () => {
     const [p] = transformHoco([row({ name: '[FW9-6][BWF5-08] Pelican Ranger | Samsung S22 Plus' })]);
     expect(p.name).toBe('Pelican Ranger | Samsung S22 Plus');
+  });
+});
+
+describe('barcodes', () => {
+  it('carries a catalogue barcode through as gtin, and omits it when absent', () => {
+    const [withBarcode] = transformHoco([row({ barcode: '6942007671415' })]);
+    expect(withBarcode.gtin).toBe('6942007671415');
+    expect(transformHoco([row()])[0]).not.toHaveProperty('gtin');
+  });
+
+  it('every imported gtin is a well-formed GTIN-8/12/13/14', () => {
+    const coded = HOCO_PRODUCTS.filter((p) => p.gtin);
+    expect(coded.length).toBeGreaterThan(1000);
+    expect(coded.filter((p) => !/^\d{8}$|^\d{12,14}$/.test(p.gtin))).toEqual([]);
+    // A GTIN identifies one product — two listings sharing one would merge in
+    // Merchant Center.
+    expect(new Set(coded.map((p) => p.gtin)).size).toBe(coded.length);
   });
 });
 
