@@ -1,0 +1,224 @@
+---
+import Layout from '../../layouts/Layout.astro';
+---
+<Layout title="Supplier order" path="/staff/order/" noindex={true}>
+  <main id="main-content" style="max-width:52rem;margin:0 auto;padding:2rem 1.25rem;font-family:system-ui,sans-serif">
+    <h1 style="font-size:1.4rem;margin:0 0 .25rem">Supplier order</h1>
+    <p style="color:#555;margin:.25rem 0 1rem;font-size:.95rem">Build an order, then copy or download it and send it through the supplier's usual channel.</p>
+
+    <form id="so-load" style="display:flex;gap:.6rem;flex-wrap:wrap;align-items:end;margin-bottom:1rem">
+      <label style="display:grid;gap:.35rem;font-weight:600;font-size:.9rem">Shop PIN
+        <input id="so-pin" type="password" autocomplete="off" required
+          style="padding:.55rem;font-size:1rem;border:1px solid #ccc;border-radius:8px;width:11rem" />
+      </label>
+      <label style="display:grid;gap:.35rem;font-weight:600;font-size:.9rem">Supplier
+        <select id="so-supplier" style="padding:.55rem;font-size:1rem;border:1px solid #ccc;border-radius:8px">
+          <option value="hoco">HOCO</option>
+          <option value="mobilemall">MobileMall</option>
+        </select>
+      </label>
+      <button type="submit" style="padding:.6rem 1rem;font-size:1rem;font-weight:700;color:#fff;background:#0a66ff;border:0;border-radius:10px;cursor:pointer">Load catalogue</button>
+      <p id="so-status" role="status" aria-live="polite" style="margin:0;min-height:1.2rem;font-size:.9rem;flex-basis:100%"></p>
+    </form>
+
+    <div id="so-tool" hidden>
+      <div style="display:flex;gap:.6rem;flex-wrap:wrap;align-items:center;margin-bottom:.6rem">
+        <input id="so-search" type="search" placeholder="Search name / SKU / category…" aria-label="Search catalogue"
+          style="flex:1;min-width:14rem;padding:.55rem;font-size:1rem;border:1px solid #ccc;border-radius:8px" />
+        <label style="font-size:.9rem;display:flex;gap:.3rem;align-items:center">
+          <input id="so-stocked" type="checkbox" /> Stocked only
+        </label>
+      </div>
+      <p id="so-hoco-note" hidden style="color:#777;font-size:.85rem;margin:.2rem 0">HOCO stock status isn't published by the supplier, so "supplier OOS" won't show for HOCO — availability is unknown until you ask.</p>
+      <p id="so-count" style="color:#777;font-size:.85rem;margin:.2rem 0"></p>
+      <div style="overflow-x:auto"><table style="width:100%;border-collapse:collapse;font-size:.9rem">
+        <thead><tr style="text-align:left;border-bottom:2px solid #ddd">
+          <th style="padding:.4rem">SKU</th><th style="padding:.4rem">Product</th>
+          <th style="padding:.4rem">Cost</th><th style="padding:.4rem">Qty</th>
+        </tr></thead>
+        <tbody id="so-rows"></tbody>
+      </table></div>
+
+      <h2 style="font-size:1.1rem;margin:1.2rem 0 .4rem">Order (<span id="so-order-lines">0</span> lines — total $<span id="so-order-total">0.00</span>)</h2>
+      <div style="overflow-x:auto"><table style="width:100%;border-collapse:collapse;font-size:.9rem">
+        <tbody id="so-order"></tbody>
+      </table></div>
+      <div style="display:flex;gap:.6rem;margin-top:.8rem">
+        <button id="so-copy" type="button" style="padding:.6rem 1rem;font-weight:700;border:1px solid #0a66ff;color:#0a66ff;background:#fff;border-radius:10px;cursor:pointer">Copy order</button>
+        <button id="so-csv" type="button" style="padding:.6rem 1rem;font-weight:700;border:1px solid #0a66ff;color:#0a66ff;background:#fff;border-radius:10px;cursor:pointer">Download CSV</button>
+      </div>
+    </div>
+  </main>
+
+  <script is:inline>
+    (function () {
+      var $ = function (id) { return document.getElementById(id); };
+      var rows = [];               // full catalogue for the loaded supplier
+      var order = new Map();       // sku -> { row, qty }
+      var supplier = 'hoco';
+      var MAX_SHOWN = 200;
+
+      try { var saved = localStorage.getItem('rr-pin'); if (saved) $('so-pin').value = saved; } catch (e) {}
+
+      var money = function (c) { return (c / 100).toFixed(2); };
+
+      $('so-load').addEventListener('submit', async function (e) {
+        e.preventDefault();
+        var status = $('so-status');
+        status.style.color = '#555';
+        status.textContent = 'Loading…';
+        supplier = $('so-supplier').value;
+        try {
+          var res = await fetch('/api/supplier-catalog', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ pin: $('so-pin').value, supplier: supplier })
+          });
+          if (!res.ok) {
+            var err = await res.json().catch(function () { return {}; });
+            status.style.color = '#c0392b';
+            status.textContent = err.error || ('Failed (' + res.status + ')');
+            rows = []; order.clear(); $('so-tool').hidden = true;
+            return;
+          }
+          rows = await res.json();
+          try { localStorage.setItem('rr-pin', $('so-pin').value); } catch (e2) {}
+          order.clear();
+          renderOrder();
+          $('so-tool').hidden = false;
+          $('so-hoco-note').hidden = supplier !== 'hoco';
+          status.style.color = '#0a7d28';
+          status.textContent = rows.length + ' products loaded.';
+          renderList();
+        } catch (e3) {
+          status.style.color = '#c0392b';
+          status.textContent = 'Network error — try again.';
+          rows = []; order.clear(); $('so-tool').hidden = true;
+        }
+      });
+
+      function filtered() {
+        var q = $('so-search').value.toLowerCase().trim();
+        var stockedOnly = $('so-stocked').checked;
+        return rows.filter(function (r) {
+          if (stockedOnly && !r.stocked) return false;
+          if (!q) return true;
+          return (r.name + ' ' + r.sku + ' ' + r.category).toLowerCase().indexOf(q) !== -1;
+        });
+      }
+
+      function renderList() {
+        var f = filtered();
+        $('so-count').textContent = f.length > MAX_SHOWN
+          ? 'Showing ' + MAX_SHOWN + ' of ' + f.length + ' — refine your search'
+          : f.length + ' products';
+        var tbody = $('so-rows');
+        tbody.textContent = '';
+        f.slice(0, MAX_SHOWN).forEach(function (r) {
+          var tr = document.createElement('tr');
+          tr.style.borderBottom = '1px solid #eee';
+          var badges = (r.stocked ? ' <span style="color:#0a7d28;font-size:.75rem">stocked</span>' : '')
+            + (r.inStock ? '' : ' <span style="color:#c0392b;font-size:.75rem">supplier OOS</span>');
+          tr.innerHTML =
+            '<td style="padding:.35rem;white-space:nowrap">' + escapeHtml(r.sku) + '</td>' +
+            '<td style="padding:.35rem">' + escapeHtml(r.name) + badges + '</td>' +
+            '<td style="padding:.35rem;white-space:nowrap">$' + money(r.costCents) +
+              (r.rrpCents ? ' <span style="color:#999">rrp $' + money(r.rrpCents) + '</span>' : '') + '</td>' +
+            '<td style="padding:.35rem"></td>';
+          var qtyCell = tr.lastElementChild;
+          var input = document.createElement('input');
+          input.type = 'number'; input.min = '0'; input.inputMode = 'numeric';
+          input.value = order.has(r.sku) ? order.get(r.sku).qty : '';
+          input.placeholder = '0';
+          input.style.cssText = 'width:4rem;padding:.35rem;border:1px solid #ccc;border-radius:6px';
+          input.addEventListener('input', function () {
+            var q = parseInt(input.value, 10);
+            if (q > 0) order.set(r.sku, { row: r, qty: q }); else order.delete(r.sku);
+            renderOrder();
+          });
+          qtyCell.appendChild(input);
+          tbody.appendChild(tr);
+        });
+      }
+
+      function renderOrder() {
+        var tbody = $('so-order');
+        tbody.textContent = '';
+        var total = 0;
+        order.forEach(function (item) {
+          total += item.row.costCents * item.qty;
+          var tr = document.createElement('tr');
+          tr.style.borderBottom = '1px solid #eee';
+          tr.innerHTML =
+            '<td style="padding:.3rem;white-space:nowrap">' + escapeHtml(item.row.sku) + '</td>' +
+            '<td style="padding:.3rem">' + escapeHtml(item.row.name) + '</td>' +
+            '<td style="padding:.3rem">× ' + item.qty + '</td>' +
+            '<td style="padding:.3rem;white-space:nowrap">$' + money(item.row.costCents * item.qty) + '</td>' +
+            '<td style="padding:.3rem"></td>';
+          var rm = document.createElement('button');
+          rm.type = 'button'; rm.textContent = '✕'; rm.setAttribute('aria-label', 'Remove ' + item.row.name);
+          rm.style.cssText = 'border:0;background:none;color:#c0392b;cursor:pointer;font-size:1rem';
+          rm.addEventListener('click', function () { order.delete(item.row.sku); renderOrder(); renderList(); });
+          tr.lastElementChild.appendChild(rm);
+          tbody.appendChild(tr);
+        });
+        $('so-order-lines').textContent = order.size;
+        $('so-order-total').textContent = money(total);
+      }
+
+      // Supplier names/SKUs can contain the delimiter, quotes, newlines — and a
+      // leading =+-@ makes Excel treat a CSV cell as a formula. Neutralise both.
+      function cell(v, sep) {
+        var s = String(v);
+        if (/^[=+\-@]/.test(s)) s = "'" + s;
+        if (sep === ',') return '"' + s.replace(/"/g, '""') + '"';
+        return s.replace(/[\t\r\n]+/g, ' ');   // TSV has no quoting — flatten instead
+      }
+
+      function orderLines(sep) {
+        function row(fields) { return fields.map(function (v) { return cell(v, sep); }).join(sep); }
+        var lines = [row(['SKU', 'Product', 'Qty', 'Unit cost', 'Line total'])];
+        var total = 0;
+        order.forEach(function (item) {
+          total += item.row.costCents * item.qty;
+          lines.push(row([item.row.sku, item.row.name, item.qty, money(item.row.costCents), money(item.row.costCents * item.qty)]));
+        });
+        lines.push(row(['', 'TOTAL', '', '', money(total)]));
+        return lines.join('\n');
+      }
+
+      $('so-copy').addEventListener('click', function () {
+        var status = $('so-status');
+        if (!navigator.clipboard || !navigator.clipboard.writeText) {
+          status.style.color = '#c0392b';
+          status.textContent = "Couldn't copy — select the text and copy manually.";
+          return;
+        }
+        navigator.clipboard.writeText(orderLines('\t')).then(function () {
+          status.style.color = '#0a7d28';
+          status.textContent = 'Order copied ✓';
+        }).catch(function () {
+          status.style.color = '#c0392b';
+          status.textContent = "Couldn't copy — select the text and copy manually.";
+        });
+      });
+      $('so-csv').addEventListener('click', function () {
+        var blob = new Blob([orderLines(',')], { type: 'text/csv' });
+        var a = document.createElement('a');
+        a.href = URL.createObjectURL(blob);
+        a.download = 'order-' + supplier + '-' + new Date().toISOString().slice(0, 10) + '.csv';
+        a.click();
+        URL.revokeObjectURL(a.href);
+      });
+
+      function escapeHtml(s) {
+        return String(s).replace(/[&<>"']/g, function (c) {
+          return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c];
+        });
+      }
+
+      $('so-search').addEventListener('input', renderList);
+      $('so-stocked').addEventListener('change', renderList);
+    })();
+  </script>
+</Layout>

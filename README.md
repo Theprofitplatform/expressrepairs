@@ -67,6 +67,7 @@ first three as **Secret**), then redeploy:
 | `REVIEW_LINK` | no | `https://g.page/r/…/review` (GBP → Ask for reviews) |
 | `CLICKSEND_SENDER` | no | sender ID, default `Xpress` (≤11 chars, alphanumeric) |
 | `ALLOWED_ORIGINS` | no | extra comma-separated hosts allowed to call the API (e.g. a preview domain) |
+| `STAFF_PIN` | yes | staff PIN gating `/staff/order/` (min 10 chars). Falls back to `REVIEW_SMS_PIN` if unset — see [Supplier ordering](#supplier-ordering-staff-tool) below. |
 
 Notes:
 - **The PIN is the only real barrier** to sending paid SMS to arbitrary numbers
@@ -76,15 +77,25 @@ Notes:
 - **No rate-limiting in the MVP** — protection relies on the strong PIN plus the
   page being unlinked and `noindex`. If abuse ever appears, add Cloudflare
   Turnstile or a KV-backed rate limit in front of the PIN check.
-- **Preview deployments:** the API accepts only the production apex + `www` by
-  default (the blanket `*.pages.dev` allow was removed for safety). To test on a
-  `*.pages.dev` preview, add that exact host to `ALLOWED_ORIGINS`.
+- **Preview deployments:** the shared `sameSite` check allows any `*.pages.dev`
+  host by default (needed to test preview deploys), on top of the production
+  apex + `www` + `localhost`. This is a deliberate widening — Origin/Referer are
+  forgeable off-browser anyway, so the PIN below is the real gate. Use
+  `ALLOWED_ORIGINS` to allow other exact hosts (e.g. a custom preview domain).
 - Branded sender IDs are **send-only** — customers can't reply STOP. This relies
   on inferred consent (existing customer, right after their repair). To add a hard
   opt-out later, rent a ClickSend virtual number and set it as `CLICKSEND_SENDER`.
 - Confirm the `Xpress` sender ID is permitted on your ClickSend account (some
   accounts require sender-ID registration).
 - No incentives, and ask **every** customer — not only happy ones (Google/ACCC).
+
+## Supplier ordering (staff tool)
+
+Staff open **`/staff/order/`** (PIN-gated, `noindex`, unlinked), pick HOCO or
+MobileMall, search the catalogue, set quantities, then copy or download the
+order as CSV. Endpoint: `functions/api/supplier-catalog.js`. Gated by
+`STAFF_PIN` (see the env-var table above). Full setup, refresh, and
+troubleshooting steps: [`docs/supplier-orders.md`](docs/supplier-orders.md).
 
 ## Ad landing pages (`/go/`)
 
