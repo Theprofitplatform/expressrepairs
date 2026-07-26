@@ -265,7 +265,7 @@ export function Accessories() {
 
         <div className="acc-grid" style={{marginTop:48}}>
           {ACCESSORIES.map((a, i) => (
-            <div key={i} className="acc-card">
+            <a key={i} href={a.href} className="acc-card">
               <div className="acc-visual">
                 {a.tag && <span className={`acc-tag ${a.tag === 'Sale' ? 'sale' : ''}`}>{a.tag}</span>}
                 <div className="acc-img" style={{backgroundImage:`url(${a.img})`}} />
@@ -275,8 +275,12 @@ export function Accessories() {
                 <div className="acc-desc">{a.desc}</div>
                 <div className="acc-price">{a.price}</div>
               </div>
-            </div>
+            </a>
           ))}
+        </div>
+
+        <div style={{marginTop:40, textAlign:'center'}}>
+          <a href="/shop/" className="btn btn-primary">Shop all accessories</a>
         </div>
       </div>
     </section>
