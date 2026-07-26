@@ -31,7 +31,7 @@ export async function onRequest({ request, env }) {
 
   const pinSecret = env.STAFF_PIN || env.REVIEW_SMS_PIN;
   if (!pinSecret || pinSecret.length < MIN_PIN_LENGTH) {
-    if (pinSecret) console.error('STAFF_PIN is too short (min 6) — use a 16+ char random PIN');
+    if (pinSecret) console.error('STAFF_PIN is too short (min 10) — use a 16+ char random PIN');
     return json(503, { ok: false, error: 'Staff tools not configured.' });
   }
 

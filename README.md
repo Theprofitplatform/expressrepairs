@@ -63,16 +63,16 @@ first three as **Secret**), then redeploy:
 | --- | --- | --- |
 | `CLICKSEND_USERNAME` | yes | ClickSend account username |
 | `CLICKSEND_API_KEY` | yes | ClickSend API key |
-| `REVIEW_SMS_PIN` | yes | staff PIN (min 6 chars — use a 16+ char random string) |
+| `REVIEW_SMS_PIN` | yes | staff PIN (min 10 chars — use a 16+ char random string) |
 | `REVIEW_LINK` | no | `https://g.page/r/…/review` (GBP → Ask for reviews) |
 | `CLICKSEND_SENDER` | no | sender ID, default `Xpress` (≤11 chars, alphanumeric) |
 | `ALLOWED_ORIGINS` | no | extra comma-separated hosts allowed to call the API (e.g. a preview domain) |
-| `STAFF_PIN` | yes | staff PIN gating `/staff/order/` (min 6 chars). Falls back to `REVIEW_SMS_PIN` if unset — see [Supplier ordering](#supplier-ordering-staff-tool) below. |
+| `STAFF_PIN` | yes | staff PIN gating `/staff/order/` (min 10 chars). Falls back to `REVIEW_SMS_PIN` if unset — see [Supplier ordering](#supplier-ordering-staff-tool) below. |
 
 Notes:
 - **The PIN is the only real barrier** to sending paid SMS to arbitrary numbers
   (the same-site check does not stop scripted, non-browser clients), so use a
-  long, random PIN. A `REVIEW_SMS_PIN` shorter than 6 characters is rejected
+  long, random PIN. A `REVIEW_SMS_PIN` shorter than 10 characters is rejected
   server-side as misconfigured (the endpoint returns "not configured").
 - **Rate limiting**: the enforcing control is a Cloudflare edge WAF
   rate-limiting rule on `POST /api/supplier-catalog` and `POST /api/review-sms`

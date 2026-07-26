@@ -9,7 +9,7 @@ describe('pinEqual', () => {
     expect(pinEqual(undefined, 'x')).toBe(false);
   });
   it('exports the min length rule', () => {
-    expect(MIN_PIN_LENGTH).toBe(6);
+    expect(MIN_PIN_LENGTH).toBe(10);
   });
 });
 
@@ -101,19 +101,20 @@ const reqFrom = (ip, body, opts) => {
 };
 
 describe('PIN rate limiting', () => {
-  const SHORT_PIN = '123456'; // 6 chars — the new floor
+  const RL_PIN = '1234567890'; // 10 chars — a valid PIN, used to exercise the rate-limit mechanics in cases 3+
   const catalogKv = (extra = {}) => makeFakeKv({ 'supplier-catalog:hoco': HOCO_ROWS, ...extra });
 
-  it('1. accepts a 6-character PIN (used to 503 under the old 10-char floor)', async () => {
+  it('1. accepts a 10-character PIN (the floor)', async () => {
+    const pin = '1234567890';
     const res = await onRequest({
-      request: reqFrom('10.0.0.1', { pin: SHORT_PIN, supplier: 'hoco' }),
-      env: { STAFF_PIN: SHORT_PIN, ORDERS_KV: catalogKv() },
+      request: reqFrom('10.0.0.1', { pin, supplier: 'hoco' }),
+      env: { STAFF_PIN: pin, ORDERS_KV: catalogKv() },
     });
     expect(res.status).toBe(200);
   });
 
-  it('2. still 503s a 5-character PIN — the floor holds', async () => {
-    const pin = '12345';
+  it('2. still 503s a 9-character PIN — the floor holds', async () => {
+    const pin = '123456789';
     const res = await onRequest({
       request: reqFrom('10.0.0.2', { pin, supplier: 'hoco' }),
       env: { STAFF_PIN: pin, ORDERS_KV: catalogKv() },
@@ -125,7 +126,7 @@ describe('PIN rate limiting', () => {
     const kv = catalogKv();
     const res = await onRequest({
       request: reqFrom('10.0.0.3', { pin: 'nope-nope', supplier: 'hoco' }),
-      env: { STAFF_PIN: SHORT_PIN, ORDERS_KV: kv },
+      env: { STAFF_PIN: RL_PIN, ORDERS_KV: kv },
     });
     expect(res.status).toBe(401);
     expect(await kv.get('pinfail:10.0.0.3')).toBe('1');
@@ -138,14 +139,14 @@ describe('PIN rate limiting', () => {
   it('4. the 6th failure from one IP returns 429 BEFORE pinEqual runs — for a correct PIN AND a wrong one', async () => {
     const kv = catalogKv();
     const ip = '10.0.0.4';
-    const envFor = { STAFF_PIN: SHORT_PIN, ORDERS_KV: kv };
+    const envFor = { STAFF_PIN: RL_PIN, ORDERS_KV: kv };
     for (let i = 0; i < PIN_MAX_FAILS; i++) {
       const res = await onRequest({ request: reqFrom(ip, { pin: 'wrong', supplier: 'hoco' }), env: envFor });
       expect(res.status).toBe(401);
     }
     // The IP is now over PIN_MAX_FAILS. A request with the CORRECT PIN must
     // still be rejected with 429 — proving the rate limit runs before pinEqual.
-    const res = await onRequest({ request: reqFrom(ip, { pin: SHORT_PIN, supplier: 'hoco' }), env: envFor });
+    const res = await onRequest({ request: reqFrom(ip, { pin: RL_PIN, supplier: 'hoco' }), env: envFor });
     expect(res.status).toBe(429);
     expect(await res.json()).toEqual({ ok: false, error: 'Too many attempts. Wait 15 minutes.' });
 
@@ -163,49 +164,49 @@ describe('PIN rate limiting', () => {
   it('4b. PIN_MAX_FAILS - 1 failures still permit the next attempt (off-by-one boundary)', async () => {
     const kv = catalogKv();
     const ip = '10.0.0.41';
-    const envFor = { STAFF_PIN: SHORT_PIN, ORDERS_KV: kv };
+    const envFor = { STAFF_PIN: RL_PIN, ORDERS_KV: kv };
     for (let i = 0; i < PIN_MAX_FAILS - 1; i++) {
       const res = await onRequest({ request: reqFrom(ip, { pin: 'wrong', supplier: 'hoco' }), env: envFor });
       expect(res.status).toBe(401);
     }
     // Still under the cap — the next (correct-PIN) attempt must go through,
     // catching an implementation that blocks one request early.
-    const res = await onRequest({ request: reqFrom(ip, { pin: SHORT_PIN, supplier: 'hoco' }), env: envFor });
+    const res = await onRequest({ request: reqFrom(ip, { pin: RL_PIN, supplier: 'hoco' }), env: envFor });
     expect(res.status).toBe(200);
   });
 
   it('5. two different IPs each get their own budget — IP A locked does not lock IP B', async () => {
     const kv = catalogKv();
-    const envFor = { STAFF_PIN: SHORT_PIN, ORDERS_KV: kv };
+    const envFor = { STAFF_PIN: RL_PIN, ORDERS_KV: kv };
     const ipA = '10.0.0.5';
     const ipB = '10.0.0.6';
     for (let i = 0; i < PIN_MAX_FAILS; i++) {
       await onRequest({ request: reqFrom(ipA, { pin: 'wrong', supplier: 'hoco' }), env: envFor });
     }
-    const lockedA = await onRequest({ request: reqFrom(ipA, { pin: SHORT_PIN, supplier: 'hoco' }), env: envFor });
+    const lockedA = await onRequest({ request: reqFrom(ipA, { pin: RL_PIN, supplier: 'hoco' }), env: envFor });
     expect(lockedA.status).toBe(429);
 
-    const okB = await onRequest({ request: reqFrom(ipB, { pin: SHORT_PIN, supplier: 'hoco' }), env: envFor });
+    const okB = await onRequest({ request: reqFrom(ipB, { pin: RL_PIN, supplier: 'hoco' }), env: envFor });
     expect(okB.status).toBe(200);
   });
 
   it('6. exceeding PIN_GLOBAL_MAX_FAILS returns 429 even for a fresh IP', async () => {
     const kv = catalogKv({ 'pinfail:global': String(PIN_GLOBAL_MAX_FAILS) });
     const res = await onRequest({
-      request: reqFrom('10.0.0.7', { pin: SHORT_PIN, supplier: 'hoco' }),
-      env: { STAFF_PIN: SHORT_PIN, ORDERS_KV: kv },
+      request: reqFrom('10.0.0.7', { pin: RL_PIN, supplier: 'hoco' }),
+      env: { STAFF_PIN: RL_PIN, ORDERS_KV: kv },
     });
     expect(res.status).toBe(429);
   });
 
   it('7. a correct PIN clears that IP counter', async () => {
     const kv = catalogKv();
-    const envFor = { STAFF_PIN: SHORT_PIN, ORDERS_KV: kv };
+    const envFor = { STAFF_PIN: RL_PIN, ORDERS_KV: kv };
     const ip = '10.0.0.8';
     await onRequest({ request: reqFrom(ip, { pin: 'wrong', supplier: 'hoco' }), env: envFor });
     expect(await kv.get(`pinfail:${ip}`)).toBe('1');
 
-    const res = await onRequest({ request: reqFrom(ip, { pin: SHORT_PIN, supplier: 'hoco' }), env: envFor });
+    const res = await onRequest({ request: reqFrom(ip, { pin: RL_PIN, supplier: 'hoco' }), env: envFor });
     expect(res.status).toBe(200);
     expect(await kv.get(`pinfail:${ip}`)).toBeNull();
   });
@@ -224,8 +225,8 @@ describe('PIN rate limiting', () => {
       },
     };
     const res = await onRequest({
-      request: reqFrom('10.0.0.9', { pin: SHORT_PIN, supplier: 'hoco' }),
-      env: { STAFF_PIN: SHORT_PIN, ORDERS_KV: throwingKv },
+      request: reqFrom('10.0.0.9', { pin: RL_PIN, supplier: 'hoco' }),
+      env: { STAFF_PIN: RL_PIN, ORDERS_KV: throwingKv },
     });
     expect(res.status).toBe(200);
   });

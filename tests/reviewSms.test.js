@@ -38,7 +38,7 @@ describe('buildReviewMessage', () => {
 });
 
 const ORIGIN = 'https://expressrepairs.com.au';
-const PIN = 'test-pin-abc123'; // >= MIN_PIN_LENGTH (6)
+const PIN = 'test-pin-abc123'; // >= MIN_PIN_LENGTH (10)
 const FULL_ENV = {
   CLICKSEND_USERNAME: 'u',
   CLICKSEND_API_KEY: 'k',
@@ -226,12 +226,12 @@ function reqFrom(ip, opts) {
 describe('POST /api/review-sms — PIN rate limiting', () => {
   beforeEach(() => vi.restoreAllMocks());
 
-  it('accepts a 6-character PIN (used to 503 under the old 10-char floor)', async () => {
+  it('accepts a 10-character PIN (the floor)', async () => {
     const spy = clickSendOk();
-    const shortPin = '654321';
+    const tenCharPin = '6543216543';
     const res = await onRequest({
-      request: reqFrom('20.0.0.1', { body: { pin: shortPin, mobile: '0412345678', name: 'Sam' } }),
-      env: { ...FULL_ENV, REVIEW_SMS_PIN: shortPin, ORDERS_KV: makeFakeKv() },
+      request: reqFrom('20.0.0.1', { body: { pin: tenCharPin, mobile: '0412345678', name: 'Sam' } }),
+      env: { ...FULL_ENV, REVIEW_SMS_PIN: tenCharPin, ORDERS_KV: makeFakeKv() },
     });
     expect(res.status).toBe(200);
     expect(spy).toHaveBeenCalledTimes(1);

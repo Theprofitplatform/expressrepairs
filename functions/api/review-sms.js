@@ -74,7 +74,7 @@ export async function onRequest({ request, env }) {
   // PIN gate. Unset OR too short → unconfigured (never an open endpoint).
   const pinSecret = env.REVIEW_SMS_PIN;
   if (!pinSecret || pinSecret.length < MIN_PIN_LENGTH) {
-    if (pinSecret) console.error('REVIEW_SMS_PIN is too short (min 6) — use a 16+ char random PIN');
+    if (pinSecret) console.error('REVIEW_SMS_PIN is too short (min 10) — use a 16+ char random PIN');
     return json(503, { ok: false, error: 'SMS sending not configured.' });
   }
 
