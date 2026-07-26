@@ -37,6 +37,16 @@ export const MOBILEMALL_EXCLUDE_PATTERNS = [
   /\bdummy\b/i, // non-functional display handsets
   /\d+\s*pcs\s*\/\s*pack|\bpcs\/pack\b/i, // "**10pcs/pack**" bulk glass
   /\bmould?\b|\bmold\b/i, // press moulds for the sublimation machines
+  // Replacement parts sold to repairers, never to shoppers (owner directive
+  // 2026-07-23: the shop repairs phones, it does not sell parts). HOCO's
+  // equivalents are written against its "Part | Model" name format and don't
+  // fire on MobileMall's "Model Part - Colour"; its supplier part code does.
+  // Verified against the full import: 246 matches, every one a part (LCDs,
+  // batteries, charging-port flex, replacement back-glass panels), no
+  // consumer product carries a code of this shape.
+  /\bA\d{5}-\d{2}\b/,
+  /\bincell\b|\blcd\b/i, // the one part with no code: "iPhone X NCC incell LCD"
+  /heat transfer printer/i, // trade sublimation gear (HIDE_IDS covers the DXPOS twin)
   // Account-credit promos and supplier test rows are dropped upstream by the
   // extractor's numeric-SKU rule — they have no SKU to sell against.
 ];

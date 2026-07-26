@@ -82,6 +82,29 @@ describe('transformMobileMall', () => {
     expect(transformMobileMall(rows)).toEqual([]);
   });
 
+  // MobileMall names parts "Model Part - Colour", so HOCO's "Part | Model"
+  // patterns miss them; the supplier part code is what catches these.
+  it('excludes repair parts, which carry a supplier part code', () => {
+    const rows = [
+      row({ sku: '10', name: 'iPhone 6 OG Original Charging Port Flex Cable - White A55562-02' }),
+      row({ sku: '11', name: 'iPhone 8 Premium Back Glass - Gold A14868-03' }),
+      row({ sku: '12', name: 'iPhone 5S KILIX Battery - Black A36383-01' }),
+      row({ sku: '13', name: 'iPhone 14 Pro OG Refurbished LCD - Black A56318-01' }),
+      row({ sku: '14', name: 'iPhone X NCC incell LCD (Colour X) - Black' }), // no code
+      row({ sku: '15', name: 'Epson L8058 Heat Transfer Printer - Black' }),
+    ];
+    expect(transformMobileMall(rows)).toEqual([]);
+  });
+
+  it('keeps consumer products the part rules sit close to', () => {
+    const rows = [
+      row({ sku: '20', name: 'iPhone 17 Pro LITO LSG069 Stainless Armor Camera Lens Protector - Gold' }),
+      row({ sku: '21', name: 'XIAOMI Bluetooth AR Photo Portable Printer - With 5 Sheets Photo Paper' }),
+      row({ sku: '22', name: 'BLACKTECH 10000mAh Power Bank with Built-in Cable - Black' }),
+    ];
+    expect(transformMobileMall(rows, new Set())).toHaveLength(3);
+  });
+
   it('drops rows with no usable image or price', () => {
     expect(transformMobileMall([row({ image: '' })])).toEqual([]);
     expect(transformMobileMall([row({ rrpCents: 0 })])).toEqual([]);
