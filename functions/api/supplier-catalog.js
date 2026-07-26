@@ -7,7 +7,17 @@
 //
 // Config: STAFF_PIN (secret) — staff PIN; falls back to REVIEW_SMS_PIN so
 // staff keep a single shop PIN until the owner wants them split.
-import { json, sameSite, pinEqual, MIN_PIN_LENGTH, readJsonBody } from '../_shared.js';
+import {
+  json,
+  sameSite,
+  pinEqual,
+  MIN_PIN_LENGTH,
+  readJsonBody,
+  clientIp,
+  pinRateLimited,
+  recordPinFailure,
+  clearPinFailures,
+} from '../_shared.js';
 
 const SUPPLIERS = new Set(['hoco', 'mobilemall']);
 
@@ -24,9 +34,16 @@ export async function onRequest({ request, env }) {
     if (pinSecret) console.error('STAFF_PIN is too short (min 10) — use a 16+ char random PIN');
     return json(503, { ok: false, error: 'Staff tools not configured.' });
   }
+
+  const ip = clientIp(request);
+  if (await pinRateLimited(env.ORDERS_KV, ip)) {
+    return json(429, { ok: false, error: 'Too many attempts. Wait 15 minutes.' });
+  }
   if (!pinEqual(String(data.pin ?? ''), pinSecret)) {
+    await recordPinFailure(env.ORDERS_KV, ip);
     return json(401, { ok: false, error: 'Wrong PIN.' });
   }
+  await clearPinFailures(env.ORDERS_KV, ip);
 
   const supplier = String(data.supplier ?? '');
   if (!SUPPLIERS.has(supplier)) return json(400, { ok: false, error: 'Unknown supplier.' });

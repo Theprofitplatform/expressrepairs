@@ -15,7 +15,17 @@
 // Note: the shared sameSite also allows *.pages.dev (preview deploys), which
 // the old local copy here did not. Acceptable widening: the PIN below is the
 // real gate — Origin/Referer are forgeable off-browser regardless.
-import { json, sameSite, pinEqual, MIN_PIN_LENGTH, readJsonBody } from '../_shared.js';
+import {
+  json,
+  sameSite,
+  pinEqual,
+  MIN_PIN_LENGTH,
+  readJsonBody,
+  clientIp,
+  pinRateLimited,
+  recordPinFailure,
+  clearPinFailures,
+} from '../_shared.js';
 
 // Single-line, length-capped value — strips CR/LF and other control chars.
 const oneLine = (s, max = 200) => {
@@ -67,9 +77,16 @@ export async function onRequest({ request, env }) {
     if (pinSecret) console.error('REVIEW_SMS_PIN is too short (min 10) — use a 16+ char random PIN');
     return json(503, { ok: false, error: 'SMS sending not configured.' });
   }
+
+  const ip = clientIp(request);
+  if (await pinRateLimited(env.ORDERS_KV, ip)) {
+    return json(429, { ok: false, error: 'Too many attempts. Wait 15 minutes.' });
+  }
   if (!pinEqual(String(data.pin ?? ''), pinSecret)) {
+    await recordPinFailure(env.ORDERS_KV, ip);
     return json(401, { ok: false, error: 'Wrong PIN.' });
   }
+  await clearPinFailures(env.ORDERS_KV, ip);
 
   const to = normalizeAuMobile(data.mobile);
   if (!to) return json(400, { ok: false, error: 'Enter a valid Australian mobile number.' });

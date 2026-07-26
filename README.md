@@ -74,9 +74,17 @@ Notes:
   (the same-site check does not stop scripted, non-browser clients), so use a
   long, random PIN. A `REVIEW_SMS_PIN` shorter than 10 characters is rejected
   server-side as misconfigured (the endpoint returns "not configured").
-- **No rate-limiting in the MVP** — protection relies on the strong PIN plus the
-  page being unlinked and `noindex`. If abuse ever appears, add Cloudflare
-  Turnstile or a KV-backed rate limit in front of the PIN check.
+- **Rate limiting**: the enforcing control is a Cloudflare edge WAF
+  rate-limiting rule on `POST /api/supplier-catalog` and `POST /api/review-sms`
+  (configured in the Cloudflare dashboard, not in this repo). In addition,
+  `functions/_shared.js` keeps KV-backed per-IP (5/15min) and global
+  (100/15min) failed-PIN counters as a defence-in-depth second layer — it is
+  not a substitute for the WAF rule (KV is a read-modify-write under
+  concurrency and throttles to ~1 write/sec/key, so it degrades under a fast
+  or parallel attack; see the comment above `pinRateLimited` in
+  `functions/_shared.js` for the numbers). See
+  [`docs/supplier-orders.md`](docs/supplier-orders.md#pin-lockout-recovery-break-glass)
+  for how to clear a lockout.
 - **Preview deployments:** the shared `sameSite` check allows any `*.pages.dev`
   host by default (needed to test preview deploys), on top of the production
   apex + `www` + `localhost`. This is a deliberate widening — Origin/Referer are
