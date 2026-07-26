@@ -123,6 +123,8 @@
 /* ============ Reset & base ============ */
 *, *::before, *::after { box-sizing: border-box; }
 html { scroll-behavior: smooth; }
+/* Anchor targets clear the sticky nav instead of hiding behind it. */
+:target { scroll-margin-top: calc(var(--nav-h) + 16px); }
 body {
   margin: 0;
   font-family: var(--font-body);
@@ -562,6 +564,7 @@ input, select, textarea { font-family: inherit; font-size: inherit; color: inher
 .acc-card {
   background: var(--surface); border: 1px solid var(--border); border-radius: 20px; overflow:hidden;
   transition: all .2s ease; display:flex; flex-direction:column;
+  text-decoration: none; color: inherit;
 }
 .acc-card:hover { transform: translateY(-3px); box-shadow: var(--shadow-md); }
 .acc-visual {

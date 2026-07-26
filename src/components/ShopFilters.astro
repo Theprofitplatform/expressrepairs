@@ -54,6 +54,7 @@ const families = modelFamilies(models);
         </label>
       </div>
     </details>
+    <button id="show-all" type="button" class="btn btn-ghost btn-sm">Show all on one page</button>
     <div id="active-filters" class="chip-row" aria-label="Active filters" hidden></div>
   </div>
 
@@ -106,16 +107,20 @@ const families = modelFamilies(models);
   const brandSel = document.getElementById('brand-select');
   const priceSel = document.getElementById('price-select');
   const chipsRow = document.getElementById('active-filters');
+  const allBtn = document.getElementById('show-all');
   const { category, categorySlug, model, tag } = root.dataset;
 
   const fmtPrice = (c) => (c % 100 === 0 ? `$${c / 100}` : `$${(c / 100).toFixed(2)}`);
   const esc = (s) => s.replace(/[&<>"']/g, (ch) => `&#${ch.charCodeAt(0)};`);
-  // ponytail: render cap keeps a filter-only view of a 2,400-product category
-  // from creating thousands of DOM nodes; raise if anyone ever pages past it.
-  const CAP = 500;
+  // ponytail: cards paint in chunks as you scroll rather than all at once —
+  // 2,400 cards in one write janks mobile. Raise if scrolling feels starved.
+  const CHUNK = 200;
 
   const state = { brand: '', price: '', sort: '', q: '' };
   const controls = { q: input, brand: brandSel, price: priceSel, sort: sortSel };
+  // A view mode, not a facet — deliberately outside `state` so it stays out of
+  // the filter chips and the shareable URL.
+  let showAll = false;
   let orig = null;
   let indexP = null;
 
@@ -163,11 +168,37 @@ const families = modelFamilies(models);
       : '';
   };
 
+  // Endless scroll: hold the whole result set, paint CHUNK at a time as the
+  // sentinel below the grid scrolls into view.
+  const sentinel = document.createElement('div');
+  sentinel.style.height = '1px';
+  const io = new IntersectionObserver((e) => e[0].isIntersecting && more(), { rootMargin: '600px' });
+  let rest = [];
+
+  const stopScroll = () => { io.disconnect(); sentinel.remove(); rest = []; };
+
+  const more = () => {
+    grid.insertAdjacentHTML('beforeend', rest.splice(0, CHUNK).map(card).join(''));
+    if (!rest.length) return stopScroll();
+    // IntersectionObserver only re-fires on a *change*. If the sentinel is still
+    // on screen after painting, keep going or the scroll stalls short of the end.
+    if (sentinel.getBoundingClientRect().top < innerHeight) more();
+  };
+
+  const render = (hits) => {
+    stopScroll();
+    grid.innerHTML = '';
+    rest = hits.slice();
+    grid.after(sentinel);
+    io.observe(sentinel);
+    more();
+  };
+
   const apply = async () => {
     syncUrl();
     renderChips();
-    if (!state.brand && !state.price && !state.sort && !state.q) {
-      if (orig !== null) { grid.innerHTML = orig; pagination.style.display = ''; status.hidden = true; }
+    if (!state.brand && !state.price && !state.sort && !state.q && !showAll) {
+      if (orig !== null) { stopScroll(); grid.innerHTML = orig; pagination.style.display = ''; status.hidden = true; }
       return;
     }
     orig ??= grid.innerHTML;
@@ -175,11 +206,17 @@ const families = modelFamilies(models);
     const hits = filterProducts(await indexP, { category, model, tag, ...state });
     status.hidden = false;
     status.textContent = hits.length
-      ? `${hits.length} product${hits.length === 1 ? '' : 's'}${hits.length > CAP ? ` — showing first ${CAP}` : ''}`
+      ? `Showing all ${hits.length} product${hits.length === 1 ? '' : 's'}${hits.length > CHUNK ? ' — scroll for more' : ''}`
       : 'No products match those filters — clear one and try again.';
-    grid.innerHTML = hits.slice(0, CAP).map(card).join('');
+    render(hits);
     pagination.style.display = 'none';
   };
+
+  const syncAllBtn = () => {
+    allBtn.className = `btn btn-sm ${showAll ? 'btn-primary' : 'btn-ghost'}`;
+    allBtn.textContent = showAll ? 'Back to pages' : 'Show all on one page';
+  };
+  allBtn?.addEventListener('click', () => { showAll = !showAll; syncAllBtn(); apply(); });
 
   chipsRow.addEventListener('click', (e) => {
     const btn = e.target.closest('[data-clear]');

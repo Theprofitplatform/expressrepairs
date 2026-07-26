@@ -135,6 +135,8 @@ describe('shop pages', () => {
     expect(category).toContain('Page 1 of');
     expect(category).toContain('acc-grid acc-grid--dense');
     expect(category).toContain('section-tight');
+    // "Show all on one page" replaces pagination with an endless-scroll grid.
+    expect(category).toContain('id="show-all"');
   });
 
   it('paginated category pages canonicalize to themselves, not page 1', async () => {

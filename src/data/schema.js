@@ -51,6 +51,7 @@ export const accessorySchema = z.object({
   desc: z.string(),
   price: z.string(),
   img: z.string(),
+  href: z.string(),
   tag: z.string().optional(),
 });
 
