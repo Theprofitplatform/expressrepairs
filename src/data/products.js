@@ -2,7 +2,8 @@ import { z } from 'zod';
 import { productSchema } from './schema.js';
 import raw from './products.json';
 import hoco from './hoco-products.json';
-import { mergeCatalogs } from '../lib/merge-catalogs.js';
+import mobilemall from './mobilemall-products.json';
+import { mergeCatalogs, mergeSupplier } from '../lib/merge-catalogs.js';
 import { tagsFor } from '../lib/tags.js';
 
 // Owner-set retail prices (2026-07-25), whatever DXPOS or the HOCO catalogue
@@ -20,12 +21,19 @@ const priceFix = (p) => {
 };
 
 // products.json is synced from DXPOS (scripts/sync-products.mjs);
-// hoco-products.json is imported from the HOCO catalogue (scripts/import-hoco.mjs).
-// Merged here so every consumer (shop pages, search index, product feed)
-// sees one catalog. DXPOS wins duplicates. Tags are derived, not synced.
+// mobilemall-products.json and hoco-products.json are imported from the two
+// supplier catalogues (scripts/import-mobilemall.mjs, scripts/import-hoco.mjs).
+// Merged here so every consumer (shop pages, search index, product feed) sees
+// one catalog. DXPOS wins duplicates — MobileMall by SKU, HOCO by name — so a
+// POS re-sync can never wipe a supplier product, nor double-list a stocked one.
+// Tags are derived, not synced.
 export const PRODUCTS = z
   .array(productSchema)
-  .parse(mergeCatalogs(raw, hoco).map((p) => priceFix({ ...p, tags: tagsFor(p) })));
+  .parse(
+    mergeCatalogs(mergeSupplier(raw, mobilemall), hoco).map((p) =>
+      priceFix({ ...p, tags: tagsFor(p) }),
+    ),
+  );
 
 // Shipping config — owner-adjustable. Cents, AUD, GST-inclusive.
 export const SHOP = {

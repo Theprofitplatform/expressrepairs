@@ -60,9 +60,11 @@ jobs:
             # Non-fatal: a bad/expired R2 token must not throw away a valid
             # catalog sync — products fall back to supplier image URLs.
             if node scripts/upload-images-r2.mjs; then
-              # Regenerate the HOCO import so newly mirrored H- ids switch
-              # from hoco.com.au URLs to the R2 copies in the committed data.
+              # Regenerate the supplier imports so newly mirrored H-/M- ids
+              # switch from the hoco.com.au / mobilemall.com.au URLs to the R2
+              # copies in the committed data.
               node scripts/import-hoco.mjs
+              node scripts/import-mobilemall.mjs
             else
               echo "::warning::image mirror failed (check R2_* secrets) — continuing without it"
             fi
@@ -74,7 +76,7 @@ jobs:
       - name: Commit if changed
         id: commit
         run: |
-          git add src/data/products.json src/data/r2-images.json src/data/hoco-products.json
+          git add src/data/products.json src/data/r2-images.json src/data/hoco-products.json src/data/mobilemall-products.json
           if git diff --cached --quiet; then
             echo "No product changes."
             echo "changed=false" >> "$GITHUB_OUTPUT"

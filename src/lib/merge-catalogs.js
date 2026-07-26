@@ -13,6 +13,17 @@
 // device/wattage/color words to actually match too. Failure mode if this pair
 // ever wrongly agrees: a duplicate listing — the cheap failure, so this stays
 // a token-coverage heuristic, not a real product-attribute diff.
+// MobileMall shares DXPOS's SKU namespace — DXPOS is stocked *from* MobileMall,
+// and every synced product carries the MobileMall SKU — so an exact SKU match
+// is a reliable duplicate here, no fuzzy name matching needed. (The name check
+// is the backstop for a SKU retyped in the POS.) DXPOS wins: those products
+// exist in store and can be rung up at the counter.
+export function mergeSupplier(dxpos, supplier) {
+  const skus = new Set(dxpos.map((p) => p.sku).filter(Boolean));
+  const names = new Set(dxpos.map((p) => p.name));
+  return [...dxpos, ...supplier.filter((p) => !skus.has(p.sku) && !names.has(p.name))];
+}
+
 export const modelCodes = (name) =>
   new Set(name.match(/\b[A-Z]{1,3}\d{1,3}[A-Z]{0,2}\b/g) || []);
 
