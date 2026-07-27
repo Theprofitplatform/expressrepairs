@@ -249,11 +249,10 @@ describe('built shop thanks page', () => {
 });
 
 describe('built NBN page', () => {
-  it('renders the displayed plan cards with list prices', async () => {
+  it('renders every plan card with its list price', async () => {
     const { NBN_PLANS } = await import('../src/data/plans.js');
     const nbn = readFileSync('dist/nbn/index.html', 'utf8');
-    for (const name of ['NBN 50/20', 'NBN 250/100', 'NBN 1000/100', 'NBN 1000/400']) {
-      const p = NBN_PLANS.find((x) => x.name === name);
+    for (const p of NBN_PLANS) {
       expect(nbn).toContain(p.name);
       expect(nbn).toContain(`>${p.price}<`); // big list price
     }
