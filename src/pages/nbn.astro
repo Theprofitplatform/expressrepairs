@@ -16,10 +16,8 @@ const navLinks = [
   { label: 'Blog', href: '/blog/' },
 ];
 
-// Curated storefront: four speed tiers. The rest stay in NBN_PLANS (and the
-// enquiry form's dropdown) for customers who ask.
-const DISPLAY = ['NBN 50/20', 'NBN 250/100', 'NBN 1000/100', 'NBN 1000/400'];
-const shown = DISPLAY.map((name) => NBN_PLANS.find((p) => p.name === name));
+// Every plan, cheapest first.
+const shown = [...NBN_PLANS].sort((a, b) => a.price - b.price);
 
 const schema = breadcrumbSchema([
   { name: 'Home', path: '/' },
@@ -95,7 +93,7 @@ const schema = breadcrumbSchema([
         </div>
 
         <p class="plan-footer-note">
-          Need 2 Gbps, upload-heavy speeds or something in between? We have more plans in-store — call <a href={SITE.phoneHref} style="color: var(--brand-700); font-weight: 700;">{SITE.phone}</a>.
+          Not sure which speed suits your business? Call <a href={SITE.phoneHref} style="color: var(--brand-700); font-weight: 700;">{SITE.phone}</a> and we'll size it with you.
           Typical business-hour speeds shown; actual speeds depend on your NBN technology and address.
           See our <a href="/nbn/terms/" style="color: var(--brand-700); font-weight: 700;">NBN service terms</a>.
         </p>
@@ -153,7 +151,7 @@ const schema = breadcrumbSchema([
     border: 1px solid color-mix(in oklab, var(--brand-500, #2563eb) 25%, transparent);
     font-size: 15px;
   }
-  .nbn-grid { grid-template-columns: repeat(4, 1fr); }
+  .nbn-grid { grid-template-columns: repeat(3, 1fr); }
   @media (max-width: 1100px) { .nbn-grid { grid-template-columns: repeat(2, 1fr); } }
   @media (max-width: 620px) { .nbn-grid { grid-template-columns: 1fr; } }
   .nbn-blurb {
