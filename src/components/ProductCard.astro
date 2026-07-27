@@ -2,13 +2,14 @@
 // Shared product card for shop grids. Mirrored in the client card() renderer
 // in ShopFilters.astro — keep both in sync.
 import { fmtPrice } from '../data/products.js';
+import { gridThumb } from '../shop/search-core.js';
 const { p } = Astro.props;
 ---
 <div class="acc-card" data-brand={p.brand}>
   <a href={`/shop/${p.id}/`} class="acc-card-link">
     <div class="acc-visual">
       <img
-        src={p.thumb}
+        src={gridThumb(p.thumb)}
         alt={p.name}
         loading="lazy"
         decoding="async"

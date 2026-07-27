@@ -5,9 +5,28 @@
 // relevance complaints survive this.
 
 // Thumbnail URL for a search-index entry's id. Both suppliers' photos are
-// mirrored to R2 as products/<id>.webp by scripts/upload-images-r2.mjs
-// (run it after any catalog import so new ids exist before this URL is hit).
-export const thumbSrc = (id) => `https://img.expressrepairs.com.au/products/${id}.webp`;
+// mirrored to R2 by scripts/upload-images-r2.mjs as products/<id>.webp (800px,
+// used by product detail pages) plus a products/<id>-400.webp variant.
+//
+// Grids and search results render at most ~400px wide — a phone card is ~343px
+// and a suggestion thumb is 44px — so they take the -400 variant. Serving the
+// 800px original here decoded ~2.1MB of bitmap per card and took the renderer
+// from 120MB to 602MB at 862 images before it died. Run the upload script after
+// any catalog import so new ids have the variant before this URL is hit.
+export const thumbSrc = (id) => `https://img.expressrepairs.com.au/products/${id}-400.webp`;
+
+// Same downscale for a thumb URL already baked into the product data by the
+// import scripts. Leaves supplier-hosted URLs (no R2 variant) untouched, and is
+// idempotent — the early return matters because if the import scripts ever start
+// emitting -400 directly, a second pass here would ask for -400-400 and 404 every
+// grid image. Deliberately not a lookbehind: this ships to phones, and older iOS
+// Safari throws at parse time on those, taking the whole script down with it.
+export const gridThumb = (url) => {
+  const s = String(url || '');
+  return /-400\.webp$/.test(s)
+    ? s
+    : s.replace(/(\/\/img\.expressrepairs\.com\.au\/products\/[^/]+)\.webp$/, '$1-400.webp');
+};
 
 import { tagsFor } from '../lib/tags.js';
 

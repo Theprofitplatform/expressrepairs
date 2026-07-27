@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { searchProducts } from '../src/shop/search-core.js';
+import { searchProducts, thumbSrc, gridThumb } from '../src/shop/search-core.js';
 import { PRODUCTS } from '../src/data/products.js';
 
 // searchProducts caches normalized haystacks on the entries — copy so other
@@ -64,5 +64,30 @@ describe('searchProducts', () => {
   it('returns nothing for garbage and empty queries', () => {
     expect(searchProducts(INDEX, 'zzqqxxyy').hits).toHaveLength(0);
     expect(searchProducts(INDEX, '   ').hits).toHaveLength(0);
+  });
+});
+
+// Grid cards render ~343px wide on a phone; serving them the 800px original
+// decoded ~2.1MB each and killed the renderer at ~600MB. These pin the -400
+// variant so a refactor can't quietly put the full-size image back in a grid.
+describe('grid thumbnails', () => {
+  it('derives the -400 variant from an id', () => {
+    expect(thumbSrc('X-01687')).toBe('https://img.expressrepairs.com.au/products/X-01687-400.webp');
+  });
+
+  it('downscales an R2 thumb URL already baked into the product data', () => {
+    expect(gridThumb('https://img.expressrepairs.com.au/products/H-8250.webp'))
+      .toBe('https://img.expressrepairs.com.au/products/H-8250-400.webp');
+  });
+
+  it('leaves supplier-hosted URLs alone — they have no R2 variant', () => {
+    const supplier = 'https://www.hoco.com.au/web/image/product.template/8250/image_256';
+    expect(gridThumb(supplier)).toBe(supplier);
+    expect(gridThumb('')).toBe('');
+  });
+
+  it('is idempotent, so a double-applied transform cannot produce -400-400', () => {
+    const once = gridThumb('https://img.expressrepairs.com.au/products/X-1.webp');
+    expect(gridThumb(once)).toBe(once);
   });
 });

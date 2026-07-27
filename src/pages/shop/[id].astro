@@ -6,6 +6,7 @@ import { PRODUCTS, fmtPrice } from '../../data/products.js';
 import { breadcrumbSchema, productSchema, productDescription } from '../../lib/seo.js';
 import { specRows, slugifyCategory, relatedProducts, deviceModel, modelGroups, isHocoSupplied } from '../../lib/shop.js';
 import { CURATED_TAGS, tagLabel } from '../../lib/tags.js';
+import { gridThumb } from '../../shop/search-core.js';
 import { SITE } from '../../data/site.js';
 
 export function getStaticPaths() {
@@ -123,7 +124,7 @@ const schema = [
               <a href={`/shop/${r.id}/`} class="acc-card">
                 <div class="acc-visual">
                   <img
-                    src={r.thumb}
+                    src={gridThumb(r.thumb)}
                     alt={r.name}
                     loading="lazy"
                     decoding="async"
