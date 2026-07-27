@@ -71,10 +71,16 @@ const schema = breadcrumbSchema([
         </div>
 
         <input type="checkbox" id="showDiscount" class="price-toggle-input" />
-        <label for="showDiscount" class="price-toggle">
-          <span class="price-toggle-switch" aria-hidden="true"></span>
-          <span>Show prices with 10% off</span>
-        </label>
+        <div class="nbn-controls">
+          <label for="showDiscount" class="price-toggle">
+            <span class="price-toggle-switch" aria-hidden="true"></span>
+            <span>Show prices with 10% off</span>
+          </label>
+          <div class="nbn-arrows">
+            <button type="button" class="nbn-arrow" data-dir="prev" aria-label="Scroll to cheaper plans"><span aria-hidden="true">←</span></button>
+            <button type="button" class="nbn-arrow" data-dir="next" aria-label="Scroll to faster plans"><span aria-hidden="true">→</span></button>
+          </div>
+        </div>
 
         <div class="plan-grid nbn-grid">
           {shown.map((p) => (
@@ -150,6 +156,27 @@ const schema = breadcrumbSchema([
   <PageScripts />
 </Layout>
 
+<script>
+  // Arrow controls for the swipeable plan row — one card per click.
+  const row = document.querySelector('.nbn-grid');
+  const arrows = [...document.querySelectorAll('.nbn-arrow')];
+  if (row && arrows.length) {
+    const step = () => row.querySelector('.plan').offsetWidth + 18;
+    const sync = () => {
+      arrows[0].disabled = row.scrollLeft < 8;
+      arrows[1].disabled = row.scrollLeft > row.scrollWidth - row.clientWidth - 8;
+    };
+    for (const a of arrows) {
+      a.addEventListener('click', () => {
+        row.scrollBy({ left: a.dataset.dir === 'next' ? step() : -step(), behavior: 'smooth' });
+      });
+    }
+    row.addEventListener('scroll', sync, { passive: true });
+    window.addEventListener('resize', sync);
+    sync();
+  }
+</script>
+
 <style>
   .nbn-offer-banner {
     margin-top: 24px;
@@ -173,10 +200,25 @@ const schema = breadcrumbSchema([
   .nbn-grid > .plan { flex: 0 0 300px; scroll-snap-align: start; }
   @media (max-width: 620px) { .nbn-grid > .plan { flex-basis: 84%; } }
 
+  .nbn-controls {
+    display: flex; align-items: center; justify-content: space-between;
+    gap: 16px; flex-wrap: wrap; margin-top: 22px;
+  }
+  .nbn-arrows { display: flex; gap: 8px; }
+  .nbn-arrow {
+    width: 42px; height: 42px; border-radius: 50%; cursor: pointer;
+    border: 1px solid var(--border); background: var(--surface);
+    color: var(--text); font-size: 19px; line-height: 1;
+    display: grid; place-items: center;
+    transition: border-color .2s ease, color .2s ease, opacity .2s ease;
+  }
+  .nbn-arrow:hover:not(:disabled) { border-color: var(--brand-600); color: var(--brand-700); }
+  .nbn-arrow:disabled { opacity: .3; cursor: default; }
+
   .price-toggle-input { position: absolute; opacity: 0; width: 0; height: 0; }
   .price-toggle {
     display: inline-flex; align-items: center; gap: 10px;
-    margin-top: 22px; cursor: pointer; font-size: 14px; font-weight: 700;
+    cursor: pointer; font-size: 14px; font-weight: 700;
   }
   .price-toggle-switch {
     width: 44px; height: 26px; border-radius: 999px; flex-shrink: 0;
@@ -187,9 +229,9 @@ const schema = breadcrumbSchema([
     border-radius: 50%; background: #fff; box-shadow: var(--shadow-sm);
     transition: transform .2s ease;
   }
-  .price-toggle-input:checked + .price-toggle .price-toggle-switch { background: var(--brand-600); }
-  .price-toggle-input:checked + .price-toggle .price-toggle-switch::after { transform: translateX(18px); }
-  .price-toggle-input:focus-visible + .price-toggle .price-toggle-switch {
+  .price-toggle-input:checked + .nbn-controls .price-toggle-switch { background: var(--brand-600); }
+  .price-toggle-input:checked + .nbn-controls .price-toggle-switch::after { transform: translateX(18px); }
+  .price-toggle-input:focus-visible + .nbn-controls .price-toggle-switch {
     outline: 2px solid var(--brand-600); outline-offset: 2px;
   }
   .price-off { display: none; }
