@@ -3,8 +3,15 @@ import { productSchema } from './schema.js';
 import raw from './products.json';
 import hoco from './hoco-products.json';
 import mobilemall from './mobilemall-products.json';
+import barcodes from './barcodes.json';
 import { mergeCatalogs, mergeSupplier } from '../lib/merge-catalogs.js';
 import { tagsFor } from '../lib/tags.js';
+
+// Supplier barcodes, keyed by SKU (scripts/extract-mobilemall-catalogue.py).
+// DXPOS SKUs are MobileMall SKUs, so one map codes both the POS-synced and the
+// MobileMall-imported products; HOCO ships its own gtin and is left alone.
+// Applied after the merge so no re-sync can wipe it — same reason as priceFix.
+const barcodeFix = (p) => (p.gtin || !barcodes[p.sku] ? p : { ...p, gtin: barcodes[p.sku] });
 
 // Owner-set retail prices (2026-07-25), whatever DXPOS or the HOCO catalogue
 // carry: Hanman cases $29.95 phone / $39.95 tablet; Korean Simple D $29.95,
@@ -31,7 +38,7 @@ export const PRODUCTS = z
   .array(productSchema)
   .parse(
     mergeCatalogs(mergeSupplier(raw, mobilemall), hoco).map((p) =>
-      priceFix({ ...p, tags: tagsFor(p) }),
+      barcodeFix(priceFix({ ...p, tags: tagsFor(p) })),
     ),
   );
 

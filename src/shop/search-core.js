@@ -37,6 +37,11 @@ export const norm = (s) =>
     .trim() +
   ' ';
 
+// A search token long enough to be a barcode rather than a model number —
+// "15" must keep meaning iPhone 15, not every EAN with a 15 in it, so short
+// digit runs never touch p.gtin.
+const isBarcode = (t) => /^\d{6,}$/.test(t);
+
 // Returns { hits, total, partial }. Every token (or a synonym) must match;
 // if nothing matches all tokens, fall back to all-but-one so a single typo'd
 // word degrades the results instead of blanking them (partial: true).
@@ -52,6 +57,13 @@ export function searchProducts(index, q, limit = 50) {
     let matched = 0;
     let score = 0;
     for (const t of tokens) {
+      // Scanned or typed barcode: beats every name match, so the one box on
+      // the shelf lands at the top. Prefix, so it hits mid-scan too.
+      if (isBarcode(t) && p.gtin?.startsWith(t)) {
+        matched++;
+        score += 4;
+        continue;
+      }
       const alts = [t, ...(SYN[t] || [])];
       const inName = alts.some((a) => p._name.includes(a));
       if (!inName && !alts.some((a) => p._all.includes(a))) continue;
