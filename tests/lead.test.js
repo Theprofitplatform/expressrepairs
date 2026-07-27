@@ -115,6 +115,20 @@ describe('POST /api/lead', () => {
     expect(payload.subject).toContain('screen-repair');   // at-a-glance inbox triage
   });
 
+  it('reports the ad attribution stashed on the landing page (email + KV)', async () => {
+    const fetchSpy = okResend();
+    const store = new Map();
+    const env = { ...ENV, ORDERS_KV: { put: async (k, v) => void store.set(k, v) } };
+    const attr = ['utm_source=google', 'utm_campaign=nbn-riverwood', 'gclid=abc123'].join('&');
+    await onRequest({
+      request: makeReq({ body: { name: 'Jane', phone: '0400 000 000', source: 'landing:nbn', attr } }),
+      env,
+    });
+    const payload = JSON.parse(fetchSpy.mock.calls[0][1].body);
+    expect(payload.text).toContain('nbn-riverwood');
+    expect(JSON.parse([...store.values()][0]).attr).toBe(attr);
+  });
+
   it('counts a delivered lead in KV — attribution only, no customer PII', async () => {
     okResend();
     const store = new Map();

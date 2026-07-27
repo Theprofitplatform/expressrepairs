@@ -5,10 +5,13 @@
 // of showing success while the enquiry went nowhere.
 export async function sendLead(payload) {
   try {
+    // First-touch attribution stashed by Layout.astro on the landing page.
+    let attr = '';
+    try { attr = sessionStorage.getItem('attr') || ''; } catch { /* storage blocked */ }
     const res = await fetch('/api/lead', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(payload),
+      body: JSON.stringify(attr ? { ...payload, attr } : payload),
     });
     let body = {};
     try {
