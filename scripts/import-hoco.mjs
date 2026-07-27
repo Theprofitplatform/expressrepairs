@@ -99,7 +99,10 @@ export function transformHoco(rows, r2Ids = R2_IDS) {
           image: hosted || r.image,
           thumb: hosted || thumbUrl(r.image),
           inStock: true,
-          sku: String(r.id),
+          // HOCO's printed product code where the catalogue has one, else our
+          // own catalogue id. The real code is what's on the carton, so it's
+          // both the truer mpn and the string staff actually scan or type.
+          sku: r.sku || String(r.id),
           // Supplier GTIN, only where the catalogue export judged it valid
           // (see extract-hoco-catalogue.py). Feeds Merchant Center + JSON-LD.
           ...(r.barcode ? { gtin: r.barcode } : {}),

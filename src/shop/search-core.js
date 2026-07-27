@@ -37,10 +37,15 @@ export const norm = (s) =>
     .trim() +
   ' ';
 
-// A search token long enough to be a barcode rather than a model number —
-// "15" must keep meaning iPhone 15, not every EAN with a 15 in it, so short
-// digit runs never touch p.gtin.
-const isBarcode = (t) => /^\d{6,}$/.test(t);
+// Product codes — barcode or SKU — are matched against the WHOLE query, not
+// per token: norm() would shred "PCK10-BW-S26" into five tokens. Strip the
+// punctuation off both sides so a code scans, types, and pastes the same.
+const codeOf = (s) => (s || '').replace(/[^a-z0-9]/gi, '').toLowerCase();
+
+// Only queries that look like a code are tested against one: they must carry a
+// digit and be 4+ characters, so "case" never prefix-matches a SKU and "15"
+// keeps meaning iPhone 15 rather than every EAN with a 15 in it.
+const isCodeQuery = (c) => c.length >= 4 && /\d/.test(c);
 
 // Returns { hits, total, partial }. Every token (or a synonym) must match;
 // if nothing matches all tokens, fall back to all-but-one so a single typo'd
@@ -50,20 +55,26 @@ const isBarcode = (t) => /^\d{6,}$/.test(t);
 export function searchProducts(index, q, limit = 50) {
   const tokens = norm(q).trim().split(/\s+/).filter(Boolean);
   if (!tokens.length) return { hits: [], total: 0, partial: false };
+  const code = codeOf(q);
+  const asCode = isCodeQuery(code);
   const scored = [];
   for (const p of index) {
     p._name ??= norm(p.name);
     p._all ??= norm(`${p.name} ${p.brand} ${p.category} ${tagsFor(p).join(' ')}`);
+    // Scanned or typed product code — barcode first, else the SKU printed on
+    // the carton (HOCO publishes no barcode for 1,594 of its lines). Beats
+    // every name match so the one box on the shelf lands top. Prefix, so it
+    // hits mid-scan too.
+    if (asCode) {
+      p._code ??= [codeOf(p.gtin), codeOf(p.sku)];
+      if (p._code.some((c) => c && c.startsWith(code))) {
+        scored.push({ p, matched: tokens.length, score: 4 * tokens.length });
+        continue;
+      }
+    }
     let matched = 0;
     let score = 0;
     for (const t of tokens) {
-      // Scanned or typed barcode: beats every name match, so the one box on
-      // the shelf lands at the top. Prefix, so it hits mid-scan too.
-      if (isBarcode(t) && p.gtin?.startsWith(t)) {
-        matched++;
-        score += 4;
-        continue;
-      }
       const alts = [t, ...(SYN[t] || [])];
       const inName = alts.some((a) => p._name.includes(a));
       if (!inName && !alts.some((a) => p._all.includes(a))) continue;
