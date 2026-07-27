@@ -4,7 +4,7 @@ import { PRODUCTS } from '../src/data/products.js';
 
 // searchProducts caches normalized haystacks on the entries — copy so other
 // tests' PRODUCTS assertions never see the _name/_all props.
-const INDEX = PRODUCTS.map(({ id, name, brand, category, priceCents, gtin }) => ({ id, name, brand, category, priceCents, gtin }));
+const INDEX = PRODUCTS.map(({ id, name, brand, category, priceCents, gtin, sku }) => ({ id, name, brand, category, priceCents, gtin, sku }));
 
 describe('searchProducts', () => {
   it('matches glued model names like "iphone15"', () => {
@@ -59,6 +59,20 @@ describe('searchProducts', () => {
     expect(searchProducts(INDEX, coded.gtin.slice(0, 9)).hits.map((h) => h.id)).toContain(coded.id);
     // "15" is iPhone 15, not every EAN containing 15.
     expect(searchProducts(INDEX, 'iphone 15 case').hits[0].name).toMatch(/iPhone/i);
+  });
+
+  it('finds a product by SKU, punctuation and case ignored', () => {
+    // The fallback for the 1,594 HOCO lines with no published barcode.
+    const p = PRODUCTS.find((x) => /^[A-Z]+\d+-[A-Z0-9]+$/.test(x.sku));
+    for (const q of [p.sku, p.sku.toLowerCase(), p.sku.replace(/-/g, '')]) {
+      expect(searchProducts(INDEX, q).hits.map((h) => h.id)).toContain(p.id);
+    }
+  });
+
+  it('never treats an ordinary word or a short model number as a code', () => {
+    // "case" has no digit; "15" is too short — both must stay name searches.
+    expect(searchProducts(INDEX, 'case').hits[0].name).toMatch(/case|cover/i);
+    expect(searchProducts(INDEX, 'iphone 15').hits[0].name).toMatch(/iPhone/i);
   });
 
   it('returns nothing for garbage and empty queries', () => {

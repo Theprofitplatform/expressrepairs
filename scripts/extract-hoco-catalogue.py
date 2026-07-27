@@ -20,6 +20,7 @@ def col(fragment, required=True):
 
 
 C_RRP, C_IMAGE = col("RRP"), col("Image")
+C_SKU = col("SKU", False)
 C_BARCODE, C_STATUS = col("Barcode", False), col("Barcode Status", False)
 if C_BARCODE == C_STATUS:  # "Barcode" matched the status column: no barcodes here
     C_BARCODE = C_STATUS = None
@@ -36,6 +37,11 @@ for r in rows:
         "rrpCents": round(float(rrp) * 100),
         "image": str(image or "").strip(),
     }
+    # HOCO's own product code, the one printed on the carton ("PCK10-BW-S26",
+    # "RP-A36"). 1,086 of the rows with no usable barcode still have one, so
+    # this is what makes those scannable — see the sku match in search-core.js.
+    if C_SKU is not None and r[C_SKU] and str(r[C_SKU]).strip():
+        row["sku"] = str(r[C_SKU]).strip()
     # Only "Valid" barcodes are real GTINs — the sheet also flags rows where the
     # supplier put the SKU in the barcode field, or the check digit fails. A
     # wrong GTIN in a Merchant Center feed is worse than none, so those are dropped.
