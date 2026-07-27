@@ -175,14 +175,43 @@ const families = modelFamilies(models);
   const io = new IntersectionObserver((e) => e[0].isIntersecting && more(), { rootMargin: '600px' });
   let rest = [];
   let total = 0;
+  // ponytail: the ceiling here is image DECODE memory, not DOM nodes. Measured on
+  // a real phone-sized viewport: 862 loaded thumbs took the renderer from 120MB to
+  // 602MB (~0.56MB each) and it died. DOM is cheap by comparison — 66k nodes cost
+  // ~10MB. So auto-scroll stops every MAX_AUTO cards and waits for a deliberate
+  // click. Raise this once thumbs are served at display size (~4x less decode).
+  const MAX_AUTO = 500;
+  let autoLimit = MAX_AUTO;
 
-  const stopScroll = () => { io.disconnect(); sentinel.remove(); rest = []; };
+  const moreBtn = document.createElement('button');
+  moreBtn.type = 'button';
+  moreBtn.className = 'btn btn-ghost';
+  moreBtn.style.cssText = 'display:block;margin:24px auto;';
+  moreBtn.addEventListener('click', () => {
+    autoLimit = grid.children.length + MAX_AUTO;
+    moreBtn.remove();
+    grid.after(sentinel);
+    io.observe(sentinel);
+    more();
+  });
 
-  // Reads `rest`, so it must run after each paint — "scroll for more" has to
-  // disappear once the last chunk lands, or it invites a scroll that does nothing.
+  const stopScroll = () => { io.disconnect(); sentinel.remove(); moreBtn.remove(); rest = []; };
+
+  // Pause, don't stop: keep `rest` so the button can resume where we left off.
+  const pauseScroll = () => {
+    io.disconnect();
+    sentinel.remove();
+    moreBtn.textContent = `Load ${Math.min(MAX_AUTO, rest.length)} more`;
+    grid.after(moreBtn);
+  };
+
+  // Must run after every paint — a count that says "all" while more is pending
+  // invites a scroll that does nothing.
   const setStatus = () => {
     status.textContent = total
-      ? `Showing all ${total} product${total === 1 ? '' : 's'}${rest.length ? ' — scroll for more' : ''}`
+      ? rest.length
+        ? `Showing ${grid.children.length} of ${total} products`
+        : `Showing all ${total} product${total === 1 ? '' : 's'}`
       : 'No products match those filters — clear one and try again.';
   };
 
@@ -190,6 +219,7 @@ const families = modelFamilies(models);
     grid.insertAdjacentHTML('beforeend', rest.splice(0, CHUNK).map(card).join(''));
     setStatus();
     if (!rest.length) return stopScroll();
+    if (grid.children.length >= autoLimit) return pauseScroll();
     // IntersectionObserver only re-fires on a *change*. If the sentinel is still
     // on screen after painting, keep going or the scroll stalls short of the end.
     if (sentinel.getBoundingClientRect().top < innerHeight) more();
@@ -199,6 +229,7 @@ const families = modelFamilies(models);
     stopScroll();
     grid.innerHTML = '';
     rest = hits.slice();
+    autoLimit = MAX_AUTO;
     grid.after(sentinel);
     io.observe(sentinel);
     more();
