@@ -291,3 +291,36 @@ describe('built NBN page', () => {
     expect(terms).toContain('$10/mth');
   });
 });
+
+describe('built shop mega menu', () => {
+  // The panel is inlined into every /shop/* page, so a link that stops
+  // resolving breaks ~10,000 pages at once. shopMenu.test.js checks the data;
+  // this checks the pages the data promised were actually written to disk.
+  const panelOf = (file) => {
+    const page = readFileSync(file, 'utf8');
+    return page.slice(page.indexOf('mega-panel'), page.indexOf('</header>'));
+  };
+
+  it('renders on shop pages and not on the rest of the site', () => {
+    expect(panelOf('dist/shop/index.html')).toContain('Shop by type');
+    expect(readFileSync('dist/shop/H-2762/index.html', 'utf8')).toContain('mega-panel');
+    expect(readFileSync('dist/repairs/index.html', 'utf8')).not.toContain('mega-panel');
+  });
+
+  it('every page it links to exists', () => {
+    const panel = panelOf('dist/shop/H-2762/index.html');
+    const hrefs = [...new Set([...panel.matchAll(/href="(\/[^"]*)"/g)].map((m) => m[1]))];
+    expect(hrefs.length).toBeGreaterThan(40);
+    const missing = hrefs.filter((h) => !existsSync(`dist${h}index.html`));
+    expect(missing).toEqual([]);
+  });
+
+  it('builds the cross-category model pages and their index', () => {
+    expect(existsSync('dist/shop/m/index.html')).toBe(true);
+    const model = readFileSync('dist/shop/m/iphone-17-pro/index.html', 'utf8');
+    expect(model).toContain('iPhone 17 Pro accessories');
+    // Cross-category: cases AND screen protection on one page.
+    expect(model).toContain('/shop/c/cases-covers/m/iphone-17-pro/');
+    expect(model).toContain('/shop/c/screen-protection/m/iphone-17-pro/');
+  });
+});

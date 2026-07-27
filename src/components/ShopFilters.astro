@@ -17,7 +17,9 @@ const families = modelFamilies(models);
           id="model-filter"
           type="search"
           list="model-options"
-          placeholder="Filter by your model — e.g. iPhone 15 Pro, S24 Ultra"
+          placeholder={models.length
+            ? 'Filter by your model — e.g. iPhone 15 Pro, S24 Ultra'
+            : 'Search these products — e.g. clear case, MagSafe'}
           aria-label="Filter this list by device model or keyword"
           autocomplete="off"
         />
