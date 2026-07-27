@@ -114,6 +114,10 @@ export async function onRequest({ request, env }) {
       : isLanding
         ? 'landing'
         : 'contact';
+  // Ad attribution stashed client-side on the landing page: the utm_*/gclid/
+  // fbclid query string, or 'ref=<external referrer>'. Free-form customer-
+  // controlled text — it is only ever displayed (escaped) and counted.
+  const attr = oneLine(data.attr, 300);
   // Delivery address may contain newlines; capped like details.
   const address = String(data.address ?? '').trim().slice(0, 500);
   const fulfilment = oneLine(data.fulfilment, 20);
@@ -172,6 +176,7 @@ export async function onRequest({ request, env }) {
     ['Email', email],
     ...orderRows,
     ['Details', details],
+    ['Came from', attr],
   ].filter(([, v]) => v);
 
   const text = `${heading}\n\n${rows.map(([k, v]) => `${k}: ${v}`).join('\n')}\n\nSource: ${source} form, expressrepairs.com.au`;
@@ -227,8 +232,8 @@ export async function onRequest({ request, env }) {
         `lead:${new Date().toISOString()}:${crypto.randomUUID().slice(0, 8)}`,
         JSON.stringify(
           order
-            ? { source, items: order.lines.length, value: order.totalCents }
-            : { source, campaign, type: repairType, model, quote: oneLine(data.quote, 60) },
+            ? { source, attr, items: order.lines.length, value: order.totalCents }
+            : { source, campaign, attr, type: repairType, model, quote: oneLine(data.quote, 60) },
         ),
         { expirationTtl: 60 * 60 * 24 * 730 },
       );

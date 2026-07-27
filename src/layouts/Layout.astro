@@ -65,6 +65,20 @@ const FONTS_HREF =
 
     <SiteAnalytics />
     <AdTracking />
+    <script is:inline>
+      // First-touch ad attribution. Stashes the landing query string (or the
+      // external referrer) once per session so /api/lead can tell the shop
+      // which campaign produced a lead — the form is often several clicks
+      // after the ad click, by which point location.search is long gone.
+      try {
+        if (!sessionStorage.getItem('attr')) {
+          var q = location.search.slice(1, 300);
+          if (/utm_|gclid|gbraid|wbraid|fbclid|msclkid/.test(q)) sessionStorage.setItem('attr', q);
+          else if (document.referrer && new URL(document.referrer).host !== location.host)
+            sessionStorage.setItem('attr', 'ref=' + document.referrer.slice(0, 200));
+        }
+      } catch (e) { /* private mode / storage blocked — attribution is optional */ }
+    </script>
   </head>
   <body>
     <a href="#main-content" class="skip-link">Skip to content</a>
