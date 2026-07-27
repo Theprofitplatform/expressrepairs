@@ -174,11 +174,21 @@ const families = modelFamilies(models);
   sentinel.style.height = '1px';
   const io = new IntersectionObserver((e) => e[0].isIntersecting && more(), { rootMargin: '600px' });
   let rest = [];
+  let total = 0;
 
   const stopScroll = () => { io.disconnect(); sentinel.remove(); rest = []; };
 
+  // Reads `rest`, so it must run after each paint — "scroll for more" has to
+  // disappear once the last chunk lands, or it invites a scroll that does nothing.
+  const setStatus = () => {
+    status.textContent = total
+      ? `Showing all ${total} product${total === 1 ? '' : 's'}${rest.length ? ' — scroll for more' : ''}`
+      : 'No products match those filters — clear one and try again.';
+  };
+
   const more = () => {
     grid.insertAdjacentHTML('beforeend', rest.splice(0, CHUNK).map(card).join(''));
+    setStatus();
     if (!rest.length) return stopScroll();
     // IntersectionObserver only re-fires on a *change*. If the sentinel is still
     // on screen after painting, keep going or the scroll stalls short of the end.
@@ -205,9 +215,7 @@ const families = modelFamilies(models);
     indexP ??= fetch('/shop/search-index.json').then((r) => r.json());
     const hits = filterProducts(await indexP, { category, model, tag, ...state });
     status.hidden = false;
-    status.textContent = hits.length
-      ? `Showing all ${hits.length} product${hits.length === 1 ? '' : 's'}${hits.length > CHUNK ? ' — scroll for more' : ''}`
-      : 'No products match those filters — clear one and try again.';
+    total = hits.length;
     render(hits);
     pagination.style.display = 'none';
   };
