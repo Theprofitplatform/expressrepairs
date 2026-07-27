@@ -4,7 +4,7 @@ import { PRODUCTS } from '../src/data/products.js';
 
 // searchProducts caches normalized haystacks on the entries — copy so other
 // tests' PRODUCTS assertions never see the _name/_all props.
-const INDEX = PRODUCTS.map(({ id, name, brand, category, priceCents }) => ({ id, name, brand, category, priceCents }));
+const INDEX = PRODUCTS.map(({ id, name, brand, category, priceCents, gtin }) => ({ id, name, brand, category, priceCents, gtin }));
 
 describe('searchProducts', () => {
   it('matches glued model names like "iphone15"', () => {
@@ -46,6 +46,19 @@ describe('searchProducts', () => {
       'apple',
     );
     expect(hits[0].id).toBe('B');
+  });
+
+  it('finds a product by its full barcode, ranked first', () => {
+    const coded = PRODUCTS.find((p) => p.gtin);
+    const { hits } = searchProducts(INDEX, coded.gtin);
+    expect(hits[0].id).toBe(coded.id);
+  });
+
+  it('matches a barcode mid-scan (prefix), but never on a short digit run', () => {
+    const coded = PRODUCTS.find((p) => p.gtin);
+    expect(searchProducts(INDEX, coded.gtin.slice(0, 9)).hits.map((h) => h.id)).toContain(coded.id);
+    // "15" is iPhone 15, not every EAN containing 15.
+    expect(searchProducts(INDEX, 'iphone 15 case').hits[0].name).toMatch(/iPhone/i);
   });
 
   it('returns nothing for garbage and empty queries', () => {

@@ -1,4 +1,5 @@
 # scripts/extract-mobilemall-catalogue.py — MobileMall xlsx -> src/data/mobilemall-catalogue.json
+#                                                          -> src/data/barcodes.json
 # Usage: python scripts/extract-mobilemall-catalogue.py "../MobileMall_Catalogue_2026-07-20.xlsx"
 # The repo is public: ONLY "Regular Price" (the RRP) is exported. "Current Price"
 # is our trade/cost price and never leaves this script — see the assert below.
@@ -6,7 +7,7 @@
 # "Regular Price" is genuinely the RRP: every one of the 3,518 DXPOS-synced SKUs
 # prices at exactly 1.00x this column, so importing at it matches what the shop
 # already charges in-store.
-import json, sys, pathlib
+import json, re, sys, pathlib
 import openpyxl
 
 src = sys.argv[1]
@@ -16,13 +17,16 @@ header = [str(h or "") for h in next(rows)]
 
 
 # Columns move between exports; find them by header text, not a fixed index.
-def col(fragment):
+def col(fragment, required=True):
     i = next((i for i, h in enumerate(header) if fragment.lower() in h.lower()), None)
-    assert i is not None, f"no '{fragment}' column in: {header}"
+    assert i is not None or not required, f"no '{fragment}' column in: {header}"
     return i
 
 
 C_SKU, C_NAME = col("SKU"), col("Product Name")
+# Barcodes arrived in the 2026-07-27 export; older xlsx files have no such
+# column, so this one is optional and simply yields an empty map.
+C_BARCODE = col("Barcode", required=False)
 C_RRP, C_STOCK, C_IMAGE = col("Regular Price"), col("Stock Status"), col("Image")
 C_CATS = col("Categories")
 # Guard the one mistake that would leak cost data into a public repo: if a
@@ -31,6 +35,10 @@ C_CATS = col("Categories")
 assert C_RRP != col("Current Price"), "Regular/Current price columns collapsed — refusing to export"
 
 out = {"skipped_oos": 0, "skipped_bad": 0, "rows": []}
+# sku -> barcode, keyed off EVERY valid row including out-of-stock ones. A
+# barcode is printed on the box, not a stock level: 236 products the shop has
+# on the shelf sit "out of stock" at the supplier and would otherwise lose it.
+barcodes = {}
 for r in rows:
     sku, name, rrp, stock, image = r[C_SKU], r[C_NAME], r[C_RRP], r[C_STOCK], r[C_IMAGE]
     cats = [c.strip() for c in str(r[C_CATS] or "").split("|") if c.strip()]
@@ -41,6 +49,10 @@ for r in rows:
     if not sku or not str(sku).strip().isdigit():
         out["skipped_bad"] += 1
         continue
+    if C_BARCODE is not None:
+        bc = str(r[C_BARCODE] or "").strip()
+        if re.fullmatch(r"\d{8}|\d{12,14}", bc):
+            barcodes[str(sku).strip()] = bc
     if not name or not isinstance(rrp, (int, float)) or rrp <= 0 or not image:
         out["skipped_bad"] += 1
         continue
@@ -62,9 +74,18 @@ for r in rows:
         }
     )
 
-dst = pathlib.Path(__file__).parent.parent / "src" / "data" / "mobilemall-catalogue.json"
+data = pathlib.Path(__file__).parent.parent / "src" / "data"
+dst = data / "mobilemall-catalogue.json"
 dst.write_text(json.dumps(out["rows"], indent=1) + "\n", encoding="utf-8")
 print(
     f"mobilemall: {len(out['rows'])} rows -> {dst.name} "
     f"({out['skipped_oos']} out of stock, {out['skipped_bad']} unpriced/imageless skipped)"
 )
+
+# Barcodes live in their own file, not on the catalogue rows: DXPOS SKUs are
+# MobileMall SKUs, so src/data/products.js attaches these to the POS-synced
+# products too, and a re-sync of either catalogue can't wipe them.
+if barcodes:
+    bc_dst = data / "barcodes.json"
+    bc_dst.write_text(json.dumps(barcodes, indent=0, sort_keys=True) + "\n", encoding="utf-8")
+    print(f"barcodes: {len(barcodes)} sku->EAN -> {bc_dst.name}")
