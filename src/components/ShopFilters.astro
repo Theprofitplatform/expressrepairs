@@ -96,7 +96,7 @@ const families = modelFamilies(models);
 
 <script>
   import { filterProducts } from '../shop/filter-core.js';
-  import { thumbSrc } from '../shop/search-core.js';
+  import { thumbSrc, fullSrc } from '../shop/search-core.js';
 
   const root = document.getElementById('shop-filters');
   const grid = document.querySelector('.acc-grid');
@@ -130,6 +130,7 @@ const families = modelFamilies(models);
       <a href="/shop/${esc(p.id)}/" class="acc-card-link">
         <div class="acc-visual">
           <img src="${esc(thumbSrc(p.id))}" alt="${esc(p.name)}"
+            onerror="this.onerror=null;this.src='${esc(fullSrc(p.id))}'"
             loading="lazy" decoding="async" width="400" height="300"
             style="width: 100%; height: auto; aspect-ratio: 4 / 3; object-fit: contain; background: #fff; padding: 12px; box-sizing: border-box;" />
         </div>

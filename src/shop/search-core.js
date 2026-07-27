@@ -15,6 +15,12 @@
 // any catalog import so new ids have the variant before this URL is hit.
 export const thumbSrc = (id) => `https://img.expressrepairs.com.au/products/${id}-400.webp`;
 
+// The 800px original. Used as the onerror fallback for the grid: the manifest
+// tracks the 800px key, so a product whose -400 backfill failed is still listed
+// as R2-hosted and would otherwise render a broken image. Falling back costs
+// memory, not correctness.
+export const fullSrc = (id) => `https://img.expressrepairs.com.au/products/${id}.webp`;
+
 // Same downscale for a thumb URL already baked into the product data by the
 // import scripts. Leaves supplier-hosted URLs (no R2 variant) untouched, and is
 // idempotent — the early return matters because if the import scripts ever start

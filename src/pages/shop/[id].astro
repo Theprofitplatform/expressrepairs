@@ -125,6 +125,7 @@ const schema = [
                 <div class="acc-visual">
                   <img
                     src={gridThumb(r.thumb)}
+                    onerror={`this.onerror=null;this.src=${JSON.stringify(r.thumb)}`}
                     alt={r.name}
                     loading="lazy"
                     decoding="async"

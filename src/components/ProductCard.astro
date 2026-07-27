@@ -10,6 +10,7 @@ const { p } = Astro.props;
     <div class="acc-visual">
       <img
         src={gridThumb(p.thumb)}
+        onerror={`this.onerror=null;this.src=${JSON.stringify(p.thumb)}`}
         alt={p.name}
         loading="lazy"
         decoding="async"
