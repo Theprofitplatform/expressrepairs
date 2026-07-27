@@ -255,6 +255,7 @@ describe('built NBN page', () => {
     for (const p of NBN_PLANS) {
       expect(nbn).toContain(p.name);
       expect(nbn).toContain(`>${p.price}<`); // big list price
+      expect(nbn).toContain(`>${(p.price * 0.9).toFixed(2)}<`); // 10%-off toggle price
     }
     expect(nbn).toContain('No lock-in');
     expect(nbn).toContain('Want an extra 10% off?'); // in-store offer, no brand named
