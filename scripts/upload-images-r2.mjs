@@ -45,6 +45,19 @@ if (!ACCOUNT || !KEY_ID || !SECRET) {
 const S3 = `https://${ACCOUNT}.r2.cloudflarestorage.com/${BUCKET}`;
 const aws = new AwsClient({ accessKeyId: KEY_ID, secretAccessKey: SECRET, service: 's3', region: 'auto' });
 const keyFor = (id) => `products/${id}.webp`;
+// Grid cards render ~343px wide on a phone but were being served the 800px
+// original, which decodes to ~2.1MB of bitmap each. At 500+ cards on screen that
+// walked the renderer past 600MB and killed it. The -400 variant decodes to ~4x
+// less; product detail pages keep the 800px one.
+const thumbKeyFor = (id) => `products/${id}-400.webp`;
+
+const webpAt = (buf, px) =>
+  sharp(buf).resize({ width: px, height: px, fit: 'inside', withoutEnlargement: true }).webp({ quality: 80 }).toBuffer();
+
+async function putWebp(key, body) {
+  const put = await aws.fetch(`${S3}/${key}`, { method: 'PUT', headers: { 'Content-Type': 'image/webp' }, body });
+  if (!put.ok) throw new Error(`put ${put.status} ${await put.text()}`);
+}
 
 // One paginated ListObjectsV2 of the whole bucket up front.
 // ponytail: regex over the XML — the S3 list response is flat and stable.
@@ -64,17 +77,44 @@ async function listExisting() {
 async function uploadOne(p) {
   const src = await fetch(p.image, { headers: { 'User-Agent': 'Mozilla/5.0 (expressrepairs image mirror)' } });
   if (!src.ok) throw new Error(`download ${src.status}`);
-  const webp = await sharp(Buffer.from(await src.arrayBuffer()))
-    .resize({ width: 800, height: 800, fit: 'inside', withoutEnlargement: true })
-    .webp({ quality: 80 })
-    .toBuffer();
-  const put = await aws.fetch(`${S3}/${keyFor(p.id)}`, {
-    method: 'PUT',
-    headers: { 'Content-Type': 'image/webp' },
-    body: webp,
-  });
-  if (!put.ok) throw new Error(`put ${put.status} ${await put.text()}`);
-  return webp.length;
+  const buf = Buffer.from(await src.arrayBuffer());
+  const [full, thumb] = await Promise.all([webpAt(buf, 800), webpAt(buf, 400)]);
+  await putWebp(keyFor(p.id), full);
+  await putWebp(thumbKeyFor(p.id), thumb);
+  return full.length + thumb.length;
+}
+
+// Backfill for products mirrored before the -400 variant existed. Source from R2
+// (our own bucket) rather than the supplier: re-downloading ~6.9k supplier images
+// just to make a smaller copy would be slow and rude, and some suppliers have
+// since dropped the original.
+async function backfillThumb(p) {
+  const res = await aws.fetch(`${S3}/${keyFor(p.id)}`);
+  if (!res.ok) throw new Error(`get ${res.status}`);
+  const thumb = await webpAt(Buffer.from(await res.arrayBuffer()), 400);
+  await putWebp(thumbKeyFor(p.id), thumb);
+  return thumb.length;
+}
+
+// Shared worker pool — same shape for both passes.
+async function runQueue(items, worker, label) {
+  const failures = [];
+  const queue = [...items];
+  let done = 0;
+  await Promise.all(
+    Array.from({ length: CONCURRENCY }, async () => {
+      for (let p; (p = queue.shift()); ) {
+        try {
+          const bytes = await worker(p);
+          done++;
+          if (done % 100 === 0) console.log(`${label} ${done}/${items.length} (last ${(bytes / 1024).toFixed(0)}KB)`);
+        } catch (e) {
+          failures.push(`${p.id} ${p.name}: ${e.message}`);
+        }
+      }
+    }),
+  );
+  return { done, failures };
 }
 
 const existing = await listExisting();
@@ -84,28 +124,26 @@ const todo = PRODUCTS.filter((p) => !existing.has(keyFor(p.id)) && !p.image.incl
   .slice(0, Number(process.env.LIMIT) || Infinity); // LIMIT=5 for a smoke run
 console.log(`${PRODUCTS.length} products, ${existing.size} already in R2, ${todo.length} to upload`);
 
-const failures = [];
-let done = 0;
-const queue = [...todo];
-await Promise.all(
-  Array.from({ length: CONCURRENCY }, async () => {
-    for (let p; (p = queue.shift()); ) {
-      try {
-        const bytes = await uploadOne(p);
-        existing.add(keyFor(p.id));
-        done++;
-        if (done % 100 === 0) console.log(`${done}/${todo.length} uploaded (last ${(bytes / 1024).toFixed(0)}KB)`);
-      } catch (e) {
-        failures.push(`${p.id} ${p.name}: ${e.message}`);
-      }
-    }
-  }),
-);
+const mirrored = await runQueue(todo, async (p) => {
+  const bytes = await uploadOne(p);
+  existing.add(keyFor(p.id));
+  existing.add(thumbKeyFor(p.id));
+  return bytes;
+}, 'uploaded');
+
+// Second pass: anything with an 800px object but no -400 thumb yet.
+const needThumb = PRODUCTS.filter((p) => existing.has(keyFor(p.id)) && !existing.has(thumbKeyFor(p.id)))
+  .slice(0, Number(process.env.LIMIT) || Infinity);
+console.log(`${needThumb.length} thumbs to backfill`);
+const thumbed = await runQueue(needThumb, backfillThumb, 'thumbed');
+
+const failures = [...mirrored.failures, ...thumbed.failures];
+const done = mirrored.done;
 
 // Manifest = every product id whose image exists in R2 (sorted for stable diffs).
 const ids = PRODUCTS.map((p) => p.id).filter((id) => existing.has(keyFor(id))).sort();
 writeFileSync(fileURLToPath(new URL('../src/data/r2-images.json', import.meta.url)), JSON.stringify(ids) + '\n');
 
-console.log(`uploaded=${done} failed=${failures.length} manifest=${ids.length} ids`);
+console.log(`uploaded=${done} thumbed=${thumbed.done} failed=${failures.length} manifest=${ids.length} ids`);
 if (failures.length) console.log('failures:\n  ' + failures.slice(0, 50).join('\n  '));
 // Failures are logged, not fatal — those products keep their supplier URL.
