@@ -1,0 +1,56 @@
+---
+// Desktop shop mega menu. Pure static markup — opening is CSS (:hover /
+// :focus-within on .mega), so there is no JS and no aria-expanded to keep
+// truthful. Hidden under 900px, where .nav-links is display:none anyway.
+// Data comes from SHOP_MENU, which also feeds the /shop/m/ route generator.
+import { SHOP_MENU } from '../lib/shopMenu.js';
+const { categories, deviceColumns, tags, total } = SHOP_MENU;
+const fmt = (n) => n.toLocaleString('en-AU');
+---
+<div class="mega-panel">
+  <nav class="mega-inner container-wide" aria-label="Shop categories">
+    <div class="mega-col">
+      <p class="mega-head">Categories</p>
+      <ul class="mega-list">
+        {categories.map((c) => (
+          <li>
+            <a href={`/shop/c/${c.slug}/`}>{c.name} <span class="mega-count">{fmt(c.count)}</span></a>
+          </li>
+        ))}
+      </ul>
+    </div>
+
+    {deviceColumns.map((col) => (
+      <div class="mega-col">
+        <p class="mega-head">{col.heading}</p>
+        {col.groups.map((g) => (
+          <ul class="mega-list">
+            <li class="mega-sub">{g.family}</li>
+            {g.models.map((m) => (
+              <li><a href={`/shop/m/${m.key}/`}>{m.label} <span class="mega-count">{fmt(m.count)}</span></a></li>
+            ))}
+          </ul>
+        ))}
+        <a href="/shop/m/" class="mega-more">All {col.total} models →</a>
+      </div>
+    ))}
+
+    <div class="mega-col mega-col--tags">
+      <p class="mega-head">Shop by type</p>
+      <ul class="mega-list mega-list--split">
+        {tags.map((t) => (
+          <li><a href={`/shop/t/${t.tag}/`}>{t.label}</a></li>
+        ))}
+      </ul>
+    </div>
+  </nav>
+
+  <div class="mega-foot">
+    <div class="container-wide">
+      <a href="/shop/">All {fmt(total)} products</a>
+      <span>Free shipping over $99</span>
+      <span>Free pickup — Riverwood Plaza</span>
+      <a href="/shop/search/">Search the catalogue</a>
+    </div>
+  </div>
+</div>

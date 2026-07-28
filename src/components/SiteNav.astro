@@ -1,7 +1,10 @@
 ---
 import { SITE } from '../data/site.js';
+import ShopMegaMenu from './ShopMegaMenu.astro';
 // Static inner-page nav. Pass `links` ([{label, href}]) and optional `ctaHref`.
-const { links = [], ctaHref = '#cta' } = Astro.props;
+// `mega` turns the /shop/ link into a hover/focus mega menu — shop pages only,
+// so repairs/blog/nbn pages don't carry ~4KB of catalogue links they'd never use.
+const { links = [], ctaHref = '#cta', mega = false } = Astro.props;
 ---
 <header class="nav">
   <div class="container-wide nav-inner">
@@ -12,7 +15,16 @@ const { links = [], ctaHref = '#cta' } = Astro.props;
       {SITE.name}
     </a>
     <nav class="nav-links">
-      {links.map((l) => <a href={l.href}>{l.label}</a>)}
+      {links.map((l) =>
+        mega && l.href === '/shop/' ? (
+          <span class="mega">
+            <a href={l.href} class="mega-trigger">{l.label}</a>
+            <ShopMegaMenu />
+          </span>
+        ) : (
+          <a href={l.href}>{l.label}</a>
+        ),
+      )}
     </nav>
     <div class="nav-cta">
       <a href={SITE.phoneHref} class="nav-phone">
