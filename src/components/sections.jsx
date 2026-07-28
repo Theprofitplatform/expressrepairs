@@ -70,7 +70,7 @@ export function Nav() {
           </span>
           {SITE.name}
         </a>
-        <nav className="nav-links">
+        <nav className="nav-links" id="nav-menu">
           <a href="/repairs/">Repairs</a>
           <a href="#plans">Plans</a>
           <a href="/nbn/">NBN</a>
@@ -85,6 +85,9 @@ export function Nav() {
             <Icon.Phone size={16} /><span>{SITE.phone}</span>
           </a>
           <a href="#contact" className="btn btn-primary btn-sm">Get a quote</a>
+          <button type="button" className="nav-toggle" aria-expanded="false" aria-controls="nav-menu" aria-label="Menu">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+          </button>
         </div>
       </div>
     </header>

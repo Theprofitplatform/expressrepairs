@@ -261,9 +261,50 @@ input, select, textarea { font-family: inherit; font-size: inherit; color: inher
 }
 .mega-foot a { font-weight: 600; color: var(--brand-700); }
 
+.nav-toggle { display: none; }
+
 @media (max-width: 900px) {
   .nav-links { display:none; }
   .nav-phone span { display: none; }
+  /* The toggle costs 48px of the top row; without this the brand wraps to two
+     lines at 375px and the nav grows past its own --nav-h. */
+  .brand { white-space: nowrap; font-size: 17px; }
+
+  /* Mobile drawer. Below 900px there was no nav at all — the links existed
+     only in the desktop row. The toggle reveals the same .nav-links element,
+     so the two nav implementations and the shop mega menu all come along
+     without duplicating any markup. */
+  .nav-cta { gap: 8px; }
+  .nav-toggle {
+    display: grid; place-items: center;
+    width: 36px; height: 36px; padding: 0;
+    border: 1px solid var(--border); border-radius: 10px;
+    background: var(--surface); color: var(--text); cursor: pointer;
+  }
+  .nav[data-open="true"] .nav-links {
+    display: block;
+    position: absolute; top: var(--nav-h); left: 0; right: 0;
+    background: var(--bg); border-bottom: 1px solid var(--border);
+    padding: 8px 0 12px;
+    max-height: calc(100vh - var(--nav-h)); overflow-y: auto;
+    box-shadow: 0 18px 40px -18px rgb(0 0 0 / .28);
+  }
+  .nav[data-open="true"] .nav-links > a,
+  .nav[data-open="true"] .mega-trigger {
+    display: block; padding: 12px 20px; font-size: 16px; border-radius: 0;
+  }
+
+  /* The shop panel rides inside the drawer — flatten it from a hovering
+     4-column overlay into a plain stacked block.
+     ponytail: all 55 links expanded, so the drawer scrolls a long way on a
+     shop page. Wrap .mega-col in <details> if that draws complaints. */
+  .nav[data-open="true"] .mega-panel {
+    position: static; opacity: 1; visibility: visible; transform: none;
+    box-shadow: none; border-bottom: 0; max-height: none; overflow: visible;
+  }
+  .nav[data-open="true"] .mega-inner { grid-template-columns: 1fr; gap: 20px; padding: 4px 20px 12px; }
+  .nav[data-open="true"] .mega-list--split { columns: 2; }
+  .nav[data-open="true"] .mega-foot > div { padding: 12px 20px; gap: 6px 16px; }
 }
 
 /* ============ Hero ============ */

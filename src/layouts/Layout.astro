@@ -83,5 +83,36 @@ const FONTS_HREF =
   <body>
     <a href="#main-content" class="skip-link">Skip to content</a>
     <slot />
+    <script>
+      // Mobile nav toggle. One delegated handler in the layout covers both nav
+      // implementations — SiteNav.astro (inner pages) and the homepage Nav in
+      // sections.jsx — so they can't drift apart.
+      const close = (nav) => {
+        if (!nav || nav.dataset.open !== 'true') return;
+        nav.dataset.open = 'false';
+        nav.querySelector('.nav-toggle')?.setAttribute('aria-expanded', 'false');
+      };
+
+      document.addEventListener('click', (e) => {
+        const nav = document.querySelector('.nav');
+        if (!nav) return;
+        const btn = e.target.closest('.nav-toggle');
+        if (btn) {
+          const open = nav.dataset.open !== 'true';
+          nav.dataset.open = String(open);
+          btn.setAttribute('aria-expanded', String(open));
+        } else if (!e.target.closest('.nav')) {
+          close(nav);
+        }
+      });
+
+      document.addEventListener('keydown', (e) => {
+        if (e.key !== 'Escape') return;
+        close(document.querySelector('.nav'));
+        // Desktop mega menu opens on :focus-within, which no CSS can dismiss —
+        // dropping focus is what closes it.
+        if (document.activeElement?.closest('.mega')) document.activeElement.blur();
+      });
+    </script>
   </body>
 </html>
