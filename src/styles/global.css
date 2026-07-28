@@ -268,7 +268,13 @@ input, select, textarea { font-family: inherit; font-size: inherit; color: inher
   .nav-phone span { display: none; }
   /* The toggle costs 48px of the top row; without this the brand wraps to two
      lines at 375px and the nav grows past its own --nav-h. */
-  .brand { white-space: nowrap; font-size: 17px; }
+  /* The toggle costs 48px of the top row. Slim the brand to pay for it —
+     adding gap to .nav-inner instead would push the toggle off-screen, since
+     space-between only distributes space that's left over, and there is none.
+     Not solved by hiding .nav-phone either: the homepage, product, cart and
+     thanks pages have no sticky call bar, and calls are the main conversion. */
+  .brand { white-space: nowrap; font-size: 16px; gap: 8px; }
+  .brand-mark { width: 30px; height: 30px; border-radius: 9px; }
 
   /* Mobile drawer. Below 900px there was no nav at all — the links existed
      only in the desktop row. The toggle reveals the same .nav-links element,
