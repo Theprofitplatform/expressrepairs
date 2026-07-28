@@ -75,7 +75,7 @@ export function Nav() {
           <a href="#plans">Plans</a>
           <a href="/nbn/">NBN</a>
           <a href="#accessories">Accessories</a>
-          <a href="/shop/">Shop</a>
+          <a href="/shop/">Catalogue</a>
           <a href="/blog/">Blog</a>
           <a href="#visit">Visit</a>
           <a href="#faq">FAQ</a>

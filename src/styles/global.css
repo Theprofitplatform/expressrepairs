@@ -212,9 +212,15 @@ input, select, textarea { font-family: inherit; font-size: inherit; color: inher
   color: #fff; display:grid; place-items:center;
   box-shadow: 0 6px 16px -4px color-mix(in oklab, var(--brand-600) 60%, transparent);
 }
-.nav-links { display:flex; gap: 4px; }
+/* align-items:center, not the default stretch: .mega wraps its trigger in a
+   span, so the trigger stayed inline and its 8px padding didn't push the text
+   down like it does on the sibling anchors — "Shop" sat 8px above "Repairs". */
+.nav-links { display:flex; align-items: center; gap: 4px; }
 .nav-links a { padding: 8px 14px; border-radius: 10px; font-size: 14.5px; color: var(--text-muted); font-weight: 500; transition: color .15s ease, background .15s ease; }
 .nav-links a:hover { color: var(--text); background: var(--ink-25); }
+/* Current section, set by SiteNav. Prefix match, so /shop/c/cases/ still lights
+   up Catalogue. */
+.nav-links a[aria-current="page"] { color: var(--text); font-weight: 600; }
 .nav-cta { display:flex; align-items:center; gap: 10px; }
 .nav-phone { display:flex; align-items:center; gap: 8px; font-weight: 600; color: var(--text); font-size: 14.5px; }
 .nav-phone:hover { color: var(--brand-700); }
@@ -222,8 +228,17 @@ input, select, textarea { font-family: inherit; font-size: inherit; color: inher
    anchor puts focus inside .mega, so tabbing opens it and tabbing out closes
    it. No JS, so no aria-expanded (a permanently-false one would misreport
    state to assistive tech). The trigger stays a real link to /shop/. */
-.mega { position: static; }
-.mega-trigger::after { content: "▾"; margin-left: 6px; opacity: .5; font-size: 11px; }
+.mega { position: static; display: flex; align-items: center; }
+.mega-trigger::after {
+  content: ""; margin-left: 7px; width: 7px; height: 7px; flex: none;
+  border-right: 1.8px solid currentColor; border-bottom: 1.8px solid currentColor;
+  transform: translateY(-2px) rotate(45deg); opacity: .55;
+  transition: transform .15s ease, opacity .15s ease;
+}
+.mega-trigger { display: flex; align-items: center; }
+.mega:hover .mega-trigger, .mega:focus-within .mega-trigger { color: var(--text); background: var(--ink-25); }
+.mega:hover .mega-trigger::after,
+.mega:focus-within .mega-trigger::after { transform: translateY(1px) rotate(-135deg); opacity: 1; }
 .mega-panel {
   position: absolute; left: 0; right: 0; top: 100%;
   opacity: 0; visibility: hidden; transform: translateY(-6px);
@@ -328,10 +343,16 @@ input, select, textarea { font-family: inherit; font-size: inherit; color: inher
     max-height: calc(100vh - var(--nav-h)); overflow-y: auto;
     box-shadow: 0 18px 40px -18px rgb(0 0 0 / .28);
   }
+  /* Desktop makes .mega a flex row (see the trigger-alignment note above); in
+     the drawer the panel stacks under the trigger instead of beside it. */
+  .nav[data-open="true"] .mega { display: block; }
   .nav[data-open="true"] .nav-links > a,
   .nav[data-open="true"] .mega-trigger {
     display: block; padding: 12px 20px; font-size: 16px; border-radius: 0;
   }
+  /* The drawer's shop panel is always open, so the caret would sit permanently
+     flipped and read as a control that does nothing. */
+  .nav[data-open="true"] .mega-trigger::after { display: none; }
 
   /* The shop panel rides inside the drawer — flatten it from a hovering
      4-column overlay into a plain stacked block. The cascade columns stack

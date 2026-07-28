@@ -5,6 +5,15 @@ import ShopMegaMenu from './ShopMegaMenu.astro';
 // `mega` turns the /shop/ link into a hover/focus mega menu — shop pages only,
 // so repairs/blog/nbn pages don't carry ~4KB of catalogue links they'd never use.
 const { links = [], ctaHref = '#cta', mega = false } = Astro.props;
+
+// Highlight the section you're in. Prefix match so /shop/c/cases/ still lights
+// up Catalogue and /repairs/screen/ still lights up Repairs. In-page anchors
+// ('#faq', '/#plans') are never "current" — they don't identify a page.
+const path = Astro.url.pathname;
+const current = (href) =>
+  href.length > 1 && href.startsWith('/') && !href.includes('#') && path.startsWith(href)
+    ? 'page'
+    : undefined;
 ---
 <header class="nav">
   <div class="container-wide nav-inner">
@@ -18,11 +27,11 @@ const { links = [], ctaHref = '#cta', mega = false } = Astro.props;
       {links.map((l) =>
         mega && l.href === '/shop/' ? (
           <span class="mega">
-            <a href={l.href} class="mega-trigger">{l.label}</a>
+            <a href={l.href} class="mega-trigger" aria-current={current(l.href)}>{l.label}</a>
             <ShopMegaMenu />
           </span>
         ) : (
-          <a href={l.href}>{l.label}</a>
+          <a href={l.href} aria-current={current(l.href)}>{l.label}</a>
         ),
       )}
     </nav>
