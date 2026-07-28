@@ -1,39 +1,44 @@
 ---
-// Desktop shop mega menu. Pure static markup — opening is CSS (:hover /
-// :focus-within on .mega), so there is no JS and no aria-expanded to keep
-// truthful. Hidden under 900px, where .nav-links is display:none anyway.
-// Data comes from SHOP_MENU, which also feeds the /shop/m/ route generator.
+// Desktop shop mega menu — a cascade: category → device family → model, with
+// every leaf an existing /shop/c/<cat>/m/<model>/ page.
+//
+// Only the two cheap columns are inlined (9 categories + the curated tags).
+// The cascade's ~230 model links arrive from /shop/menu.json on first hover:
+// this panel renders on 10,347 pages, so inlining the tree would add ~217MB
+// to dist for markup most visitors never open. See CATALOGUE in shopMenu.js.
+//
+// Opening the panel is still CSS (:hover / :focus-within on .mega).
+// public/shop-menu.js only fills the two flyout columns, and it owns their
+// aria-expanded state.
 import { SHOP_MENU } from '../lib/shopMenu.js';
-const { categories, deviceColumns, tags, total } = SHOP_MENU;
+const { categories, tags, total } = SHOP_MENU;
 const fmt = (n) => n.toLocaleString('en-AU');
 ---
 <div class="mega-panel">
-  <nav class="mega-inner container-wide" aria-label="Shop categories">
+  <nav class="mega-inner container-wide" aria-label="Shop categories" data-cascade>
     <div class="mega-col">
-      <p class="mega-head">Categories</p>
-      <ul class="mega-list">
+      <p class="mega-head">All catalogues</p>
+      <ul class="mega-list cascade" data-col="cats">
         {categories.map((c) => (
           <li>
-            <a href={`/shop/c/${c.slug}/`}>{c.name} <span class="mega-count">{fmt(c.count)}</span></a>
+            <a href={`/shop/c/${c.slug}/`} class="cascade-row" data-cat={c.slug}>
+              <span>{c.name}</span><span class="mega-count">{fmt(c.count)}</span>
+            </a>
           </li>
         ))}
       </ul>
+      <a href="/shop/m/" class="mega-more">Browse by device →</a>
     </div>
 
-    {deviceColumns.map((col) => (
-      <div class="mega-col">
-        <p class="mega-head">{col.heading}</p>
-        {col.groups.map((g) => (
-          <ul class="mega-list">
-            <li class="mega-sub">{g.family}</li>
-            {g.models.map((m) => (
-              <li><a href={`/shop/m/${m.key}/`}>{m.label} <span class="mega-count">{fmt(m.count)}</span></a></li>
-            ))}
-          </ul>
-        ))}
-        <a href="/shop/m/" class="mega-more">All {col.total} models →</a>
-      </div>
-    ))}
+    <div class="mega-col mega-col--fly">
+      <p class="mega-head" data-head="families">Device</p>
+      <ul class="mega-list cascade" data-col="families"></ul>
+    </div>
+
+    <div class="mega-col mega-col--fly">
+      <p class="mega-head" data-head="models">Model</p>
+      <ul class="mega-list cascade cascade--scroll" data-col="models"></ul>
+    </div>
 
     <div class="mega-col mega-col--tags">
       <p class="mega-head">Shop by type</p>
@@ -54,3 +59,7 @@ const fmt = (n) => n.toLocaleString('en-AU');
     </div>
   </div>
 </div>
+
+<!-- is:inline so Astro leaves it alone: a hoisted script under 4KB gets
+     inlined into all 10,347 pages that carry the nav. See public/shop-menu.js. -->
+<script type="module" src="/shop-menu.js" is:inline></script>

@@ -4,11 +4,23 @@ import { deviceModel, slugifyCategory, modelGroups } from '../src/lib/shop.js';
 import { CURATED_TAGS } from '../src/lib/tags.js';
 import {
   SHOP_MENU,
+  CATALOGUE,
   MODEL_ROUTES,
   MODEL_FAMILIES,
   MIN_MODEL_PAGE_PRODUCTS,
   menuLinks,
+  catalogueLinks,
 } from '../src/lib/shopMenu.js';
+
+// Every category-scoped model page the site builds, as "<catSlug>|<modelKey>".
+// Mirrors getStaticPaths in pages/shop/c/[category]/m/[model]/[...page].astro —
+// modelGroups' default min, applied within the category.
+const builtPairs = new Set(
+  [...new Set(PRODUCTS.map((p) => p.category))].flatMap((category) => {
+    const inCat = PRODUCTS.filter((p) => p.category === category);
+    return modelGroups(inCat).map((m) => `${slugifyCategory(category)}|${m.key}`);
+  }),
+);
 
 // The mega menu renders on every /shop/* page, so one bad href is ~10,000
 // pages linking to a 404. These guard the menu against the catalog drifting
@@ -26,13 +38,6 @@ describe('shop mega menu', () => {
     }
   });
 
-  it('every device link is a model that /shop/m/ actually builds', () => {
-    const built = new Set(MODEL_ROUTES.map((m) => m.key));
-    const shown = SHOP_MENU.deviceColumns.flatMap((c) => c.groups.flatMap((g) => g.models));
-    expect(shown.length).toBeGreaterThan(0);
-    for (const m of shown) expect(built.has(m.key), m.label).toBe(true);
-  });
-
   it('every type link is a curated tag with a live page', () => {
     const curated = new Set(CURATED_TAGS.map((t) => t.tag));
     for (const t of SHOP_MENU.tags) {
@@ -42,26 +47,75 @@ describe('shop mega menu', () => {
   });
 
   it('every href is URL-safe and trailing-slashed', () => {
-    for (const href of menuLinks()) {
+    for (const href of [...menuLinks(), ...catalogueLinks()]) {
       expect(href.endsWith('/'), href).toBe(true);
       for (const seg of href.split('/').filter(Boolean)) expect(seg, href).toMatch(slugSafe);
     }
   });
 
-  // The panel ships in the HTML of ~10,000 pages. Left unwatched it grows with
-  // the catalog; at ~4KB it costs roughly 16% of dist. This is the tripwire,
-  // not a hard rule — raise it deliberately, having measured.
-  it('stays under 80 links', () => {
-    expect(menuLinks().length).toBeLessThan(80);
+  // The panel ships in the HTML of ~10,000 pages, so only the two cheap
+  // columns are inlined — the cascade's ~230 model links arrive over fetch.
+  // Inlining them measured at ~27KB a page, roughly 217MB of dist. This is
+  // the tripwire: if a link count creeps back in here, that is why.
+  it('inlines under 40 links', () => {
+    expect(menuLinks().length).toBeLessThan(40);
   });
 
-  // Column headings promise a total ("All 43 Apple models"); the /shop/m/
-  // index must actually list that many, or the promise is a lie.
-  it('column totals match the models the index page lists', () => {
+  // /shop/m/ promises a model count in its own copy; the index must list
+  // exactly the models that got routes.
+  it('the model index lists every routed model', () => {
     const listed = MODEL_FAMILIES.reduce((n, f) => n + f.models.length, 0);
-    const promised = SHOP_MENU.deviceColumns.reduce((n, c) => n + c.total, 0);
-    expect(promised).toBe(listed);
     expect(listed).toBe(MODEL_ROUTES.length);
+  });
+});
+
+// The cascade served at /shop/menu.json. Its leaves are category-scoped model
+// pages built with modelGroups' DEFAULT min (4) — using MIN_MODEL_PAGE_PRODUCTS
+// here would hide live pages, anything lower would link to pages that were
+// never generated. This is the test that pins that choice.
+describe('catalogue cascade', () => {
+  const leafPairs = () =>
+    CATALOGUE.flatMap((c) => c.families.flatMap((f) => f.models.map((m) => `${c.slug}|${m.key}`)));
+
+  it('covers every category exactly once, in the menu order', () => {
+    expect(CATALOGUE.map((c) => c.slug)).toEqual(SHOP_MENU.categories.map((c) => c.slug));
+  });
+
+  it('every leaf is a category-scoped model page that exists', () => {
+    const leaves = leafPairs();
+    expect(leaves.length).toBeGreaterThan(200);
+    for (const pair of leaves) expect(builtPairs.has(pair), pair).toBe(true);
+  });
+
+  it('reaches every category-scoped model page the build makes', () => {
+    const leaves = new Set(leafPairs());
+    expect([...builtPairs].filter((p) => !leaves.has(p))).toEqual([]);
+  });
+
+  it('counts are real and models are unique within a category', () => {
+    for (const c of CATALOGUE) {
+      const keys = c.families.flatMap((f) => f.models.map((m) => m.key));
+      expect(new Set(keys).size, c.slug).toBe(keys.length);
+      for (const f of c.families) {
+        expect(f.models.length, `${c.slug}/${f.family}`).toBeGreaterThan(0);
+        for (const m of f.models) {
+          const real = PRODUCTS.filter(
+            (p) => p.category === c.name && deviceModel(p.name)?.key === m.key,
+          ).length;
+          expect(real, `${c.slug}/${m.key}`).toBe(m.count);
+        }
+      }
+    }
+  });
+
+  // Cables, Audio, Watch Cases and AirPods Cases have no extractable device
+  // model. The script renders them as leaves; if extraction ever starts
+  // covering them this flips, and the leaf branch stops being reachable.
+  it('leaf categories are the ones with no model coverage', () => {
+    for (const c of CATALOGUE) {
+      const inCat = PRODUCTS.filter((p) => p.category === c.name);
+      expect(c.families.length === 0, c.slug).toBe(modelGroups(inCat).length === 0);
+    }
   });
 });
 
@@ -85,13 +139,6 @@ describe('/shop/m/ routes', () => {
   // min of 4 *within* the category — the chip filter must use the same floor or
   // it links to pages that were never generated.
   it('category chips only point at category-scoped pages that exist', () => {
-    const categories = [...new Set(PRODUCTS.map((p) => p.category))];
-    const builtPairs = new Set(
-      categories.flatMap((category) => {
-        const inCat = PRODUCTS.filter((p) => p.category === category);
-        return modelGroups(inCat).map((m) => `${slugifyCategory(category)}|${m.key}`);
-      }),
-    );
     for (const m of MODEL_ROUTES) {
       const bucket = PRODUCTS.filter((p) => deviceModel(p.name)?.key === m.key);
       const chips = [...new Set(bucket.map((p) => p.category))]

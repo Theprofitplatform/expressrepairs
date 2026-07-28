@@ -310,9 +310,48 @@ describe('built shop mega menu', () => {
   it('every page it links to exists', () => {
     const panel = panelOf('dist/shop/H-2762/index.html');
     const hrefs = [...new Set([...panel.matchAll(/href="(\/[^"]*)"/g)].map((m) => m[1]))];
-    expect(hrefs.length).toBeGreaterThan(40);
+    expect(hrefs.length).toBeGreaterThan(30);
     const missing = hrefs.filter((h) => !existsSync(`dist${h}index.html`));
     expect(missing).toEqual([]);
+  });
+
+  // The whole reason the cascade is fetched rather than inlined. Measured
+  // 6,213 bytes before this menu and 5,032 after, against ~27KB if the full
+  // tree were rendered — times the 10,000 pages that carry the nav. If this
+  // trips, something started putting the model links back into the markup.
+  it('stays small enough to inline 10,000 times', () => {
+    expect(panelOf('dist/shop/H-2762/index.html').length).toBeLessThan(5500);
+  });
+
+  // The cascade is three files that have to agree: the panel's markup hooks,
+  // the script that fills them, and the JSON it reads. Nothing else notices if
+  // one of the three is renamed — the menu just silently stops cascading.
+  it('wires the panel, the script and the JSON together', () => {
+    const page = readFileSync('dist/shop/H-2762/index.html', 'utf8');
+    expect(page).toContain('src="/shop-menu.js"');
+    // Inlining it would put 2.6KB of uncacheable JS on all 10,347 pages.
+    expect(page).not.toContain('querySelector("[data-cascade]")');
+    const script = readFileSync('dist/shop-menu.js', 'utf8');
+    expect(script).toContain('/shop/menu.json');
+    const inPage = ['data-cascade', 'data-col="cats"', 'data-col="families"', 'data-col="models"',
+      'data-head="families"', 'data-head="models"', 'data-cat='];
+    for (const hook of inPage) expect(page, hook).toContain(hook);
+    for (const hook of ['data-cascade', 'data-col', 'data-head', 'data-cat', 'data-fam']) {
+      expect(script, hook).toContain(hook);
+    }
+  });
+
+  it('serves the cascade as JSON with only pages that exist', () => {
+    const tree = JSON.parse(readFileSync('dist/shop/menu.json', 'utf8'));
+    expect(tree.length).toBe(9);
+    const hrefs = tree.flatMap((c) =>
+      c.f.flatMap((f) => f.m.map((m) => `/shop/c/${c.s}/m/${m.k}/`)),
+    );
+    expect(hrefs.length).toBeGreaterThan(200);
+    expect(hrefs.filter((h) => !existsSync(`dist${h}index.html`))).toEqual([]);
+    // Cases & Covers, first and deepest — the panel's default column.
+    expect(tree[0].s).toBe('cases-covers');
+    expect(tree[0].f.map((f) => f.n)).toContain('iPhone');
   });
 
   it('builds the cross-category model pages and their index', () => {
