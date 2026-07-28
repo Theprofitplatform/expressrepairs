@@ -324,3 +324,23 @@ describe('built shop mega menu', () => {
     expect(model).toContain('/shop/c/screen-protection/m/iphone-17-pro/');
   });
 });
+
+describe('mobile nav toggle', () => {
+  // Below 900px .nav-links is display:none, so before this existed the site
+  // had no nav menu at all on phones. There are two nav implementations —
+  // SiteNav.astro and the homepage Nav() in sections.jsx — and they drift
+  // easily, so assert the toggle on one of each.
+  for (const [label, file] of [
+    ['homepage (sections.jsx)', 'dist/index.html'],
+    ['inner page (SiteNav.astro)', 'dist/shop/index.html'],
+    ['product page (SiteNav.astro)', 'dist/shop/H-2762/index.html'],
+  ]) {
+    it(`${label} ships a labelled toggle wired to the menu`, () => {
+      const html = readFileSync(file, 'utf8');
+      expect(html).toContain('class="nav-toggle"');
+      expect(html).toContain('aria-controls="nav-menu"');
+      expect(html).toContain('aria-expanded="false"');
+      expect(html).toMatch(/class="nav-links"[^>]*id="nav-menu"|id="nav-menu"[^>]*class="nav-links"/);
+    });
+  }
+});

@@ -14,7 +14,7 @@ const { links = [], ctaHref = '#cta', mega = false } = Astro.props;
       </span>
       {SITE.name}
     </a>
-    <nav class="nav-links">
+    <nav class="nav-links" id="nav-menu">
       {links.map((l) =>
         mega && l.href === '/shop/' ? (
           <span class="mega">
@@ -32,6 +32,9 @@ const { links = [], ctaHref = '#cta', mega = false } = Astro.props;
         <span>{SITE.phone}</span>
       </a>
       <a href={ctaHref} class="btn btn-primary btn-sm">{ctaHref === '/shop/cart/' ? <>Cart (<span data-cart-count>0</span>)</> : 'Get a quote'}</a>
+      <button type="button" class="nav-toggle" aria-expanded="false" aria-controls="nav-menu" aria-label="Menu">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="3" y1="6" x2="21" y2="6"></line><line x1="3" y1="12" x2="21" y2="12"></line><line x1="3" y1="18" x2="21" y2="18"></line></svg>
+      </button>
     </div>
   </div>
 </header>
