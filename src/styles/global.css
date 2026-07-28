@@ -235,9 +235,30 @@ input, select, textarea { font-family: inherit; font-size: inherit; color: inher
 .mega:hover .mega-panel,
 .mega:focus-within .mega-panel { opacity: 1; visibility: visible; transform: none; }
 .mega-inner {
-  display: grid; grid-template-columns: 1.1fr 1fr 1fr 1.4fr;
+  display: grid; grid-template-columns: 1.15fr 1fr 1.15fr 1.3fr;
   gap: 32px; padding: 28px 0 24px;
 }
+/* Cascade columns: category → device family → model. The two flyout columns
+   are filled by ShopMegaMenu's script, so they reserve their height up front
+   — otherwise the panel resizes under the pointer as it fetches. */
+.mega-col--fly { min-height: 300px; border-left: 1px solid var(--border); padding-left: 28px; margin-left: -12px; }
+/* Before the fetch lands — and permanently if it never does — an empty column
+   reads as whitespace rather than as a broken one. No layout shift either way. */
+.mega-col--fly:has(.cascade:empty) { border-left-color: transparent; }
+.mega-col--fly:has(.cascade:empty) .mega-head { visibility: hidden; }
+.cascade { display: flex; flex-direction: column; gap: 1px; }
+.cascade-row {
+  display: flex; align-items: center; gap: 10px;
+  width: 100%; padding: 6px 8px; margin-left: -8px; border-radius: 8px;
+  font: inherit; font-size: 14px; font-weight: 500; color: var(--text);
+  background: none; border: 0; text-align: left; cursor: pointer;
+}
+.cascade-row > span:first-child { flex: 1; }
+.cascade-row:hover { background: var(--ink-25); color: var(--brand-700); }
+.cascade-row[aria-expanded="true"] { background: var(--brand-50); color: var(--brand-700); font-weight: 600; }
+.cascade-row[aria-expanded]::after { content: "›"; color: var(--text-subtle); font-size: 15px; line-height: 1; }
+/* 130 models in Cases & Covers — the column scrolls rather than the panel. */
+.cascade--scroll { max-height: 46vh; overflow-y: auto; scrollbar-width: thin; }
 .mega-head {
   font-size: 11.5px; font-weight: 700; text-transform: uppercase;
   letter-spacing: .06em; color: var(--text-muted); margin: 0 0 10px;
@@ -249,7 +270,6 @@ input, select, textarea { font-family: inherit; font-size: inherit; color: inher
   font-size: 14px; color: var(--text); font-weight: 500;
 }
 .mega-list a:hover { background: var(--ink-25); color: var(--brand-700); }
-.mega-sub { font-size: 12px; font-weight: 600; color: var(--text-muted); padding: 4px 0; }
 .mega-count { color: var(--text-muted); font-weight: 400; font-size: 12.5px; }
 .mega-list--split { columns: 2; column-gap: 20px; }
 .mega-list--split li { break-inside: avoid; }
@@ -314,9 +334,9 @@ input, select, textarea { font-family: inherit; font-size: inherit; color: inher
   }
 
   /* The shop panel rides inside the drawer — flatten it from a hovering
-     4-column overlay into a plain stacked block.
-     ponytail: all 55 links expanded, so the drawer scrolls a long way on a
-     shop page. Wrap .mega-col in <details> if that draws complaints. */
+     4-column overlay into a plain stacked block. The cascade columns stack
+     under the categories, which is why the script turns the first tap on a
+     category into an expand instead of a navigation (same 480px breakpoint). */
   .nav[data-open="true"] .mega-panel {
     position: static; opacity: 1; visibility: visible; transform: none;
     box-shadow: none; border-bottom: 0; max-height: none; overflow: visible;
@@ -324,6 +344,14 @@ input, select, textarea { font-family: inherit; font-size: inherit; color: inher
   .nav[data-open="true"] .mega-inner { grid-template-columns: 1fr; gap: 20px; padding: 4px 20px 12px; }
   .nav[data-open="true"] .mega-list--split { columns: 2; }
   .nav[data-open="true"] .mega-foot > div { padding: 12px 20px; gap: 6px 16px; }
+  /* No pointer to reserve room for, and an empty bordered column reads as a
+     rendering bug — the flyouts collapse until the tap fills them. */
+  .nav[data-open="true"] .mega-col--fly {
+    min-height: 0; border-left: 0; padding-left: 0; margin-left: 0;
+  }
+  .nav[data-open="true"] .mega-col--fly:has(.cascade:empty) { display: none; }
+  .nav[data-open="true"] .cascade--scroll { max-height: none; }
+  .nav[data-open="true"] .cascade-row { padding: 10px 8px; font-size: 15px; }
 }
 
 /* ============ Hero ============ */
