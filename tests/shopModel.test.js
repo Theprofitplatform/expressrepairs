@@ -77,6 +77,27 @@ describe('modelFamilies', () => {
     const fams = modelFamilies(groups);
     expect(fams[0].models.map((m) => m.label)).toEqual(['iPhone 17 Pro', 'iPhone 7', 'iPhone XS Max', 'iPhone X']);
   });
+  // Every Galaxy label is letter-led at the second word, so the numeric test
+  // can't separate them and plain alphabetical order buries the S flagships
+  // under the whole foldable line. LINE_ORDER fixes that; this pins it.
+  it('ranks Galaxy product lines S > Z Fold > Z Flip > Note > A > Tab', () => {
+    const groups = [
+      g('Galaxy Tab S9'), g('Galaxy A55'), g('Galaxy Note 20'),
+      g('Galaxy Z Flip 6'), g('Galaxy Z Fold 7'), g('Galaxy S26 Ultra'), g('Galaxy S26'),
+    ];
+    expect(modelFamilies(groups)[0].models.map((m) => m.label)).toEqual([
+      'Galaxy S26 Ultra', 'Galaxy S26', 'Galaxy Z Fold 7', 'Galaxy Z Flip 6',
+      'Galaxy Note 20', 'Galaxy A55', 'Galaxy Tab S9',
+    ]);
+  });
+  // The line table is Galaxy-only on purpose — everything else must be
+  // byte-identical to how it sorted before.
+  it('leaves families with no line table alone', () => {
+    const groups = [g('iPad Pro 11'), g('iPad 10.2'), g('iPad Mini 6'), g('iPad Air 5')];
+    expect(modelFamilies(groups)[0].models.map((m) => m.label)).toEqual([
+      'iPad 10.2', 'iPad Pro 11', 'iPad Mini 6', 'iPad Air 5',
+    ]);
+  });
   it('keeps an unknown family instead of dropping it, after the fixed order', () => {
     const groups = [g('Watch Ultra 2'), g('iPhone 16')];
     const fams = modelFamilies(groups);

@@ -89,6 +89,25 @@ export const modelGroups = (products, min = 4) => {
 // Display grouping for the model-chip nav: 90 flat chips read as noise, so
 // bucket modelGroups() output into device families, newest models first.
 const FAMILY_ORDER = ['iPhone', 'Galaxy', 'Pixel', 'iPad'];
+
+// Product-line order, applied before the sort below. Only Galaxy needs it, and
+// only because *every* Galaxy label is letter-led at the second word ("Z Fold
+// 7", "S26 Ultra", "A55", "Tab S9") — the numeric test can't separate them, so
+// the alphabetical fallback puts the whole foldable line above the S
+// flagships, which are the volume sellers. This is editorial order, not a
+// derived signal: no count or generation regex gets it right (count lags a
+// release by months, and "A55" parses as generation 55).
+// A family with no entry here is untouched — iPhone, Pixel and iPad still sort
+// exactly as they did.
+const LINE_ORDER = { Galaxy: ['S', 'Z Fold', 'Z Flip', 'Note', 'A', 'M', 'Tab'] };
+const lineRank = (family, label) => {
+  const lines = LINE_ORDER[family];
+  if (!lines) return 0;
+  const line = label.slice(family.length + 1);
+  const i = lines.findIndex((l) => line.startsWith(l));
+  return i === -1 ? lines.length : i;
+};
+
 export const modelFamilies = (groups) => {
   const by = new Map();
   for (const gm of groups) {
@@ -103,7 +122,10 @@ export const modelFamilies = (groups) => {
   return families.map((family) => ({
     family,
     models: [...by.get(family)].sort(
-      (a, b) => numeric(b) - numeric(a) || b.label.localeCompare(a.label, undefined, { numeric: true }),
+      (a, b) =>
+        lineRank(family, a.label) - lineRank(family, b.label) ||
+        numeric(b) - numeric(a) ||
+        b.label.localeCompare(a.label, undefined, { numeric: true }),
     ),
   }));
 };
