@@ -275,6 +275,19 @@ input, select, textarea { font-family: inherit; font-size: inherit; color: inher
      thanks pages have no sticky call bar, and calls are the main conversion. */
   .brand { white-space: nowrap; font-size: 16px; gap: 8px; }
   .brand-mark { width: 30px; height: 30px; border-radius: 9px; }
+}
+
+/* At 375px the row is still exactly full — measured brand right edge 204 ==
+   .nav-cta left edge 204, with the content eating 21px of the container's own
+   right padding. Nothing incremental covers that, so the wordmark scales down
+   one more step on phones. Chosen over the alternatives because it removes
+   nothing: hiding the wordmark costs brand identity, and dropping the nav CTA
+   costs a sticky conversion point that the hero button doesn't replace once
+   you've scrolled. */
+@media (max-width: 480px) {
+  .brand { font-size: 14px; gap: 6px; }
+  .brand-mark { width: 26px; height: 26px; border-radius: 8px; }
+  .brand-mark svg { width: 15px; height: 15px; }
 
   /* Mobile drawer. Below 900px there was no nav at all — the links existed
      only in the desktop row. The toggle reveals the same .nav-links element,
