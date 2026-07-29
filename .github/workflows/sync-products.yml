@@ -12,6 +12,11 @@ on:
     - cron: '30 23 * * 0-5'  # ~9:30am Sydney, Mon–Sat
     - cron: '0 4 * * 1-6'    # ~2–3pm Sydney, Mon–Sat
   workflow_dispatch:
+    inputs:
+      dump_imageless:
+        description: 'Also print every in-group product that has no photo (TSV) — the worklist for sourcing missing images'
+        type: boolean
+        default: false
 
 permissions:
   contents: write
@@ -41,6 +46,7 @@ jobs:
           POS_GATE_PASS: ${{ secrets.POS_GATE_PASS }}
           POS_EMAIL: ${{ secrets.POS_EMAIL }}
           POS_PASSWORD: ${{ secrets.POS_PASSWORD }}
+          DUMP_IMAGELESS: ${{ inputs.dump_imageless && '1' || '' }}
 
       # Mirror any not-yet-hosted supplier images into R2 and refresh the
       # r2-images.json manifest, so new products become self-hosted on the
