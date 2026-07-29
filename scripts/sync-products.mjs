@@ -15,6 +15,8 @@ import { writeFileSync } from 'node:fs';
 import { fileURLToPath, pathToFileURL } from 'node:url';
 import IMAGE_MAP from '../src/data/product-images.json' with { type: 'json' };
 import R2_MANIFEST from '../src/data/r2-images.json' with { type: 'json' };
+import HOCO_CATALOGUE from '../src/data/hoco-catalogue.json' with { type: 'json' };
+import MOBILEMALL_CATALOGUE from '../src/data/mobilemall-catalogue.json' with { type: 'json' };
 import { applyCatalogFixes } from './catalog-fixes.mjs';
 
 // Images mirrored to R2 by scripts/upload-images-r2.mjs are served from our
@@ -36,7 +38,33 @@ const skuKey = (s) => String(s ?? '').toLowerCase().replace(/[^a-z0-9]/g, '');
 // NOTHING syncs until it's fixed. Falling back to the supplier map instead
 // keeps one bad POS field from freezing the whole catalogue.
 const absUrl = (u) => (/^https?:\/\//i.test(u ?? '') ? u : '');
-const imageFor = (r) => absUrl(r.imageUrl) || IMAGE_MAP[skuKey(r.sku)] || '';
+
+// SKU is not a reliable join: for ~2,400 in-group products DXPOS carries the
+// barcode or an internal code where the supplier carries their own SKU, so the
+// map misses and the product is dropped from the shop entirely. The product
+// NAME is copied verbatim from the supplier price list, so an exact match on a
+// punctuation-insensitive name recovers 1,634 of them straight from the
+// catalogues already in this repo — no scraping, no new data file.
+//
+// Only unambiguous names are used. Seven supplier names map to more than one
+// distinct photo (same title, different variant); attaching a coin-flip photo
+// to a product is worse than not listing it, so those are skipped.
+export const nameKey = (s) => String(s ?? '').toLowerCase().replace(/[^a-z0-9]+/g, ' ').trim();
+export const buildNameMap = (catalogues) => {
+  const seen = new Map(); // nameKey -> image url, or null once it's ambiguous
+  for (const p of catalogues.flat()) {
+    if (!p.image) continue;
+    const k = nameKey(p.name);
+    if (!k) continue;
+    if (!seen.has(k)) seen.set(k, p.image);
+    else if (seen.get(k) !== p.image) seen.set(k, null);
+  }
+  return seen;
+};
+const NAME_MAP = buildNameMap([MOBILEMALL_CATALOGUE, HOCO_CATALOGUE]);
+
+const imageFor = (r) =>
+  absUrl(r.imageUrl) || IMAGE_MAP[skuKey(r.sku)] || NAME_MAP.get(nameKey(r.name)) || '';
 
 // HOCO catalogue URLs follow Odoo's standard image sizes
 // (.../product.template/<id>/image_1024). Swap the trailing size token for
@@ -46,7 +74,10 @@ export const thumbUrl = (url) => (url || '').replace(/image_1024(?=\?|$)/, 'imag
 // The full accessory range is listed regardless of stock (DXPOS carries no
 // stock counts for this catalogue) — every listed product ships "dispatched
 // in 1-2 business days".
-const MAX_ONLINE = Number(process.env.MAX_ONLINE || 5000);
+// Raised from 5000 when the supplier-name image fallback recovered ~1,600
+// products that had been dropped for want of a photo. This is a runaway guard
+// (a POS misconfiguration listing the whole 11.9k catalogue), not a target.
+const MAX_ONLINE = Number(process.env.MAX_ONLINE || 7000);
 
 // Which DXPOS Sell-grid groups go online. Owner: edit this list to change
 // what the shop sells; archive a product in DXPOS to remove just one item.

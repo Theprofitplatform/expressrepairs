@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { transformCatalog, thumbUrl, ONLINE_GRID_GROUPS, TRADE_ONLY_PATTERNS, R2_BASE } from '../scripts/sync-products.mjs';
+import { transformCatalog, thumbUrl, ONLINE_GRID_GROUPS, TRADE_ONLY_PATTERNS, R2_BASE, nameKey, buildNameMap } from '../scripts/sync-products.mjs';
 
 const row = (over = {}) => ({
   id: 'X-10', name: 'Case', sku: 'C1', type: 'PRODUCT', archived: false,
@@ -77,6 +77,36 @@ describe('transformCatalog', () => {
       const [p] = transformCatalog([row({ imageUrl: bad, sku: '10008639' })], new Set());
       expect(p.image, bad).toMatch(/^https?:\/\//);
     }
+  });
+
+  // For ~2,400 in-group products DXPOS holds the barcode (or an internal code)
+  // where the supplier holds their own SKU, so the SKU join misses and the
+  // product is dropped from the shop. The name is copied verbatim from the
+  // supplier price list, so it recovers most of them.
+  describe('supplier name fallback', () => {
+    const CAT = [
+      [{ name: 'ACME Widget Case — Black', image: 'https://s/one.jpg' }],
+      [{ name: 'Two Photos', image: 'https://s/a.jpg' }, { name: 'two   photos!', image: 'https://s/b.jpg' }],
+    ];
+
+    it('matches on a punctuation- and case-insensitive name', () => {
+      expect(nameKey('ACME Widget Case — Black')).toBe(nameKey('acme  widget/case - black'));
+      expect(buildNameMap(CAT).get(nameKey('acme widget case black'))).toBe('https://s/one.jpg');
+    });
+
+    // A coin-flip photo on a product page is worse than not listing it.
+    it('refuses a name that maps to more than one photo', () => {
+      expect(buildNameMap(CAT).get(nameKey('two photos'))).toBe(null);
+    });
+
+    it('lists a product whose SKU misses but whose name is in the catalogue', () => {
+      // 'LITO C5 AR+AF …' is a real MobileMall catalogue row; the SKU is junk.
+      const [p] = transformCatalog(
+        [row({ imageUrl: null, sku: '9361195012775', name: 'LITO C5 AR+AF Full Coating Aluminum Alloy Camera Corning Glass - Display' })],
+        new Set(),
+      );
+      expect(p.image).toMatch(/^https?:\/\//);
+    });
   });
 
   // Shop fixtures / trade supplies live in the same DXPOS groups as consumer
