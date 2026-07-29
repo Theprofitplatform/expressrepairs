@@ -222,7 +222,12 @@ async function main() {
         console.log(`  ${String(names.length).padStart(5)}  ${k}  e.g. ${names.slice(0, 3).join(' ; ')}`);
       }
       if (process.env.DUMP_IMAGELESS) {
-        for (const r of imageless) console.log(`IMAGELESS\t${r.id}\t${r.sku ?? ''}\t${r.gridGroup}\t${r.name}`);
+        // sellCents is included so the shop price these products WOULD carry can
+        // be compared against the supplier RRP the site currently shows for the
+        // ones already listed under an H-/M- id. Sell price only — never
+        // costCents, this log is public.
+        for (const r of imageless)
+          console.log(`IMAGELESS\t${r.id}\t${r.sku ?? ''}\t${r.sellCents}\t${r.gridGroup}\t${r.name}`);
       }
     }
   }
