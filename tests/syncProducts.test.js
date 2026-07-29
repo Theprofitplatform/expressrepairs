@@ -67,6 +67,18 @@ describe('transformCatalog', () => {
     expect(transformCatalog([row({ imageUrl: null, sku: 'no-such-sku-xyz' })])).toHaveLength(0);
   });
 
+  // A relative path typed into the POS imageUrl field ("/products/X-10.webp")
+  // used to be emitted verbatim, fail products.test.js's Zod url() check, and
+  // fail the whole sync job — freezing the catalogue for everything else.
+  it('ignores a non-absolute DXPOS imageUrl', () => {
+    for (const bad of ['/products/X-10.webp', 'products/X-10.webp', 'X-10.webp', ' ']) {
+      expect(transformCatalog([row({ imageUrl: bad, sku: 'no-such-sku-xyz' })]), bad).toHaveLength(0);
+      // With a supplier photo on file it still lists — using the supplier URL.
+      const [p] = transformCatalog([row({ imageUrl: bad, sku: '10008639' })], new Set());
+      expect(p.image, bad).toMatch(/^https?:\/\//);
+    }
+  });
+
   // Shop fixtures / trade supplies live in the same DXPOS groups as consumer
   // accessories — a customer must never be sold a banner stand or a 100pcs
   // film roll for a cutting machine.
