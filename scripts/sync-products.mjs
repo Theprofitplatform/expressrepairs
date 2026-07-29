@@ -29,7 +29,14 @@ const BASE = process.env.POS_BASE || 'https://pos.expressrepairs.com.au';
 // (HOCO + MobileMall), keyed by SKU. Regenerate product-images.json when a new
 // supplier price list lands. A DXPOS imageUrl, if ever set, always wins.
 const skuKey = (s) => String(s ?? '').toLowerCase().replace(/[^a-z0-9]/g, '');
-const imageFor = (r) => r.imageUrl || IMAGE_MAP[skuKey(r.sku)] || '';
+// imageUrl is free text in DXPOS, so it is only usable when it is an absolute
+// http(s) URL. Relative paths typed in the POS ("/products/X-00192.webp") used
+// to pass the truthiness check, get emitted as the product image, and then fail
+// the Zod url() check in tests/products.test.js — which fails the sync job, so
+// NOTHING syncs until it's fixed. Falling back to the supplier map instead
+// keeps one bad POS field from freezing the whole catalogue.
+const absUrl = (u) => (/^https?:\/\//i.test(u ?? '') ? u : '');
+const imageFor = (r) => absUrl(r.imageUrl) || IMAGE_MAP[skuKey(r.sku)] || '';
 
 // HOCO catalogue URLs follow Odoo's standard image sizes
 // (.../product.template/<id>/image_1024). Swap the trailing size token for
@@ -181,6 +188,27 @@ async function main() {
     // Expect tens excluded, not thousands — if this list is long, a pattern is
     // matching consumer products and needs tightening.
     if (trade.length) console.log('trade-only excluded:', trade.map((r) => r.name).join(' | '));
+
+    // ~2.4k in-group products have no photo in either supplier catalogue, so
+    // they never reach the shop at all. That is the single biggest hole in the
+    // online range and it was invisible in the funnel line — break it down by
+    // POS category so sourcing the missing photos can be aimed at the biggest
+    // gaps first. DUMP_IMAGELESS=1 prints every row as TSV for a bulk match.
+    const imageless = inGroups.filter((r) => !imageFor(r));
+    if (imageless.length) {
+      const byBrand = {};
+      for (const r of imageless) {
+        const k = `${r.gridGroup} / ${r.category?.name || '(no category)'}`;
+        (byBrand[k] ??= []).push(r.name);
+      }
+      console.log(`no-image excluded=${imageless.length} (never listed online), by group / POS category:`);
+      for (const [k, names] of Object.entries(byBrand).sort((a, b) => b[1].length - a[1].length)) {
+        console.log(`  ${String(names.length).padStart(5)}  ${k}  e.g. ${names.slice(0, 3).join(' ; ')}`);
+      }
+      if (process.env.DUMP_IMAGELESS) {
+        for (const r of imageless) console.log(`IMAGELESS\t${r.id}\t${r.sku ?? ''}\t${r.gridGroup}\t${r.name}`);
+      }
+    }
   }
 
   if (products.length > MAX_ONLINE) {
