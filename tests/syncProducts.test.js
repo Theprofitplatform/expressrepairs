@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { transformCatalog, thumbUrl, ONLINE_GRID_GROUPS, TRADE_ONLY_PATTERNS, R2_BASE } from '../scripts/sync-products.mjs';
+import { transformCatalog, thumbUrl, ONLINE_GRID_GROUPS, TRADE_ONLY_PATTERNS, R2_BASE, buildPosPrices } from '../scripts/sync-products.mjs';
 
 const row = (over = {}) => ({
   id: 'X-10', name: 'Case', sku: 'C1', type: 'PRODUCT', archived: false,
@@ -148,5 +148,45 @@ describe('thumbUrl', () => {
   it('leaves other urls unchanged', () => {
     expect(thumbUrl('https://cdn.example.com/uploads/x10.jpg')).toBe('https://cdn.example.com/uploads/x10.jpg');
     expect(thumbUrl('')).toBe('');
+  });
+});
+
+/**
+ * pos-prices.json — the POS sell price for products the shop lists under a
+ * SUPPLIER id (their DXPOS row has no photo, so it never reaches
+ * products.json and the site quoted the supplier's RRP instead).
+ */
+describe('buildPosPrices', () => {
+  const row = (name, sellCents) => ({ name, sellCents });
+
+  it('keys on the FIXED name, because that is what the build-time merge compares', () => {
+    // "[BW-013] " is a DXPOS shelf code that catalog-fixes strips.
+    const { prices } = buildPosPrices([row('[BW-013] Case-Mate Karat | iPhone 14', 4995)]);
+    expect(prices['Case-Mate Karat | iPhone 14']).toBe(4995);
+  });
+
+  // The shop carries some products under two SKUs at two prices (a real
+  // OtterBox Defender is $99 on one row and $109 on another). Object.fromEntries
+  // would silently take whichever came last — a coin-flip price, worse than the
+  // supplier's, which is at least what the page said yesterday.
+  it('drops a name two POS rows disagree on, rather than picking one', () => {
+    const { prices, conflicted } = buildPosPrices([
+      row('Otterbox Defender | iPhone 14 Pro Max', 9900),
+      row('Otterbox Defender | iPhone 14 Pro Max', 10900),
+    ]);
+    expect(prices['Otterbox Defender | iPhone 14 Pro Max']).toBeUndefined();
+    expect([...conflicted]).toEqual(['Otterbox Defender | iPhone 14 Pro Max']);
+  });
+
+  it('is not confused by rows that merely repeat the same price', () => {
+    const { prices, conflicted } = buildPosPrices([row('Case', 1995), row('Case', 1995)]);
+    expect(prices.Case).toBe(1995);
+    expect(conflicted.size).toBe(0);
+  });
+
+  it('skips unpriced rows — a $0 POS price must never overwrite a real one', () => {
+    const { prices } = buildPosPrices([row('Case', 0), row('Cable', 1995)]);
+    expect(prices.Case).toBeUndefined();
+    expect(prices.Cable).toBe(1995);
   });
 });
