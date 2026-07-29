@@ -28,8 +28,11 @@ const SERVICE_BY_GBP_NAME = {
 };
 
 describe('GBP kit service prices match the site', () => {
+  // Per-generation model pages (iPhone 13 Battery, …) are SEO landing pages, not
+  // things you list as GBP services — Google's service list is by job, not by
+  // handset. Only the job-level services have to appear in the kit.
   it('lists every service the site publishes a price for', () => {
-    const slugs = SERVICES.map((s) => s.slug).sort();
+    const slugs = SERVICES.filter((s) => !s.modelPage).map((s) => s.slug).sort();
     expect(Object.values(SERVICE_BY_GBP_NAME).sort()).toEqual(slugs);
   });
 

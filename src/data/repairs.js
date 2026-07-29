@@ -1,3 +1,5 @@
+import { MODEL_PRICES, ISSUES } from './services.js';
+
 // Content for the repair service-page family and local (service×suburb) pages.
 // Price bands (low/high per brand) are derived from 12 months of real POS repair
 // sales (Lightspeed), so the table shows an honest "$from–$to" range per brand
@@ -228,8 +230,11 @@ SERVICES.push(
   {
     slug: 'iphone-screen',
     label: 'iPhone Screen Repair',
-    title: 'iPhone Screen Repair Sydney — Same-Day, From $99 | Express Repairs',
-    description: 'iPhone screen repair in Sydney from $99 — iPhone 17 back to iPhone 7, fitted and tested in 30–60 minutes at Riverwood Plaza. 6–12 month warranty, free diagnostic.',
+    // Retitled for the cost intent: "iphone screen repair cost" is 300/mo at KD 4
+    // and this page already publishes the full per-generation table, which is
+    // exactly what that query wants. "Sydney" stays for the 900/mo geo term.
+    title: 'iPhone Screen Repair Cost — From $99, Same-Day Sydney | Express Repairs',
+    description: 'What an iPhone screen repair costs in Sydney: $99 for iPhone 7–X, $149 for 11–13, $199 for 14 and newer. Published prices, fitted in 30–60 minutes at Riverwood Plaza.',
     schemaName: 'iPhone Screen Repair',
     schemaPrice: '99',
     badgePill: 'iPhone specialists',
@@ -300,14 +305,19 @@ SERVICES.push(
   {
     slug: 'iphone-battery',
     label: 'iPhone Battery Replacement',
-    title: 'iPhone Battery Replacement Sydney — From $59, Same-Day | Express Repairs',
-    description: 'iPhone battery replacement in Sydney from $59. Free battery health check, fitted in 30–45 minutes at Riverwood Plaza, 6–12 month warranty. iPhone 17 back to iPhone 7.',
+    // The single biggest target on the site. Unqualified "iphone battery
+    // replacement" is 2,300/mo at KD 4 and "iphone battery replacement cost" is
+    // 1,100/mo at KD 3 — this page was previously aimed at the 70/mo "sydney"
+    // variant. Same page, 30x the demand, and the cost query wants exactly what
+    // it already has: a published number.
+    title: 'iPhone Battery Replacement — Cost From $59, Same-Day Sydney | Express Repairs',
+    description: 'What an iPhone battery replacement costs: $59 for iPhone 7–X, $119 for iPhone 11 and newer, fitted in 30–45 minutes. Free battery health check at Riverwood Plaza, Sydney.',
     schemaName: 'iPhone Battery Replacement',
     schemaPrice: '59',
     badgePill: 'Free health check',
     badgeNote: '30–45 min turnaround · 6–12 month warranty',
-    h1Html: 'iPhone battery replacement in <em>Sydney</em>.',
-    sub: 'Dead by lunchtime, shutting down at 40%, or Battery Health under 80%? A fresh cell takes about half an hour and costs a fraction of a new phone. We check it free before you commit to anything.',
+    h1Html: 'iPhone battery replacement — <em>$59 to $119</em>, fitted today.',
+    sub: 'Dead by lunchtime, shutting down at 40%, or Battery Health under 80%? A fresh cell takes about half an hour and costs a fraction of a new phone. Two prices, both published below, and a free health check first — in Riverwood, Sydney.',
     img: '/images/battery-repair.jpg',
     alt: 'Technician fitting a replacement iPhone battery',
     turnaround: '30–45 min',
@@ -375,6 +385,159 @@ SERVICES.push(
     ],
   },
 );
+
+// ── Phase A: per-generation iPhone battery pages ─────────────────────────────
+//
+// Plan + research: docs/superpowers/plans/2026-07-30-model-landing-pages.md
+//
+// Battery, not screen, and per generation, not per variant. Checked against
+// Ahrefs AU (2026-07-30) before building:
+//
+//   iphone 13 battery replacement    1,100/mo  KD 1   (+ Pro 600, Pro Max 450, mini 200)
+//   iphone 12 battery replacement      800/mo  KD 3
+//   iphone 14 pro battery replacement  700/mo  KD 2   (+ Pro Max 500, 14 450)
+//   iphone 11 battery replacement      700/mo  KD 5
+//   iphone 15 pro max battery repl.    300/mo         (+ Pro 250, 15 250)
+//   iphone 8 battery replacement       200/mo  KD 0   (+ iphone 7 200)
+//
+// Battery beats screen roughly 6:1 on the same handset. Variants within a
+// generation share one price, so one page naming all of them targets every
+// variant query without four near-identical pages.
+//
+// NOT per model × suburb: "iphone screen repair riverwood" is 0/mo and the
+// cross-product isn't in Ahrefs' index at all. That build would be ~200+ pages
+// matching Google's own definition of a doorway page for zero demand.
+//
+// `note` and `extraFaq` carry something true about THAT generation's battery.
+// A page without them is mail-merge, so modelPages.test.js requires both.
+const BATTERY_GENERATIONS = [
+  {
+    slug: 'iphone-15-battery', name: 'iPhone 15', released: '2023',
+    variants: 'iPhone 15, 15 Plus, 15 Pro and 15 Pro Max',
+    models: [
+      { name: 'iPhone 15', spec: '6.1" · 2023' },
+      { name: 'iPhone 15 Plus', spec: '6.7" · 2023' },
+      { name: 'iPhone 15 Pro', spec: '6.1" · 2023' },
+      { name: 'iPhone 15 Pro Max', spec: '6.7" · 2023' },
+    ],
+    note: 'The 15 is the first iPhone that will tell you its own charge cycle count — Settings → General → About, under Battery. If you can read the cycle count and the health percentage before you come in, we can tell you over the phone whether a battery is worth it.',
+    extraFaq: { q: 'How do I check the battery on an iPhone 15?', a: 'This generation shows you more than the older ones. Settings → Battery → Battery Health for the percentage, and Settings → General → About for the charge cycle count. Read us both over the phone and we can tell you whether you need us before you drive over.' },
+  },
+  {
+    slug: 'iphone-14-battery', name: 'iPhone 14', released: '2022',
+    variants: 'iPhone 14, 14 Plus, 14 Pro and 14 Pro Max',
+    models: [
+      { name: 'iPhone 14', spec: '6.1" · 2022' },
+      { name: 'iPhone 14 Plus', spec: '6.7" · 2022' },
+      { name: 'iPhone 14 Pro', spec: '6.1" · 2022' },
+      { name: 'iPhone 14 Pro Max', spec: '6.7" · 2022' },
+    ],
+    note: 'One thing to try before you pay us anything: the 14 Pro and Pro Max were the first iPhones with an always-on display, and it is a genuine draw. If your battery health is still above 80% but the phone is not lasting the day, turn the always-on display off in Settings → Display & Brightness and give it a week.',
+    extraFaq: { q: 'My iPhone 14 Pro does not last the day but Battery Health looks fine — what now?', a: 'Try turning off the always-on display first. It was new to the 14 Pro and Pro Max and it draws power all day. If health is above 80% and the phone still dies, a background app or a poor mobile signal is more likely than a worn cell — we will diagnose that free rather than sell you a battery you do not need.' },
+  },
+  {
+    slug: 'iphone-13-battery', name: 'iPhone 13', released: '2021',
+    variants: 'iPhone 13, 13 mini, 13 Pro and 13 Pro Max',
+    models: [
+      { name: 'iPhone 13', spec: '6.1" · 2021' },
+      { name: 'iPhone 13 mini', spec: '5.4" · 2021' },
+      { name: 'iPhone 13 Pro', spec: '6.1" · 2021' },
+      { name: 'iPhone 13 Pro Max', spec: '6.7" · 2021' },
+    ],
+    note: 'Be aware of one iOS behaviour on this generation: on iPhone 11 and newer, iOS flags any battery not paired by Apple\'s own system — including genuine cells fitted outside an Apple store — with a service message in Settings. It is a notice, not a fault. The battery works normally and carries our full warranty. We would rather you heard that from us now than discovered it afterwards.',
+    extraFaq: { q: 'Will my iPhone 13 show a battery warning after the repair?', a: 'Yes, and it is worth understanding why. Apple pairs batteries to the phone at the factory, and iOS marks anything fitted elsewhere with a service notice — Apple stores included if they use a non-paired cell. Your battery percentage, charging and health reporting all work normally, and the repair is warrantied 6–12 months. If that notice would bother you, tell us and we will talk through the alternatives before we start.' },
+  },
+  {
+    slug: 'iphone-12-battery', name: 'iPhone 12', released: '2020',
+    variants: 'iPhone 12, 12 mini, 12 Pro and 12 Pro Max',
+    models: [
+      { name: 'iPhone 12', spec: '6.1" · 2020' },
+      { name: 'iPhone 12 mini', spec: '5.4" · 2020' },
+      { name: 'iPhone 12 Pro', spec: '6.1" · 2020' },
+      { name: 'iPhone 12 Pro Max', spec: '6.7" · 2020' },
+    ],
+    note: 'The 12 mini is the one we see most from this generation. It has the smallest battery Apple has put in a modern iPhone, so the same wear that leaves a 12 Pro Max merely annoying leaves a mini needing a charger by mid-afternoon. Same $119 either way — the smaller phone does not get a smaller bill.',
+    extraFaq: { q: 'Is the iPhone 12 mini worse for battery than the others?', a: 'It starts with less capacity than any other modern iPhone, so as the cell wears you notice it sooner and harder. That is not a fault, just physics — and it is why the mini is the model from this generation that most often comes in for a battery.' },
+  },
+  {
+    slug: 'iphone-11-battery', name: 'iPhone 11', released: '2019',
+    variants: 'iPhone 11, 11 Pro and 11 Pro Max',
+    models: [
+      { name: 'iPhone 11', spec: '6.1" · 2019' },
+      { name: 'iPhone 11 Pro', spec: '5.8" · 2019' },
+      { name: 'iPhone 11 Pro Max', spec: '6.5" · 2019' },
+    ],
+    note: 'The iPhone 11 is the most common phone on our bench, and by 2026 it comes in for batteries far more than screens. Most are seven years old and past 1,000 charge cycles, which is well beyond the roughly 500 Apple rates the cell for. If yours is original, it is almost certainly the battery.',
+    extraFaq: { q: 'Is an iPhone 11 still worth putting money into?', a: 'For most people yes. It still receives iOS updates and handles everyday use fine. $119 for a battery against $1,000-plus for a new handset buys you another year or two for around a tenth of the cost. We will tell you honestly if yours has other faults that change the maths.' },
+  },
+  {
+    slug: 'iphone-8-battery', name: 'iPhone 8 & 7', released: '2016–2017',
+    variants: 'iPhone 8, 8 Plus, 7 and 7 Plus',
+    models: [
+      { name: 'iPhone 8', spec: '4.7" · 2017' },
+      { name: 'iPhone 8 Plus', spec: '5.5" · 2017' },
+      { name: 'iPhone 7', spec: '4.7" · 2016' },
+      { name: 'iPhone 7 Plus', spec: '5.5" · 2016' },
+    ],
+    note: 'These are the models where a new battery makes the phone measurably faster, not just longer-lasting. As the cell degrades, iOS deliberately throttles the processor to stop unexpected shutdowns — most noticeable on the 7 and older. Replace the battery and the phone returns to full speed. At $59 it is the best value repair we do.',
+    extraFaq: { q: 'Will a new battery make my iPhone 7 faster?', a: 'On these models, usually yes. When the battery degrades enough, iOS reduces peak processor performance to prevent the phone shutting down mid-task — you experience that as sluggishness. A healthy cell removes the need for it and the phone runs at full speed again. It is the one repair where people regularly tell us the phone feels new.' },
+  },
+];
+
+// Battery price comes from MODEL_PRICES — the same data the booking widget quotes
+// — falling back to the Apple brand floor for generations Apple-era models don't
+// list individually (iPhone 8/7 sit on the $59 floor). Deriving rather than
+// hardcoding means a price change moves the widget and these pages together, and
+// modelPages.test.js asserts every variant on a page really does share one price.
+const APPLE_BATTERY_FLOOR = ISSUES.find((i) => i.id === 'battery').basePrice.apple;
+const batteryPriceFor = (modelName) => MODEL_PRICES.battery[modelName] ?? APPLE_BATTERY_FLOOR;
+
+function batteryPage(g) {
+  const prices = [...new Set(g.models.map((m) => batteryPriceFor(m.name)))];
+  if (prices.length !== 1) {
+    throw new Error(`${g.slug}: variants disagree on battery price (${prices.join(', ')}) — split the generation or fix MODEL_PRICES`);
+  }
+  const price = prices[0];
+  return {
+    slug: g.slug,
+    label: `${g.name} Battery`,
+    modelPage: true,
+    generation: g,
+    title: `${g.name} Battery Replacement — $${price} Fitted Same-Day, Sydney | Express Repairs`,
+    description: `${g.name} battery replacement for $${price}, fitted and tested in 30–45 minutes at Riverwood Plaza, Sydney. Covers the ${g.variants}. Free battery health check, 6–12 month warranty.`,
+    schemaName: `${g.name} Battery Replacement`,
+    schemaPrice: String(price),
+    badgePill: `${g.name} · $${price}`,
+    badgeNote: '30–45 min · Free health check · 6–12 mth warranty',
+    h1Html: `<em>${g.name}</em> battery replacement, $${price} fitted.`,
+    sub: `One price across the ${g.variants} — the Pro and Max sizes are not charged extra. Fitted and tested in about half an hour at Riverwood Plaza, after a free battery health check that tells you whether you need one at all.`,
+    img: '/images/battery-repair.jpg',
+    alt: `Technician fitting a replacement battery in an ${g.name}`,
+    turnaround: '30–45 min',
+    fromCaption: `${g.name} battery`,
+    fromAmount: `$${price}`,
+    priceEyebrow: `${g.name} battery pricing`,
+    priceColLabel: 'Battery replacement',
+    priceFirstCol: 'Model',
+    priceNote: g.note,
+    rows: g.models.map((m) => ({
+      id: m.name.toLowerCase().replace(/[^a-z0-9]+/g, '-'),
+      logo: '', name: m.name, models: m.spec, price, time: '30–45 min',
+    })),
+    warranties: STD_WARRANTIES(`Most ${g.name} batteries are fitted in 30–45 minutes.`),
+    ctaTitle: `${g.name} dying by lunchtime? Fresh battery today.`,
+    faqs: [
+      { q: `How much is an ${g.name} battery replacement?`, a: `$${price}, and that is the whole price — the cell, fitting, testing and a 6–12 month warranty. It is the same figure across the ${g.variants}; the larger sizes are not charged extra.` },
+      { q: 'How do I know the battery is actually the problem?', a: 'Settings → Battery → Battery Health. Below 80% maximum capacity means the cell is worn. A phone that shuts down with charge still showing is another clear sign. We check it free either way — sometimes the real fault is the charging port, and we would rather find that than sell you a battery.' },
+      g.extraFaq,
+      { q: 'How long does it take?', a: 'About 30–45 minutes. Drop it at Shop 7C inside Riverwood Plaza, do your shopping, and it is generally ready before you have finished. Walk in any time Monday to Saturday.' },
+      { q: 'Do you use genuine batteries?', a: `Genuine OEM or premium-grade cells matched to the ${g.name}'s original capacity, tested after fitting and covered by our warranty. We tell you which one your repair uses before we start.` },
+      { q: 'Is it worth it, or should I just upgrade?', a: `For a phone that still gets iOS updates, a $${price} battery against $1,000-plus for a new handset is straightforward. We will give you an honest read if yours has other problems that change the answer — we would rather lose a battery sale than sell you one for a phone that is finished.` },
+    ],
+  };
+}
+
+SERVICES.push(...BATTERY_GENERATIONS.map(batteryPage));
 
 export const SERVICE_BY_SLUG = Object.fromEntries(SERVICES.map((s) => [s.slug, s]));
 

@@ -36,7 +36,7 @@ const SCREEN_PRICES = {
   // Apple — iPhone 11 to 13
   'iPhone 13 Pro Max': 149, 'iPhone 13 Pro': 149, 'iPhone 13': 149, 'iPhone 13 mini': 149,
   'iPhone 12 Pro Max': 149, 'iPhone 12 Pro': 149, 'iPhone 12': 149, 'iPhone 12 mini': 149,
-  'iPhone 11 Pro': 149, 'iPhone 11': 149,
+  'iPhone 11 Pro Max': 149, 'iPhone 11 Pro': 149, 'iPhone 11': 149,
   // Samsung — official Samsung AU genuine-screen pricing (swept 2026-07-10)
   'Galaxy S25 Ultra': 436, 'Galaxy S25+': 360, 'Galaxy S25 Edge': 525, 'Galaxy S25': 303, 'Galaxy S25 FE': 311,
   'Galaxy S24 Ultra': 432, 'Galaxy S24+': 359, 'Galaxy S24 FE': 294, 'Galaxy S24': 315,
@@ -70,7 +70,7 @@ const BATTERY_PRICES = {
   'iPhone 14 Pro Max': 119, 'iPhone 14 Pro': 119, 'iPhone 14 Plus': 119, 'iPhone 14': 119,
   'iPhone 13 Pro Max': 119, 'iPhone 13 Pro': 119, 'iPhone 13': 119, 'iPhone 13 mini': 119,
   'iPhone 12 Pro Max': 119, 'iPhone 12 Pro': 119, 'iPhone 12': 119, 'iPhone 12 mini': 119,
-  'iPhone 11 Pro': 119, 'iPhone 11': 119,
+  'iPhone 11 Pro Max': 119, 'iPhone 11 Pro': 119, 'iPhone 11': 119,
   'Galaxy S25 Ultra': 99, 'Galaxy S25+': 99, 'Galaxy S25 Edge': 99, 'Galaxy S25': 99, 'Galaxy S25 FE': 99,
   'Galaxy S24 Ultra': 99, 'Galaxy S24+': 99, 'Galaxy S24 FE': 99, 'Galaxy S24': 99,
   'Galaxy S23 Ultra': 99, 'Galaxy S23+': 99, 'Galaxy S23': 99, 'Galaxy S23 FE': 99,
