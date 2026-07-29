@@ -24,6 +24,7 @@ const SERVICE_BY_GBP_NAME = {
   'iPhone Screen Repair': 'iphone-screen',
   'Samsung Screen Repair': 'samsung-screen',
   'iPhone Battery Replacement': 'iphone-battery',
+  'iPad Repair': 'ipad',
 };
 
 describe('GBP kit service prices match the site', () => {

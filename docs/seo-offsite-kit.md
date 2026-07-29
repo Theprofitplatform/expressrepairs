@@ -67,6 +67,7 @@ or call 0415 303 300 for a quick quote.
 | iPhone Screen Repair | From $99 | iPhone 7 to iPhone 17 — $99/$149/$199 by generation. Fitted and tested in 30–60 min. |
 | Samsung Screen Repair | From $211 | Genuine Samsung parts at Samsung Australia's official pricing. Galaxy S, Z Fold/Flip and A series. |
 | iPhone Battery Replacement | From $59 | $59 for iPhone 7–X, $119 for iPhone 11 and newer. Free battery health check. |
+| iPad Repair | From $120 | Screens, batteries, charging ports and home buttons for iPad, mini, Air and Pro. Free assessment. |
 | Free Diagnostic | Free | Not sure what's wrong? Free assessment and quote, no fix no fee. |
 
 Each of the three device services above now has a matching landing page — link them

@@ -219,7 +219,7 @@ export const SERVICES = [
   },
 ];
 
-// Device-specific head-term pages. "iphone screen repair sydney" (~900/mo) is an
+// Device-specific head-term pages, plus iPad. "iphone screen repair sydney" (~900/mo) is an
 // order of magnitude bigger than the generic "phone screen repair sydney" the
 // /repairs/screen/ page targets, and it wants a different table: per-model tiers
 // from services.js MODEL_PRICES, not per-brand floors. `priceFirstCol` relabels
@@ -330,6 +330,48 @@ SERVICES.push(
       { q: 'How long does it take?', a: 'Most iPhone batteries are fitted in 30–45 minutes. Drop it at Shop 7C in Riverwood Plaza and it is usually ready before you have finished your shopping.' },
       { q: 'Will I get the "Unknown Part" battery warning?', a: 'On iPhone 11 and newer, iOS flags any battery not paired by Apple’s own system, including genuine cells fitted outside an Apple store. It is a service message, not a fault — the battery works normally and is fully warrantied. We explain exactly what you will see before we start.' },
       { q: 'Do you replace Samsung and other batteries too?', a: 'Yes — Galaxy batteries are $79–$99 depending on model, and we cover Pixel, Oppo, Huawei and Motorola from $59. See the general battery replacement page for the full table.' },
+    ],
+  },
+  {
+    // Unlike the other services, iPad rows are jobs rather than models or brands
+    // — one table covering the four repairs we actually do on a tablet. Prices are
+    // the real bands from docs/quoting-sheet.md (POS-derived), not phone prices
+    // scaled up. Turnaround is honest about adhesive: a glued display can need to
+    // sit overnight, so the page never promises a flat 30 minutes.
+    slug: 'ipad',
+    label: 'iPad Repair',
+    title: 'iPad Repair Sydney — Screens, Batteries & Ports | Express Repairs',
+    description: 'iPad repair in Sydney from $120 — screens, batteries, charging ports and home buttons for iPad, iPad Air, mini and Pro. Free assessment at Riverwood Plaza, 6–12 month warranty.',
+    schemaName: 'iPad Repair',
+    schemaPrice: '120',
+    badgePill: 'Tablets too',
+    badgeNote: 'Free assessment · 6–12 month warranty',
+    h1Html: 'iPad repair in <em>Sydney</em> — screens, batteries, ports.',
+    sub: 'Cracked glass, a battery that will not hold a day, or a charging port that has stopped taking a cable. Tablets are a slower job than phones — the display is glued rather than clipped in — so we quote the real timeframe instead of promising you half an hour.',
+    img: '/images/other-repairs.jpg',
+    alt: 'Technician working on an opened iPad',
+    turnaround: 'Same-day–next-day',
+    fromCaption: 'iPad repairs from',
+    fromAmount: '$120',
+    priceEyebrow: 'iPad repair pricing',
+    priceColLabel: 'Price',
+    priceFirstCol: 'iPad repair',
+    priceNote: 'Bands rather than single prices, because an iPad mini and a 13" iPad Pro are genuinely different jobs — the larger and Pro models sit at the top of each range. We confirm your exact price after a free assessment, before any work starts. Glass-only reglue is sometimes possible for less where the panel can be split.',
+    rows: [
+      { id: 'ipad-screen', logo: '', name: 'Screen replacement', models: 'iPad 5–11 · mini · Air · Pro', price: 149, priceTo: 399, time: 'Same-day–next-day' },
+      { id: 'ipad-battery', logo: '', name: 'Battery replacement', models: 'All models', price: 120, priceTo: 249, time: 'Same-day–next-day' },
+      { id: 'ipad-port', logo: '', name: 'Charging port', models: 'Lightning and USB-C', price: 120, priceTo: 179, time: 'Same-day–next-day' },
+      { id: 'ipad-button', logo: '', name: 'Home button', models: 'Pre-Face ID models', price: 120, time: 'Same-day–next-day' },
+    ],
+    warranties: STD_WARRANTIES('Most iPad repairs are same-day; glued screens can need overnight.'),
+    ctaTitle: 'Broken iPad? Free assessment, real quote.',
+    faqs: [
+      { q: 'How much does an iPad repair cost?', a: 'Screens run $149–$399 depending on size, batteries $120–$249, charging ports $120–$179 and home buttons $120. The larger and Pro models sit at the top of each band. We confirm the exact figure free, before starting.' },
+      { q: 'Why does an iPad screen cost more than a phone screen?', a: 'The panel is much bigger and it is bonded to the frame with adhesive rather than clipped in, so it takes longer to remove cleanly and the part itself costs more. A rushed iPad screen is how you end up with a lifting edge, so we would rather take the time.' },
+      { q: 'How long will it take?', a: 'Many iPad repairs are same-day. Screens are the exception — fresh adhesive needs time to cure properly, so some are ready the next day. We tell you which when we assess it, not after you have dropped it off.' },
+      { q: 'Which iPads do you repair?', a: 'iPad 5th generation through to the current models, plus iPad mini, iPad Air and iPad Pro. Bring it in and we will confirm parts availability for your exact model — very old or very new models occasionally need a part ordered in.' },
+      { q: 'Will I lose what is on it?', a: 'No — screen, battery and port repairs do not touch your storage. We still recommend an iCloud or computer backup before any service, as we would with a phone.' },
+      { q: 'Do you repair Samsung and other tablets?', a: 'Often, yes. Android tablets vary far more in parts availability than iPads, so we assess and quote those individually rather than publishing a band we might not be able to honour. Bring it in or call (02) 9533 3300.' },
     ],
   },
 );
