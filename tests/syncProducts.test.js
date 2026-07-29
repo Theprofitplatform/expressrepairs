@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { transformCatalog, thumbUrl, ONLINE_GRID_GROUPS, TRADE_ONLY_PATTERNS, R2_BASE, nameKey, buildNameMap } from '../scripts/sync-products.mjs';
+import { transformCatalog, thumbUrl, ONLINE_GRID_GROUPS, TRADE_ONLY_PATTERNS, R2_BASE } from '../scripts/sync-products.mjs';
 
 const row = (over = {}) => ({
   id: 'X-10', name: 'Case', sku: 'C1', type: 'PRODUCT', archived: false,
@@ -79,36 +79,6 @@ describe('transformCatalog', () => {
     }
   });
 
-  // For ~2,400 in-group products DXPOS holds the barcode (or an internal code)
-  // where the supplier holds their own SKU, so the SKU join misses and the
-  // product is dropped from the shop. The name is copied verbatim from the
-  // supplier price list, so it recovers most of them.
-  describe('supplier name fallback', () => {
-    const CAT = [
-      [{ name: 'ACME Widget Case — Black', image: 'https://s/one.jpg' }],
-      [{ name: 'Two Photos', image: 'https://s/a.jpg' }, { name: 'two   photos!', image: 'https://s/b.jpg' }],
-    ];
-
-    it('matches on a punctuation- and case-insensitive name', () => {
-      expect(nameKey('ACME Widget Case — Black')).toBe(nameKey('acme  widget/case - black'));
-      expect(buildNameMap(CAT).get(nameKey('acme widget case black'))).toBe('https://s/one.jpg');
-    });
-
-    // A coin-flip photo on a product page is worse than not listing it.
-    it('refuses a name that maps to more than one photo', () => {
-      expect(buildNameMap(CAT).get(nameKey('two photos'))).toBe(null);
-    });
-
-    it('lists a product whose SKU misses but whose name is in the catalogue', () => {
-      // 'LITO C5 AR+AF …' is a real MobileMall catalogue row; the SKU is junk.
-      const [p] = transformCatalog(
-        [row({ imageUrl: null, sku: '9361195012775', name: 'LITO C5 AR+AF Full Coating Aluminum Alloy Camera Corning Glass - Display' })],
-        new Set(),
-      );
-      expect(p.image).toMatch(/^https?:\/\//);
-    });
-  });
-
   // Shop fixtures / trade supplies live in the same DXPOS groups as consumer
   // accessories — a customer must never be sold a banner stand or a 100pcs
   // film roll for a cutting machine.
@@ -117,6 +87,17 @@ describe('transformCatalog', () => {
       'BLACKTECH 3D Custom Sublimation Retractable Banner Stands',
       'hoco. GF012 Phone Screen Protector 100pcs For Film Cutting Machine',
       'BLACKTECH Camera Glass Display Stand',
+      // Bench-repair stock that only lacks a photo today — see the comment on
+      // TRADE_ONLY_PATTERNS. A customer must never be able to buy these.
+      '[TOL4-2] JAKEMY JM-8190 1.5mm Logic Board Precision Screwdriver',
+      '[SP-110] Charging Port | iPhone XR - Black',
+      '[PT-115] Charging Port Sub Board| Nokia C30',
+      'Battery for AirPods Pro Ori 2pcs in one set',
+      'iRoo SQ25 [PACK 25] Easy Apply Glass Protector | iPhone 7/8/SE',
+      'G1200 12MP Digital Microscope 7 Inch Large Color Screen',
+      'SY10A Cashier Desk (L800xD550xH1000mm)',
+      'RELIFE XA3 Pro Multi-function USB-C Professional Detector',
+      'MaAnt D2 Intelligent Charging Grinding Pen for Phone CPU/IC Polishing',
     ];
     for (const name of tradeNames) {
       expect(transformCatalog([row({ name })]), name).toHaveLength(0);

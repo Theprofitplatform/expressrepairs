@@ -15,8 +15,6 @@ import { writeFileSync } from 'node:fs';
 import { fileURLToPath, pathToFileURL } from 'node:url';
 import IMAGE_MAP from '../src/data/product-images.json' with { type: 'json' };
 import R2_MANIFEST from '../src/data/r2-images.json' with { type: 'json' };
-import HOCO_CATALOGUE from '../src/data/hoco-catalogue.json' with { type: 'json' };
-import MOBILEMALL_CATALOGUE from '../src/data/mobilemall-catalogue.json' with { type: 'json' };
 import { applyCatalogFixes } from './catalog-fixes.mjs';
 
 // Images mirrored to R2 by scripts/upload-images-r2.mjs are served from our
@@ -39,32 +37,7 @@ const skuKey = (s) => String(s ?? '').toLowerCase().replace(/[^a-z0-9]/g, '');
 // keeps one bad POS field from freezing the whole catalogue.
 const absUrl = (u) => (/^https?:\/\//i.test(u ?? '') ? u : '');
 
-// SKU is not a reliable join: for ~2,400 in-group products DXPOS carries the
-// barcode or an internal code where the supplier carries their own SKU, so the
-// map misses and the product is dropped from the shop entirely. The product
-// NAME is copied verbatim from the supplier price list, so an exact match on a
-// punctuation-insensitive name recovers 1,634 of them straight from the
-// catalogues already in this repo — no scraping, no new data file.
-//
-// Only unambiguous names are used. Seven supplier names map to more than one
-// distinct photo (same title, different variant); attaching a coin-flip photo
-// to a product is worse than not listing it, so those are skipped.
-export const nameKey = (s) => String(s ?? '').toLowerCase().replace(/[^a-z0-9]+/g, ' ').trim();
-export const buildNameMap = (catalogues) => {
-  const seen = new Map(); // nameKey -> image url, or null once it's ambiguous
-  for (const p of catalogues.flat()) {
-    if (!p.image) continue;
-    const k = nameKey(p.name);
-    if (!k) continue;
-    if (!seen.has(k)) seen.set(k, p.image);
-    else if (seen.get(k) !== p.image) seen.set(k, null);
-  }
-  return seen;
-};
-const NAME_MAP = buildNameMap([MOBILEMALL_CATALOGUE, HOCO_CATALOGUE]);
-
-const imageFor = (r) =>
-  absUrl(r.imageUrl) || IMAGE_MAP[skuKey(r.sku)] || NAME_MAP.get(nameKey(r.name)) || '';
+const imageFor = (r) => absUrl(r.imageUrl) || IMAGE_MAP[skuKey(r.sku)] || '';
 
 // HOCO catalogue URLs follow Odoo's standard image sizes
 // (.../product.template/<id>/image_1024). Swap the trailing size token for
@@ -74,10 +47,7 @@ export const thumbUrl = (url) => (url || '').replace(/image_1024(?=\?|$)/, 'imag
 // The full accessory range is listed regardless of stock (DXPOS carries no
 // stock counts for this catalogue) — every listed product ships "dispatched
 // in 1-2 business days".
-// Raised from 5000 when the supplier-name image fallback recovered ~1,600
-// products that had been dropped for want of a photo. This is a runaway guard
-// (a POS misconfiguration listing the whole 11.9k catalogue), not a target.
-const MAX_ONLINE = Number(process.env.MAX_ONLINE || 7000);
+const MAX_ONLINE = Number(process.env.MAX_ONLINE || 5000);
 
 // Which DXPOS Sell-grid groups go online. Owner: edit this list to change
 // what the shop sells; archive a product in DXPOS to remove just one item.
@@ -103,6 +73,21 @@ export const TRADE_ONLY_PATTERNS = [
   /cutting machine/i, // film-plotter consumables reference the machine
   /\b\d{2,}\s*pcs\b/i, // bulk packs (100pcs film rolls etc.) — "100cm" is NOT matched
   /film roll/i, // plotter film consumables
+
+  // The stock below sits in the same consumer grid groups as accessories and
+  // is kept off the shop today only by the accident of having no photo — no
+  // rule excludes it. That accident is not load-bearing: the owner has started
+  // typing image URLs into DXPOS (it is what broke the 2026-07-28 sync), and
+  // the moment one of these gets a photo it goes on public sale. Name it.
+  /^\[(TOL|PT|SP)\b/i, // DXPOS shelf codes: bench TOoLs, ParTs, Spare Parts
+  /\bcharging port\b/i, // repair parts — the owner does not sell these online
+  /^battery for /i, // OEM replacement cells, likewise
+  /\[pack \d+\]/i, // 10-/25-packs are trade quantities
+  /\bmicroscope\b/i, // bench inspection gear
+  /\bcashier desk\b/i, // shop furniture
+  // Microsoldering / bench-repair tool makers and the tools themselves.
+  /\b(relife|sunshine ss-|mijing|jakemy|qianli|maant|2uul|g-tools)\b/i,
+  /\b(screwdriver|warping bar|breaking pen|grinding pen|structural adhesive|pcb board)\b/i,
 ];
 const isTradeOnly = (r) => TRADE_ONLY_PATTERNS.some((p) => p.test(r.name || ''));
 
