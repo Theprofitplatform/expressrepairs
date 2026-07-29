@@ -50,15 +50,28 @@ or call 0415 303 300 for a quick quote.
 
 ## 3. Services to add in GBP (name · price · description)
 
+> Prices below are the **"from" floors published on the site** — `gbpKit.test.js`
+> pins this table to `SERVICES` in `src/data/repairs.js`, so a price change on the
+> site fails the build until this table is updated too. Always enter them in GBP
+> with the word **"From"**: a bare "$99" against a $199 iPhone 15 screen is the
+> fastest way to turn a walk-in into a complaint.
+
 | Service name | Price | Short description |
 |---|---|---|
 | Phone Screen Repair | From $99 | Same-day cracked screen replacement for iPhone, Samsung, Pixel & more. 30–60 min, 6–12 month warranty. |
 | Phone Battery Replacement | From $59 | Fresh original-quality cells fitted in 30–45 min. Free battery health check. |
-| Charging Port Repair | From $49 | Finicky or dead charging port cleaned or replaced — fast. |
-| Back Glass Replacement | From $69 | Restore the finish, no shards or sharp edges. |
-| Camera Repair | From $79 | Blurry, cracked or black camera fixed and tested. |
-| Water Damage Repair | From $99 | Free assessment and board-level clean. Bring it in fast. |
+| Charging Port Repair | From $39 | Finicky or dead charging port cleaned or replaced — fast. |
+| Back Glass Replacement | From $99 | Restore the finish, no shards or sharp edges. |
+| Camera Repair | From $49 | Blurry, cracked or black camera fixed and tested. |
+| Water Damage Repair | From $149 | Free assessment and board-level clean. Bring it in fast. |
+| iPhone Screen Repair | From $99 | iPhone 7 to iPhone 17 — $99/$149/$199 by generation. Fitted and tested in 30–60 min. |
+| Samsung Screen Repair | From $211 | Genuine Samsung parts at Samsung Australia's official pricing. Galaxy S, Z Fold/Flip and A series. |
+| iPhone Battery Replacement | From $59 | $59 for iPhone 7–X, $119 for iPhone 11 and newer. Free battery health check. |
 | Free Diagnostic | Free | Not sure what's wrong? Free assessment and quote, no fix no fee. |
+
+Each of the three device services above now has a matching landing page — link them
+in the GBP service entry: `/repairs/iphone-screen/`, `/repairs/samsung-screen/`,
+`/repairs/iphone-battery/`.
 
 ---
 
