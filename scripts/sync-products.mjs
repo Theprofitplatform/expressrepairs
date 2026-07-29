@@ -91,6 +91,30 @@ export const TRADE_ONLY_PATTERNS = [
 ];
 const isTradeOnly = (r) => TRADE_ONLY_PATTERNS.some((p) => p.test(r.name || ''));
 
+// POS sell price keyed by fixed name, for src/data/products.js to apply to the
+// supplier-sourced listings that stand in for these products (see the comment
+// at the call site).
+//
+// A name two POS rows DISAGREE on is dropped rather than resolved: the shop
+// carries the same product under two SKUs at two prices (an OtterBox Defender
+// at $99 and $109), and `Object.fromEntries` would silently take whichever came
+// last. A coin-flip price is worse than the supplier's — that one is at least
+// consistent with what the page said yesterday. Rows that merely repeat the
+// same price are not a conflict.
+export function buildPosPrices(rows) {
+  const prices = new Map();
+  const conflicted = new Set();
+  for (const r of rows) {
+    const key = fixName(r.name);
+    if (!key || !(r.sellCents > 0)) continue;
+    const seen = prices.get(key);
+    if (seen != null && seen !== r.sellCents) conflicted.add(key);
+    else prices.set(key, r.sellCents);
+  }
+  for (const key of conflicted) prices.delete(key);
+  return { prices: Object.fromEntries([...prices].sort(([a], [b]) => (a < b ? -1 : 1))), conflicted };
+}
+
 // Pure transform: DXPOS catalog rows -> products.json entries.
 // applyCatalogFixes (catalog-fixes.mjs) then repairs names/categories/brands
 // and drops fixtures, repair parts, and double-imported duplicates.
@@ -241,14 +265,17 @@ async function main() {
     // make the shop's own price authoritative on those listings. Keyed on the
     // post-fix name because that is what the build-time merge compares.
     // Sell price only — never costCents, this file is committed to a public repo.
-    const posPrices = Object.fromEntries(
-      imageless.map((r) => [fixName(r.name), r.sellCents]).filter(([n, c]) => n && c > 0),
-    );
+    const { prices: posPrices, conflicted } = buildPosPrices(imageless);
     writeFileSync(
       fileURLToPath(new URL('../src/data/pos-prices.json', import.meta.url)),
       JSON.stringify(posPrices, null, 2) + '\n',
     );
-    console.log(`pos-prices.json: ${Object.keys(posPrices).length} shop prices for supplier-listed products`);
+    console.log(
+      `pos-prices.json: ${Object.keys(posPrices).length} shop prices for supplier-listed products` +
+        (conflicted.size
+          ? ` (${conflicted.size} dropped, two POS rows disagree: ${[...conflicted].join(' | ')})`
+          : ''),
+    );
   }
 
   if (products.length > MAX_ONLINE) {
