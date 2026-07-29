@@ -87,6 +87,17 @@ describe('transformCatalog', () => {
       'BLACKTECH 3D Custom Sublimation Retractable Banner Stands',
       'hoco. GF012 Phone Screen Protector 100pcs For Film Cutting Machine',
       'BLACKTECH Camera Glass Display Stand',
+      // Bench-repair stock that only lacks a photo today — see the comment on
+      // TRADE_ONLY_PATTERNS. A customer must never be able to buy these.
+      '[TOL4-2] JAKEMY JM-8190 1.5mm Logic Board Precision Screwdriver',
+      '[SP-110] Charging Port | iPhone XR - Black',
+      '[PT-115] Charging Port Sub Board| Nokia C30',
+      'Battery for AirPods Pro Ori 2pcs in one set',
+      'iRoo SQ25 [PACK 25] Easy Apply Glass Protector | iPhone 7/8/SE',
+      'G1200 12MP Digital Microscope 7 Inch Large Color Screen',
+      'SY10A Cashier Desk (L800xD550xH1000mm)',
+      'RELIFE XA3 Pro Multi-function USB-C Professional Detector',
+      'MaAnt D2 Intelligent Charging Grinding Pen for Phone CPU/IC Polishing',
     ];
     for (const name of tradeNames) {
       expect(transformCatalog([row({ name })]), name).toHaveLength(0);

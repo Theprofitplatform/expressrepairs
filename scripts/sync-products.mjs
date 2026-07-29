@@ -36,6 +36,7 @@ const skuKey = (s) => String(s ?? '').toLowerCase().replace(/[^a-z0-9]/g, '');
 // NOTHING syncs until it's fixed. Falling back to the supplier map instead
 // keeps one bad POS field from freezing the whole catalogue.
 const absUrl = (u) => (/^https?:\/\//i.test(u ?? '') ? u : '');
+
 const imageFor = (r) => absUrl(r.imageUrl) || IMAGE_MAP[skuKey(r.sku)] || '';
 
 // HOCO catalogue URLs follow Odoo's standard image sizes
@@ -72,6 +73,21 @@ export const TRADE_ONLY_PATTERNS = [
   /cutting machine/i, // film-plotter consumables reference the machine
   /\b\d{2,}\s*pcs\b/i, // bulk packs (100pcs film rolls etc.) — "100cm" is NOT matched
   /film roll/i, // plotter film consumables
+
+  // The stock below sits in the same consumer grid groups as accessories and
+  // is kept off the shop today only by the accident of having no photo — no
+  // rule excludes it. That accident is not load-bearing: the owner has started
+  // typing image URLs into DXPOS (it is what broke the 2026-07-28 sync), and
+  // the moment one of these gets a photo it goes on public sale. Name it.
+  /^\[(TOL|PT|SP)\b/i, // DXPOS shelf codes: bench TOoLs, ParTs, Spare Parts
+  /\bcharging port\b/i, // repair parts — the owner does not sell these online
+  /^battery for /i, // OEM replacement cells, likewise
+  /\[pack \d+\]/i, // 10-/25-packs are trade quantities
+  /\bmicroscope\b/i, // bench inspection gear
+  /\bcashier desk\b/i, // shop furniture
+  // Microsoldering / bench-repair tool makers and the tools themselves.
+  /\b(relife|sunshine ss-|mijing|jakemy|qianli|maant|2uul|g-tools)\b/i,
+  /\b(screwdriver|warping bar|breaking pen|grinding pen|structural adhesive|pcb board)\b/i,
 ];
 const isTradeOnly = (r) => TRADE_ONLY_PATTERNS.some((p) => p.test(r.name || ''));
 
