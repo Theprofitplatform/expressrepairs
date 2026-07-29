@@ -15,7 +15,7 @@ import { writeFileSync } from 'node:fs';
 import { fileURLToPath, pathToFileURL } from 'node:url';
 import IMAGE_MAP from '../src/data/product-images.json' with { type: 'json' };
 import R2_MANIFEST from '../src/data/r2-images.json' with { type: 'json' };
-import { applyCatalogFixes } from './catalog-fixes.mjs';
+import { applyCatalogFixes, fixName } from './catalog-fixes.mjs';
 
 // Images mirrored to R2 by scripts/upload-images-r2.mjs are served from our
 // own domain (800px WebP); anything not yet mirrored keeps its supplier URL
@@ -230,6 +230,25 @@ async function main() {
           console.log(`IMAGELESS\t${r.id}\t${r.sku ?? ''}\t${r.sellCents}\t${r.gridGroup}\t${r.name}`);
       }
     }
+
+    // 1,510 of those no-image products ARE on the shop — listed under their
+    // H-/M- supplier id, at the SUPPLIER's price, because the DXPOS row that
+    // carries the shop's own price never made it into products.json. Mostly the
+    // two agree, but 63 do not, and some badly: Apple EarPods listed at $119.90
+    // that the shop sells for $39.95.
+    //
+    // Emit the POS sell price keyed by fixed name so src/data/products.js can
+    // make the shop's own price authoritative on those listings. Keyed on the
+    // post-fix name because that is what the build-time merge compares.
+    // Sell price only — never costCents, this file is committed to a public repo.
+    const posPrices = Object.fromEntries(
+      imageless.map((r) => [fixName(r.name), r.sellCents]).filter(([n, c]) => n && c > 0),
+    );
+    writeFileSync(
+      fileURLToPath(new URL('../src/data/pos-prices.json', import.meta.url)),
+      JSON.stringify(posPrices, null, 2) + '\n',
+    );
+    console.log(`pos-prices.json: ${Object.keys(posPrices).length} shop prices for supplier-listed products`);
   }
 
   if (products.length > MAX_ONLINE) {

@@ -79,3 +79,45 @@ describe('owner price overrides', () => {
     }
   });
 });
+
+/**
+ * The shop's own counter price must beat the supplier's RRP.
+ *
+ * ~1,510 products the POS stocks are listed under their H-/M- SUPPLIER id,
+ * because the DXPOS row carrying the shop price has no photo and never reaches
+ * products.json. The site therefore quoted the supplier's RRP — which was
+ * visibly wrong in both directions: Apple EarPods listed at $119.90 that the
+ * shop sells for $39.95, and other lines listed BELOW the counter price,
+ * losing margin on every web order.
+ */
+describe('POS price beats supplier RRP', () => {
+  it('never leaves a supplier listing at a price the POS contradicts', async () => {
+    const { PRODUCTS } = await import('../src/data/products.js');
+    const { default: POS } = await import('../src/data/pos-prices.json');
+    const wrong = PRODUCTS.filter(
+      (p) => /^[HM]-/.test(p.id) && POS[p.name] && POS[p.name] !== p.priceCents,
+    );
+    // Owner overrides (priceFix) run last and deliberately outrank the POS, so
+    // allow those; nothing else may disagree.
+    const notOwnerSet = wrong.filter((p) => !/hanman|simple d/i.test(p.name));
+    expect(notOwnerSet.map((p) => `${p.id} ${p.name}`)).toEqual([]);
+  });
+
+  it('only touches supplier-sourced listings — a DXPOS row keeps its own price', async () => {
+    const { PRODUCTS } = await import('../src/data/products.js');
+    const { default: raw } = await import('../src/data/products.json');
+    const byId = new Map(raw.map((p) => [p.id, p.priceCents]));
+    for (const p of PRODUCTS) {
+      if (!p.id.startsWith('X-')) continue;
+      if (/hanman|simple d/i.test(p.name)) continue; // owner override wins
+      expect(p.priceCents, p.id).toBe(byId.get(p.id));
+    }
+  });
+
+  it('carries the known corrections', async () => {
+    const { PRODUCTS } = await import('../src/data/products.js');
+    const at = (id) => PRODUCTS.find((p) => p.id === id)?.priceCents;
+    expect(at('M-10003900')).toBe(3995); // Apple EarPods — was $119.90
+    expect(at('M-10009839')).toBe(1795); // USB-C to 3.5mm — was $69.90
+  });
+});
