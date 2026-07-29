@@ -4,6 +4,7 @@ import raw from './products.json';
 import hoco from './hoco-products.json';
 import mobilemall from './mobilemall-products.json';
 import barcodes from './barcodes.json';
+import POS_PRICES from './pos-prices.json';
 import { mergeCatalogs, mergeSupplier } from '../lib/merge-catalogs.js';
 import { tagsFor } from '../lib/tags.js';
 
@@ -27,6 +28,25 @@ const priceFix = (p) => {
   return p;
 };
 
+// The shop's own price wins over the supplier's RRP.
+//
+// ~1,510 products the POS stocks are listed here under their H-/M- SUPPLIER id,
+// because the DXPOS row carrying the shop's price has no photo and never
+// reaches products.json — so the site quotes the supplier's RRP instead. Mostly
+// the two agree; where they don't it is visible and bad in both directions
+// (Apple EarPods listed at $119.90 that the shop sells for $39.95, and other
+// lines listed BELOW the counter price, losing margin on every web order).
+//
+// pos-prices.json is emitted by the sync, keyed by fixed name — the same key
+// the merge dedupes on. Only supplier-sourced listings are touched: a DXPOS row
+// already carries its own price. Applied after the merge, like priceFix and
+// barcodeFix, so no re-sync can undo it.
+const posPriceFix = (p) => {
+  if (!/^[HM]-/.test(p.id)) return p;
+  const cents = POS_PRICES[p.name];
+  return cents && cents !== p.priceCents ? { ...p, priceCents: cents } : p;
+};
+
 // products.json is synced from DXPOS (scripts/sync-products.mjs);
 // mobilemall-products.json and hoco-products.json are imported from the two
 // supplier catalogues (scripts/import-mobilemall.mjs, scripts/import-hoco.mjs).
@@ -38,7 +58,7 @@ export const PRODUCTS = z
   .array(productSchema)
   .parse(
     mergeCatalogs(mergeSupplier(raw, mobilemall), hoco).map((p) =>
-      barcodeFix(priceFix({ ...p, tags: tagsFor(p) })),
+      barcodeFix(priceFix(posPriceFix({ ...p, tags: tagsFor(p) }))),
     ),
   );
 
