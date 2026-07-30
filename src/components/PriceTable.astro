@@ -1,13 +1,14 @@
 ---
 // Per-brand price table. Props: colLabel, note, rows ([{logo,name,models,price,time}]),
-// optional `compact` to drop the models column (used in-article).
-const { colLabel, note, rows = [], compact = false } = Astro.props;
+// optional `compact` to drop the models column (used in-article), and
+// `firstColLabel` for tables whose rows are models rather than brands.
+const { colLabel, note, rows = [], compact = false, firstColLabel = 'Brand' } = Astro.props;
 ---
 <div class="price-table-wrap">
   <table class="price-table">
     <thead>
       <tr>
-        <th>Brand</th>
+        <th>{firstColLabel}</th>
         {!compact && <th class="pt-models-col">Popular models</th>}
         <th>{colLabel}</th>
         <th class="pt-time-col">Turnaround</th>

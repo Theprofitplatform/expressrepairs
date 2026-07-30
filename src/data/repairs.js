@@ -1,3 +1,5 @@
+import { MODEL_PRICES, ISSUES } from './services.js';
+
 // Content for the repair service-page family and local (service×suburb) pages.
 // Price bands (low/high per brand) are derived from 12 months of real POS repair
 // sales (Lightspeed), so the table shows an honest "$from–$to" range per brand
@@ -33,6 +35,7 @@ const STD_WARRANTIES = (lastDesc) => [
 export const SUBURB_CHIPS = [
   'Riverwood', 'Padstow', 'Narwee', 'Beverly Hills', 'Peakhurst',
   'Punchbowl', 'Roselands', 'Kingsgrove', 'Hurstville', 'Revesby',
+  'Mortdale', 'Bankstown',
 ];
 
 export const SERVICES = [
@@ -217,6 +220,324 @@ export const SERVICES = [
     ],
   },
 ];
+
+// Device-specific head-term pages, plus iPad. "iphone screen repair sydney" (~900/mo) is an
+// order of magnitude bigger than the generic "phone screen repair sydney" the
+// /repairs/screen/ page targets, and it wants a different table: per-model tiers
+// from services.js MODEL_PRICES, not per-brand floors. `priceFirstCol` relabels
+// the table's first column since these rows are models, not brands.
+SERVICES.push(
+  {
+    slug: 'iphone-screen',
+    label: 'iPhone Screen Repair',
+    // Retitled for the cost intent: "iphone screen repair cost" is 300/mo at KD 4
+    // and this page already publishes the full per-generation table, which is
+    // exactly what that query wants. "Sydney" stays for the 900/mo geo term.
+    title: 'iPhone Screen Repair Cost — From $99, Same-Day Sydney | Express Repairs',
+    description: 'What an iPhone screen repair costs in Sydney: $99 for iPhone 7–X, $149 for 11–13, $199 for 14 and newer. Published prices, fitted in 30–60 minutes at Riverwood Plaza.',
+    schemaName: 'iPhone Screen Repair',
+    schemaPrice: '99',
+    badgePill: 'iPhone specialists',
+    badgeNote: '30–60 min turnaround · 6–12 month warranty',
+    h1Html: 'iPhone screen repair in <em>Sydney</em>, same day.',
+    sub: 'Cracked glass, dead pixels, ghost touches or a screen that stopped responding after a drop — we replace iPhone displays while you wait, with the price published up front instead of quoted over the phone.',
+    img: '/images/screen-repair.jpg',
+    alt: 'Technician replacing a cracked iPhone screen',
+    turnaround: '30–60 min',
+    fromCaption: 'iPhone screens from',
+    fromAmount: '$99',
+    priceEyebrow: 'iPhone screen pricing',
+    priceColLabel: 'Screen replacement',
+    priceFirstCol: 'iPhone model',
+    priceNote: 'One price per generation, not per phone — what you see is what you pay, including fitting, testing and warranty. Pro Max and Plus sizes are the same price as the standard model. Bring an iPhone we have in stock and it is usually done inside the hour.',
+    rows: [
+      { id: 'ip-new', logo: '', name: 'iPhone 17 · Air · 16 · 15 · 14', models: 'Pro Max · Pro · Plus · 16e · standard', price: 199, time: '30–60 min' },
+      { id: 'ip-mid', logo: '', name: 'iPhone 13 · 12 · 11', models: 'Pro Max · Pro · mini · standard', price: 149, time: '30–60 min' },
+      { id: 'ip-old', logo: '', name: 'iPhone XS · XR · X · SE · 8 · 7', models: 'Plus and standard sizes', price: 99, time: '30–45 min' },
+    ],
+    warranties: STD_WARRANTIES('Most iPhone screens replaced in 30–60 minutes.'),
+    ctaTitle: 'Cracked iPhone? Walk in today, walk out fixed.',
+    faqs: [
+      { q: 'How much is an iPhone screen repair in Sydney?', a: 'From $99 for an iPhone 7 through X-series, $149 for iPhone 11 to 13, and $199 for iPhone 14 and newer. That is the full price — fitting, testing and warranty included, with no separate labour charge.' },
+      { q: 'How long does an iPhone screen replacement take?', a: 'Most are done in 30–60 minutes while you wait or shop at Riverwood Plaza. If we have your model in stock you can usually walk in and collect the same visit.' },
+      { q: 'Do you use genuine Apple screens?', a: 'We fit genuine OEM displays where they are available and premium aftermarket panels that meet or exceed original specification where they are not. We tell you which one your repair uses before we start, and either way it is covered by our 6–12 month warranty.' },
+      { q: 'Will Face ID still work after the repair?', a: 'Yes. Face ID lives in the front sensor assembly, not the display, and we transfer it across intact. If Face ID was already broken before the repair we will diagnose that separately and for free.' },
+      { q: 'My glass is cracked but the display still works — is that cheaper?', a: 'On some models the glass can be separated from the display, which costs less than a full assembly. Bring it in for a free assessment and we will quote both options honestly.' },
+      { q: 'Do I need to book?', a: 'Walk-ins are welcome Monday to Saturday. Booking ahead just guarantees your model is on the shelf — worth doing for the newest iPhones. Call (02) 9533 3300 or use the quote form.' },
+    ],
+  },
+  {
+    slug: 'samsung-screen',
+    label: 'Samsung Screen Repair',
+    title: 'Samsung Screen Repair Sydney — Genuine Parts, Same-Day | Express Repairs',
+    description: 'Samsung Galaxy screen repair in Sydney with genuine Samsung parts at Samsung’s official Australian pricing. S25, S24, Z Fold, Z Flip and A series — same-day at Riverwood Plaza.',
+    schemaName: 'Samsung Galaxy Screen Repair',
+    schemaPrice: '211',
+    badgePill: 'Genuine Samsung parts',
+    badgeNote: '45–90 min turnaround · 6–12 month warranty',
+    h1Html: 'Samsung screen repair in <em>Sydney</em>, genuine parts.',
+    sub: 'Galaxy displays are bonded OLED panels — a cheap copy screen looks wrong and fails early. We fit genuine Samsung parts and charge Samsung Australia’s own published price, so you are not paying a middleman on top.',
+    img: '/images/screen-repair.jpg',
+    alt: 'Technician replacing a Samsung Galaxy screen',
+    turnaround: '45–90 min',
+    fromCaption: 'Galaxy screens from',
+    fromAmount: '$211',
+    priceEyebrow: 'Samsung screen pricing',
+    priceColLabel: 'Screen replacement',
+    priceFirstCol: 'Galaxy series',
+    priceNote: 'These are genuine Samsung parts priced from Samsung Australia’s official Repair Cost Estimator (inc GST), not aftermarket panels dressed up as originals. Foldables list the front/cover display — main inner displays are quoted on inspection. Older models Samsung no longer prices (S10, S9, Note 20, A11 era) are quoted on inspection.',
+    rows: [
+      { id: 'sg-s2x', logo: 'S', name: 'Galaxy S25 · S24 · S23', models: 'Ultra · Plus · Edge · FE · standard', price: 294, priceTo: 525, time: '45–90 min' },
+      { id: 'sg-s2older', logo: 'S', name: 'Galaxy S22 · S21 · S20', models: 'Ultra · Plus · FE · standard', price: 310, priceTo: 447, time: '45–90 min' },
+      { id: 'sg-fold', logo: 'S', name: 'Galaxy Z Fold · Z Flip', models: 'Fold7–Fold3 · Flip7–Flip3 (cover display)', price: 230, priceTo: 330, time: '60–90 min' },
+      { id: 'sg-a', logo: 'S', name: 'Galaxy A series', models: 'A73 · A56 · A55 · A35 · A25 · A16 · A05', price: 211, priceTo: 322, time: '45–90 min' },
+    ],
+    warranties: STD_WARRANTIES('Most Galaxy screens replaced in 45–90 minutes.'),
+    ctaTitle: 'Broken Galaxy screen? Genuine part, fitted today.',
+    faqs: [
+      { q: 'Why does a Samsung screen cost more than an iPhone screen?', a: 'Because we fit genuine Samsung panels. Galaxy displays are curved, bonded OLED assemblies and the genuine part itself costs more than an iPhone display. We charge Samsung Australia’s published part pricing rather than marking it up.' },
+      { q: 'Are these really genuine Samsung parts?', a: 'Yes. Our Galaxy screen pricing mirrors Samsung Australia’s official Repair Cost Estimator line for line, because that is the part we are fitting. If you want a cheaper aftermarket option on an older model, ask — we will tell you the trade-off first.' },
+      { q: 'Can you repair a folding Galaxy?', a: 'We replace the front and cover displays on Z Fold and Z Flip models at the prices listed. The inner folding display is a bigger job and we quote it on inspection rather than guessing a number.' },
+      { q: 'My Galaxy is older than the list — can you still fix it?', a: 'Usually. Samsung stopped publishing prices for the S10, S9, Note 20 and A11-era handsets, so we quote those on inspection after a free diagnostic instead of advertising a number we cannot stand behind.' },
+      { q: 'How long does a Galaxy screen take?', a: 'Most are 45–90 minutes — longer than an iPhone because the panel is bonded and has to be heated out cleanly. Foldables sit at the top of that range.' },
+    ],
+  },
+  {
+    slug: 'iphone-battery',
+    label: 'iPhone Battery Replacement',
+    // The single biggest target on the site. Unqualified "iphone battery
+    // replacement" is 2,300/mo at KD 4 and "iphone battery replacement cost" is
+    // 1,100/mo at KD 3 — this page was previously aimed at the 70/mo "sydney"
+    // variant. Same page, 30x the demand, and the cost query wants exactly what
+    // it already has: a published number.
+    title: 'iPhone Battery Replacement — Cost From $59, Same-Day Sydney | Express Repairs',
+    description: 'What an iPhone battery replacement costs: $59 for iPhone 7–X, $119 for iPhone 11 and newer, fitted in 30–45 minutes. Free battery health check at Riverwood Plaza, Sydney.',
+    schemaName: 'iPhone Battery Replacement',
+    schemaPrice: '59',
+    badgePill: 'Free health check',
+    badgeNote: '30–45 min turnaround · 6–12 month warranty',
+    h1Html: 'iPhone battery replacement — <em>$59 to $119</em>, fitted today.',
+    sub: 'Dead by lunchtime, shutting down at 40%, or Battery Health under 80%? A fresh cell takes about half an hour and costs a fraction of a new phone. Two prices, both published below, and a free health check first — in Riverwood, Sydney.',
+    img: '/images/battery-repair.jpg',
+    alt: 'Technician fitting a replacement iPhone battery',
+    turnaround: '30–45 min',
+    fromCaption: 'iPhone batteries from',
+    fromAmount: '$59',
+    priceEyebrow: 'iPhone battery pricing',
+    priceColLabel: 'Battery replacement',
+    priceFirstCol: 'iPhone model',
+    priceNote: 'Price includes the cell, fitting, testing and warranty. We run a free battery health check first — if the battery is not actually your problem, we will tell you rather than sell you one.',
+    rows: [
+      { id: 'ipb-new', logo: '', name: 'iPhone 17 · Air · 16 · 15 · 14 · 13 · 12 · 11', models: 'Pro Max · Pro · Plus · mini · standard', price: 119, time: '30–45 min' },
+      { id: 'ipb-old', logo: '', name: 'iPhone XS · XR · X · SE · 8 · 7', models: 'Plus and standard sizes', price: 59, time: '30–45 min' },
+    ],
+    warranties: STD_WARRANTIES('Most iPhone batteries fitted in 30–45 minutes.'),
+    ctaTitle: 'iPhone dying by lunchtime? Fresh battery today.',
+    faqs: [
+      { q: 'How much is an iPhone battery replacement?', a: '$119 for iPhone 11 and newer, $59 for iPhone 7 through X-series. That includes the cell, fitting, testing and a 6–12 month warranty.' },
+      { q: 'How do I know the battery is the problem?', a: 'Check Settings → Battery → Battery Health. Under 80% maximum capacity, or a phone that shuts down with charge still showing, means the cell is worn. Bring it in and we will check it free either way — sometimes the real fault is the charging port.' },
+      { q: 'Is it worth replacing, or should I upgrade?', a: 'For an iPhone under about three years old, a $119 battery against a $1,000-plus handset is an easy call — you are spending roughly a tenth to get another year or two. We will give you an honest read if the phone is genuinely at the end of its life.' },
+      { q: 'How long does it take?', a: 'Most iPhone batteries are fitted in 30–45 minutes. Drop it at Shop 7C in Riverwood Plaza and it is usually ready before you have finished your shopping.' },
+      { q: 'Will I get the "Unknown Part" battery warning?', a: 'On iPhone 11 and newer, iOS flags any battery not paired by Apple’s own system, including genuine cells fitted outside an Apple store. It is a service message, not a fault — the battery works normally and is fully warrantied. We explain exactly what you will see before we start.' },
+      { q: 'Do you replace Samsung and other batteries too?', a: 'Yes — Galaxy batteries are $79–$99 depending on model, and we cover Pixel, Oppo, Huawei and Motorola from $59. See the general battery replacement page for the full table.' },
+    ],
+  },
+  {
+    // Unlike the other services, iPad rows are jobs rather than models or brands
+    // — one table covering the four repairs we actually do on a tablet. Prices are
+    // the real bands from docs/quoting-sheet.md (POS-derived), not phone prices
+    // scaled up. Turnaround is honest about adhesive: a glued display can need to
+    // sit overnight, so the page never promises a flat 30 minutes.
+    slug: 'ipad',
+    label: 'iPad Repair',
+    title: 'iPad Repair Sydney — Screens, Batteries & Ports | Express Repairs',
+    description: 'iPad repair in Sydney from $120 — screens, batteries, charging ports and home buttons for iPad, iPad Air, mini and Pro. Free assessment at Riverwood Plaza, 6–12 month warranty.',
+    schemaName: 'iPad Repair',
+    schemaPrice: '120',
+    badgePill: 'Tablets too',
+    badgeNote: 'Free assessment · 6–12 month warranty',
+    h1Html: 'iPad repair in <em>Sydney</em> — screens, batteries, ports.',
+    sub: 'Cracked glass, a battery that will not hold a day, or a charging port that has stopped taking a cable. Tablets are a slower job than phones — the display is glued rather than clipped in — so we quote the real timeframe instead of promising you half an hour.',
+    img: '/images/other-repairs.jpg',
+    alt: 'Technician working on an opened iPad',
+    turnaround: 'Same-day–next-day',
+    fromCaption: 'iPad repairs from',
+    fromAmount: '$120',
+    priceEyebrow: 'iPad repair pricing',
+    priceColLabel: 'Price',
+    priceFirstCol: 'iPad repair',
+    priceNote: 'Bands rather than single prices, because an iPad mini and a 13" iPad Pro are genuinely different jobs — the larger and Pro models sit at the top of each range. We confirm your exact price after a free assessment, before any work starts. Glass-only reglue is sometimes possible for less where the panel can be split.',
+    rows: [
+      { id: 'ipad-screen', logo: '', name: 'Screen replacement', models: 'iPad 5–11 · mini · Air · Pro', price: 149, priceTo: 399, time: 'Same-day–next-day' },
+      { id: 'ipad-battery', logo: '', name: 'Battery replacement', models: 'All models', price: 120, priceTo: 249, time: 'Same-day–next-day' },
+      { id: 'ipad-port', logo: '', name: 'Charging port', models: 'Lightning and USB-C', price: 120, priceTo: 179, time: 'Same-day–next-day' },
+      { id: 'ipad-button', logo: '', name: 'Home button', models: 'Pre-Face ID models', price: 120, time: 'Same-day–next-day' },
+    ],
+    warranties: STD_WARRANTIES('Most iPad repairs are same-day; glued screens can need overnight.'),
+    ctaTitle: 'Broken iPad? Free assessment, real quote.',
+    faqs: [
+      { q: 'How much does an iPad repair cost?', a: 'Screens run $149–$399 depending on size, batteries $120–$249, charging ports $120–$179 and home buttons $120. The larger and Pro models sit at the top of each band. We confirm the exact figure free, before starting.' },
+      { q: 'Why does an iPad screen cost more than a phone screen?', a: 'The panel is much bigger and it is bonded to the frame with adhesive rather than clipped in, so it takes longer to remove cleanly and the part itself costs more. A rushed iPad screen is how you end up with a lifting edge, so we would rather take the time.' },
+      { q: 'How long will it take?', a: 'Many iPad repairs are same-day. Screens are the exception — fresh adhesive needs time to cure properly, so some are ready the next day. We tell you which when we assess it, not after you have dropped it off.' },
+      { q: 'Which iPads do you repair?', a: 'iPad 5th generation through to the current models, plus iPad mini, iPad Air and iPad Pro. Bring it in and we will confirm parts availability for your exact model — very old or very new models occasionally need a part ordered in.' },
+      { q: 'Will I lose what is on it?', a: 'No — screen, battery and port repairs do not touch your storage. We still recommend an iCloud or computer backup before any service, as we would with a phone.' },
+      { q: 'Do you repair Samsung and other tablets?', a: 'Often, yes. Android tablets vary far more in parts availability than iPads, so we assess and quote those individually rather than publishing a band we might not be able to honour. Bring it in or call (02) 9533 3300.' },
+    ],
+  },
+);
+
+// ── Phase A: per-generation iPhone battery pages ─────────────────────────────
+//
+// Plan + research: docs/superpowers/plans/2026-07-30-model-landing-pages.md
+//
+// Battery, not screen, and per generation, not per variant. Checked against
+// Ahrefs AU (2026-07-30) before building:
+//
+//   iphone 13 battery replacement    1,100/mo  KD 1   (+ Pro 600, Pro Max 450, mini 200)
+//   iphone 12 battery replacement      800/mo  KD 3
+//   iphone 14 pro battery replacement  700/mo  KD 2   (+ Pro Max 500, 14 450)
+//   iphone 11 battery replacement      700/mo  KD 5
+//   iphone 15 pro max battery repl.    300/mo         (+ Pro 250, 15 250)
+//   iphone 8 battery replacement       200/mo  KD 0   (+ iphone 7 200)
+//
+// Battery beats screen roughly 6:1 on the same handset. Variants within a
+// generation share one price, so one page naming all of them targets every
+// variant query without four near-identical pages.
+//
+// NOT per model × suburb: "iphone screen repair riverwood" is 0/mo and the
+// cross-product isn't in Ahrefs' index at all. That build would be ~200+ pages
+// matching Google's own definition of a doorway page for zero demand.
+//
+// `note` and `extraFaq` carry something true about THAT generation's battery.
+// A page without them is mail-merge, so modelPages.test.js requires both.
+const BATTERY_GENERATIONS = [
+  {
+    slug: 'iphone-15-battery', name: 'iPhone 15', released: '2023',
+    variants: 'iPhone 15, 15 Plus, 15 Pro and 15 Pro Max',
+    models: [
+      { name: 'iPhone 15', spec: '6.1" · 2023' },
+      { name: 'iPhone 15 Plus', spec: '6.7" · 2023' },
+      { name: 'iPhone 15 Pro', spec: '6.1" · 2023' },
+      { name: 'iPhone 15 Pro Max', spec: '6.7" · 2023' },
+    ],
+    note: 'The 15 is the first iPhone that will tell you its own charge cycle count — Settings → General → About, under Battery. If you can read the cycle count and the health percentage before you come in, we can tell you over the phone whether a battery is worth it.',
+    extraFaq: { q: 'How do I check the battery on an iPhone 15?', a: 'This generation shows you more than the older ones. Settings → Battery → Battery Health for the percentage, and Settings → General → About for the charge cycle count. Read us both over the phone and we can tell you whether you need us before you drive over.' },
+  },
+  {
+    slug: 'iphone-14-battery', name: 'iPhone 14', released: '2022',
+    variants: 'iPhone 14, 14 Plus, 14 Pro and 14 Pro Max',
+    models: [
+      { name: 'iPhone 14', spec: '6.1" · 2022' },
+      { name: 'iPhone 14 Plus', spec: '6.7" · 2022' },
+      { name: 'iPhone 14 Pro', spec: '6.1" · 2022' },
+      { name: 'iPhone 14 Pro Max', spec: '6.7" · 2022' },
+    ],
+    note: 'One thing to try before you pay us anything: the 14 Pro and Pro Max were the first iPhones with an always-on display, and it is a genuine draw. If your battery health is still above 80% but the phone is not lasting the day, turn the always-on display off in Settings → Display & Brightness and give it a week.',
+    extraFaq: { q: 'My iPhone 14 Pro does not last the day but Battery Health looks fine — what now?', a: 'Try turning off the always-on display first. It was new to the 14 Pro and Pro Max and it draws power all day. If health is above 80% and the phone still dies, a background app or a poor mobile signal is more likely than a worn cell — we will diagnose that free rather than sell you a battery you do not need.' },
+  },
+  {
+    slug: 'iphone-13-battery', name: 'iPhone 13', released: '2021',
+    variants: 'iPhone 13, 13 mini, 13 Pro and 13 Pro Max',
+    models: [
+      { name: 'iPhone 13', spec: '6.1" · 2021' },
+      { name: 'iPhone 13 mini', spec: '5.4" · 2021' },
+      { name: 'iPhone 13 Pro', spec: '6.1" · 2021' },
+      { name: 'iPhone 13 Pro Max', spec: '6.7" · 2021' },
+    ],
+    note: 'Be aware of one iOS behaviour on this generation: on iPhone 11 and newer, iOS flags any battery not paired by Apple\'s own system — including genuine cells fitted outside an Apple store — with a service message in Settings. It is a notice, not a fault. The battery works normally and carries our full warranty. We would rather you heard that from us now than discovered it afterwards.',
+    extraFaq: { q: 'Will my iPhone 13 show a battery warning after the repair?', a: 'Yes, and it is worth understanding why. Apple pairs batteries to the phone at the factory, and iOS marks anything fitted elsewhere with a service notice — Apple stores included if they use a non-paired cell. Your battery percentage, charging and health reporting all work normally, and the repair is warrantied 6–12 months. If that notice would bother you, tell us and we will talk through the alternatives before we start.' },
+  },
+  {
+    slug: 'iphone-12-battery', name: 'iPhone 12', released: '2020',
+    variants: 'iPhone 12, 12 mini, 12 Pro and 12 Pro Max',
+    models: [
+      { name: 'iPhone 12', spec: '6.1" · 2020' },
+      { name: 'iPhone 12 mini', spec: '5.4" · 2020' },
+      { name: 'iPhone 12 Pro', spec: '6.1" · 2020' },
+      { name: 'iPhone 12 Pro Max', spec: '6.7" · 2020' },
+    ],
+    note: 'The 12 mini is the one we see most from this generation. It has the smallest battery Apple has put in a modern iPhone, so the same wear that leaves a 12 Pro Max merely annoying leaves a mini needing a charger by mid-afternoon. Same $119 either way — the smaller phone does not get a smaller bill.',
+    extraFaq: { q: 'Is the iPhone 12 mini worse for battery than the others?', a: 'It starts with less capacity than any other modern iPhone, so as the cell wears you notice it sooner and harder. That is not a fault, just physics — and it is why the mini is the model from this generation that most often comes in for a battery.' },
+  },
+  {
+    slug: 'iphone-11-battery', name: 'iPhone 11', released: '2019',
+    variants: 'iPhone 11, 11 Pro and 11 Pro Max',
+    models: [
+      { name: 'iPhone 11', spec: '6.1" · 2019' },
+      { name: 'iPhone 11 Pro', spec: '5.8" · 2019' },
+      { name: 'iPhone 11 Pro Max', spec: '6.5" · 2019' },
+    ],
+    note: 'The iPhone 11 is the most common phone on our bench, and by 2026 it comes in for batteries far more than screens. Most are seven years old and past 1,000 charge cycles, which is well beyond the roughly 500 Apple rates the cell for. If yours is original, it is almost certainly the battery.',
+    extraFaq: { q: 'Is an iPhone 11 still worth putting money into?', a: 'For most people yes. It still receives iOS updates and handles everyday use fine. $119 for a battery against $1,000-plus for a new handset buys you another year or two for around a tenth of the cost. We will tell you honestly if yours has other faults that change the maths.' },
+  },
+  {
+    slug: 'iphone-8-battery', name: 'iPhone 8 & 7', released: '2016–2017',
+    variants: 'iPhone 8, 8 Plus, 7 and 7 Plus',
+    models: [
+      { name: 'iPhone 8', spec: '4.7" · 2017' },
+      { name: 'iPhone 8 Plus', spec: '5.5" · 2017' },
+      { name: 'iPhone 7', spec: '4.7" · 2016' },
+      { name: 'iPhone 7 Plus', spec: '5.5" · 2016' },
+    ],
+    note: 'These are the models where a new battery makes the phone measurably faster, not just longer-lasting. As the cell degrades, iOS deliberately throttles the processor to stop unexpected shutdowns — most noticeable on the 7 and older. Replace the battery and the phone returns to full speed. At $59 it is the best value repair we do.',
+    extraFaq: { q: 'Will a new battery make my iPhone 7 faster?', a: 'On these models, usually yes. When the battery degrades enough, iOS reduces peak processor performance to prevent the phone shutting down mid-task — you experience that as sluggishness. A healthy cell removes the need for it and the phone runs at full speed again. It is the one repair where people regularly tell us the phone feels new.' },
+  },
+];
+
+// Battery price comes from MODEL_PRICES — the same data the booking widget quotes
+// — falling back to the Apple brand floor for generations Apple-era models don't
+// list individually (iPhone 8/7 sit on the $59 floor). Deriving rather than
+// hardcoding means a price change moves the widget and these pages together, and
+// modelPages.test.js asserts every variant on a page really does share one price.
+const APPLE_BATTERY_FLOOR = ISSUES.find((i) => i.id === 'battery').basePrice.apple;
+const batteryPriceFor = (modelName) => MODEL_PRICES.battery[modelName] ?? APPLE_BATTERY_FLOOR;
+
+function batteryPage(g) {
+  const prices = [...new Set(g.models.map((m) => batteryPriceFor(m.name)))];
+  if (prices.length !== 1) {
+    throw new Error(`${g.slug}: variants disagree on battery price (${prices.join(', ')}) — split the generation or fix MODEL_PRICES`);
+  }
+  const price = prices[0];
+  return {
+    slug: g.slug,
+    label: `${g.name} Battery`,
+    modelPage: true,
+    generation: g,
+    title: `${g.name} Battery Replacement — $${price} Fitted Same-Day, Sydney | Express Repairs`,
+    description: `${g.name} battery replacement for $${price}, fitted and tested in 30–45 minutes at Riverwood Plaza, Sydney. Covers the ${g.variants}. Free battery health check, 6–12 month warranty.`,
+    schemaName: `${g.name} Battery Replacement`,
+    schemaPrice: String(price),
+    badgePill: `${g.name} · $${price}`,
+    badgeNote: '30–45 min · Free health check · 6–12 mth warranty',
+    h1Html: `<em>${g.name}</em> battery replacement, $${price} fitted.`,
+    sub: `One price across the ${g.variants} — the Pro and Max sizes are not charged extra. Fitted and tested in about half an hour at Riverwood Plaza, after a free battery health check that tells you whether you need one at all.`,
+    img: '/images/battery-repair.jpg',
+    alt: `Technician fitting a replacement battery in an ${g.name}`,
+    turnaround: '30–45 min',
+    fromCaption: `${g.name} battery`,
+    fromAmount: `$${price}`,
+    priceEyebrow: `${g.name} battery pricing`,
+    priceColLabel: 'Battery replacement',
+    priceFirstCol: 'Model',
+    priceNote: g.note,
+    rows: g.models.map((m) => ({
+      id: m.name.toLowerCase().replace(/[^a-z0-9]+/g, '-'),
+      logo: '', name: m.name, models: m.spec, price, time: '30–45 min',
+    })),
+    warranties: STD_WARRANTIES(`Most ${g.name} batteries are fitted in 30–45 minutes.`),
+    ctaTitle: `${g.name} dying by lunchtime? Fresh battery today.`,
+    faqs: [
+      { q: `How much is an ${g.name} battery replacement?`, a: `$${price}, and that is the whole price — the cell, fitting, testing and a 6–12 month warranty. It is the same figure across the ${g.variants}; the larger sizes are not charged extra.` },
+      { q: 'How do I know the battery is actually the problem?', a: 'Settings → Battery → Battery Health. Below 80% maximum capacity means the cell is worn. A phone that shuts down with charge still showing is another clear sign. We check it free either way — sometimes the real fault is the charging port, and we would rather find that than sell you a battery.' },
+      g.extraFaq,
+      { q: 'How long does it take?', a: 'About 30–45 minutes. Drop it at Shop 7C inside Riverwood Plaza, do your shopping, and it is generally ready before you have finished. Walk in any time Monday to Saturday.' },
+      { q: 'Do you use genuine batteries?', a: `Genuine OEM or premium-grade cells matched to the ${g.name}'s original capacity, tested after fitting and covered by our warranty. We tell you which one your repair uses before we start.` },
+      { q: 'Is it worth it, or should I just upgrade?', a: `For a phone that still gets iOS updates, a $${price} battery against $1,000-plus for a new handset is straightforward. We will give you an honest read if yours has other problems that change the answer — we would rather lose a battery sale than sell you one for a phone that is finished.` },
+    ],
+  };
+}
+
+SERVICES.push(...BATTERY_GENERATIONS.map(batteryPage));
 
 export const SERVICE_BY_SLUG = Object.fromEntries(SERVICES.map((s) => [s.slug, s]));
 
@@ -806,6 +1127,84 @@ export const LOCAL_PAGES = [
       { q: 'Do you use genuine batteries?', a: "Genuine OEM or premium-grade cells matched to your phone's original capacity, tested after fitting and covered by a 6–12 month warranty." },
     ],
     ctaTitle: 'Battery dying in Kingsgrove? Fresh power today.',
+  },
+  {
+    service: 'screen',
+    suburb: 'mortdale',
+    suburbName: 'Mortdale',
+    title: 'Screen Repair Mortdale — 8 Minutes Away, Same-Day | Express Repairs',
+    description: 'Cracked screen in Mortdale? Same-day phone screen repair from $99, about eight minutes up King Georges Rd at Riverwood Plaza. Free parking, 6–12 month warranty.',
+    badgePill: 'Mortdale',
+    badgeNote: 'About 8 min from Mortdale · Same-day',
+    h1Html: 'Screen repair for <em>Mortdale</em> locals.',
+    sub: 'Cracked or shattered screen? We are a short run up King Georges Road at Riverwood Plaza — close enough that dropping the phone off and picking it up fixed is a single trip, not a day of your life.',
+    turnaroundLabel: 'Screen turnaround',
+    captionSub: '8 min from Mortdale',
+    trust: 'Trusted by <strong>1,000+</strong> locals across Mortdale, Riverwood &amp; the St George area',
+    visitEyebrow: 'Getting here from Mortdale',
+    visitTitle: 'Eight minutes up the road.',
+    visitLede: 'We are at Riverwood Plaza on Belmore Rd — the next stop north for anyone in Mortdale.',
+    areaCopy: [
+      '<strong>By car:</strong> head up Morts Rd and onto King Georges Rd, then left onto Belmore Rd — about eight minutes outside school pickup. Riverwood Plaza has <strong>free customer parking</strong>, which is more than you can say for most repair counters in a shopping centre.',
+      '<strong>By bus:</strong> the 947 and local Georges River services run between Mortdale and Riverwood, and the Plaza entrance is right by the stop on Belmore Rd. Mortdale sits on the T4 Illawarra line rather than the T8, so driving or the bus is the quicker trip.',
+      '<strong>Walk-ins welcome, Mon–Sat.</strong> Most screens are done in 30–60 minutes, so it is genuinely a wait-and-collect job. Call ahead on newer models and we will have the screen on the bench when you arrive.',
+    ],
+    areaFacts: [
+      { label: 'By car', value: '~8 min drive' },
+      { label: 'Parking', value: 'Free at the Plaza' },
+      { label: 'Screen turnaround', value: '30–60 min' },
+      { label: 'Open', value: 'Mon–Sat (Sun closed)' },
+    ],
+    reviewsTitle: 'What locals say.',
+    reviewsLede: 'Real reviews from customers across the St George area.',
+    faqTitle: 'Screen repairs near Mortdale — common questions.',
+    faqs: [
+      { q: 'How do I get to you from Mortdale?', a: 'Up Morts Rd to King Georges Rd, then Belmore Rd — about eight minutes by car, with free parking when you arrive. We are at Shop 7C inside Riverwood Plaza.' },
+      { q: 'Is there a train from Mortdale?', a: 'Not directly — Mortdale is on the T4 Illawarra line and we are near Riverwood station on the T8. Driving or the local bus along King Georges Rd is quicker than changing trains in the city.' },
+      { q: 'How long does a screen repair take?', a: 'Most screen replacements are finished in 30–60 minutes. Drop it off, do your shopping in the Plaza, and it is usually ready before you are done.' },
+      { q: 'How much will it cost?', a: 'iPhone screens run $99 to $199 depending on the model, and Samsung Galaxy screens are genuine Samsung parts at Samsung Australia’s published prices. The price table on this page is the real one — no phone-quote games.' },
+      { q: 'Do you use genuine screens?', a: 'Genuine OEM where it is available, premium aftermarket that meets or beats original spec where it is not, and we tell you which before we start. Every screen is tested and warrantied 6–12 months.' },
+    ],
+    ctaTitle: 'Cracked screen in Mortdale? Fixed this afternoon.',
+  },
+  {
+    service: 'screen',
+    suburb: 'bankstown',
+    suburbName: 'Bankstown',
+    title: 'Screen Repair Bankstown — Free Parking, Same-Day | Express Repairs',
+    description: 'Phone screen repair for Bankstown from $99 — about 15 minutes down Punchbowl Rd at Riverwood Plaza, with free parking and published prices. 6–12 month warranty.',
+    badgePill: 'Bankstown',
+    badgeNote: '~15 min from Bankstown · Free parking',
+    h1Html: 'Screen repair for <em>Bankstown</em> locals.',
+    sub: 'Worth the short drive: published prices instead of a counter quote, free parking instead of a ticket, and a repair bench that has been in the same shopping centre for years rather than a kiosk that moves on.',
+    turnaroundLabel: 'Screen turnaround',
+    captionSub: '15 min from Bankstown',
+    trust: 'Trusted by <strong>1,000+</strong> locals across Bankstown, Riverwood &amp; the St George area',
+    visitEyebrow: 'Getting here from Bankstown',
+    visitTitle: 'A quarter of an hour, and parking is free.',
+    visitLede: 'Riverwood Plaza sits on Belmore Rd, a straight run south-east from Bankstown.',
+    areaCopy: [
+      '<strong>By car:</strong> Punchbowl Rd through to Belmore Rd, or Canterbury Rd if the traffic is with you — roughly fifteen minutes. Riverwood Plaza has <strong>free customer parking</strong> off Belmore Rd, so you are not feeding a machine while someone works on your phone.',
+      '<strong>Why bother leaving Bankstown:</strong> every price on this page is published, including the genuine Samsung part costs. Shopping-centre kiosks generally quote on the spot and vary by who is behind the counter. We would rather you knew the number before you drove over.',
+      '<strong>Walk-ins welcome, Mon–Sat.</strong> Most screens take 30–60 minutes, so plan it as one trip. Ring ahead on the newest iPhones and Galaxies and we will have the part ready.',
+    ],
+    areaFacts: [
+      { label: 'By car', value: '~15 min drive' },
+      { label: 'Parking', value: 'Free at the Plaza' },
+      { label: 'Screen turnaround', value: '30–60 min' },
+      { label: 'Open', value: 'Mon–Sat (Sun closed)' },
+    ],
+    reviewsTitle: 'What locals say.',
+    reviewsLede: 'Real reviews from customers across the St George area.',
+    faqTitle: 'Screen repairs near Bankstown — common questions.',
+    faqs: [
+      { q: 'Why drive to Riverwood when Bankstown has repair shops?', a: 'Mostly price transparency and parking. Our screen prices are published on this page, parking at Riverwood Plaza is free, and we have been at the same bench in the same centre for years — so the warranty is with someone you can still find in six months.' },
+      { q: 'How long does the drive take?', a: 'About fifteen minutes via Punchbowl Rd or Canterbury Rd through to Belmore Rd. We are at Shop 7C inside Riverwood Plaza, with free parking off Belmore Rd.' },
+      { q: 'How long does a screen repair take?', a: 'Most are finished in 30–60 minutes, so it is a wait-and-collect trip rather than leaving the phone overnight. Less common models can take longer and we will say so up front.' },
+      { q: 'What does it cost?', a: 'iPhone screens are $99 to $199 by generation. Samsung Galaxy screens use genuine Samsung parts priced from Samsung Australia’s own estimator. The table on this page is the price you pay, fitting and warranty included.' },
+      { q: 'Can I book ahead?', a: 'Yes, and it is worth it from Bankstown — booking guarantees your screen is in stock so the drive is not wasted. Call (02) 9533 3300 or use the quote form on this page.' },
+    ],
+    ctaTitle: 'Cracked screen in Bankstown? Worth the 15 minutes.',
   },
 ];
 
