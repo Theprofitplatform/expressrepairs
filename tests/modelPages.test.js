@@ -25,17 +25,42 @@ describe('per-generation model pages', () => {
 
   for (const page of modelPages) {
     describe(page.slug, () => {
-      it('every variant it claims to cover really shares one price', () => {
+      // A generation is flat or base/Pro. A third price means the price book
+      // changed shape and the page copy no longer describes it.
+      it('covers at most a base and a Pro price', () => {
         const prices = page.generation.models.map(
           (m) => MODEL_PRICES.battery[m.name] ?? APPLE_BATTERY_FLOOR,
         );
-        expect(new Set(prices).size, `prices: ${prices.join(', ')}`).toBe(1);
+        expect(new Set(prices).size, `prices: ${prices.join(', ')}`).toBeLessThanOrEqual(2);
       });
 
-      it('the advertised price is the price the widget quotes', () => {
-        const fromWidget = MODEL_PRICES.battery[page.generation.models[0].name] ?? APPLE_BATTERY_FLOOR;
-        expect(page.fromAmount).toBe(`$${fromWidget}`);
-        expect(page.schemaPrice).toBe(String(fromWidget));
+      it('every price row equals what the widget quotes for that model', () => {
+        for (const row of page.rows) {
+          const fromWidget = MODEL_PRICES.battery[row.name] ?? APPLE_BATTERY_FLOOR;
+          expect(row.price, `${row.name} row`).toBe(fromWidget);
+        }
+      });
+
+      it('the advertised price is the cheapest a customer can actually pay', () => {
+        const prices = page.generation.models.map(
+          (m) => MODEL_PRICES.battery[m.name] ?? APPLE_BATTERY_FLOOR,
+        );
+        const min = Math.min(...prices);
+        expect(page.fromAmount).toBe(`$${min}`);
+        expect(page.schemaPrice).toBe(String(min));
+      });
+
+      // A page quoting two prices must SAY so. Advertising "$159" on a page
+      // whose Pro variants cost $199 is the bug this whole change fixes.
+      it('a tiered page names both prices in its copy', () => {
+        const prices = [...new Set(page.generation.models.map(
+          (m) => MODEL_PRICES.battery[m.name] ?? APPLE_BATTERY_FLOOR,
+        ))];
+        if (prices.length < 2) return;
+        const top = Math.max(...prices);
+        const copy = [page.title, page.description, page.h1Html, page.sub, ...page.faqs.map((f) => f.a)].join(' ');
+        expect(copy, `page never mentions the $${top} Pro price`).toContain(`$${top}`);
+        expect(page.title + page.h1Html, 'headline must say "from"').toContain('from $');
       });
 
       // The anti-doorway rule, mechanically enforced.

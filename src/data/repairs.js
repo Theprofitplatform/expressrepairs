@@ -493,25 +493,45 @@ const BATTERY_GENERATIONS = [
 const APPLE_BATTERY_FLOOR = ISSUES.find((i) => i.id === 'battery').basePrice.apple;
 const batteryPriceFor = (modelName) => MODEL_PRICES.battery[modelName] ?? APPLE_BATTERY_FLOOR;
 
+// A generation is either flat (every variant one price) or two-tier (the Pro
+// and Pro Max take a higher-capacity cell). Those are the only two shapes the
+// owner's price book uses, so a third distinct price means the book changed
+// shape and this copy no longer describes it — fail loudly rather than
+// advertise a price some variant on the page will not honour.
 function batteryPage(g) {
-  const prices = [...new Set(g.models.map((m) => batteryPriceFor(m.name)))];
-  if (prices.length !== 1) {
-    throw new Error(`${g.slug}: variants disagree on battery price (${prices.join(', ')}) — split the generation or fix MODEL_PRICES`);
+  const prices = [...new Set(g.models.map((m) => batteryPriceFor(m.name)))].sort((a, b) => a - b);
+  if (prices.length > 2) {
+    throw new Error(`${g.slug}: ${prices.length} distinct battery prices (${prices.join(', ')}) — this page's copy only describes a flat or base/Pro split`);
   }
-  const price = prices[0];
+  const [price, proPrice] = [prices[0], prices[1]];
+  const tiered = proPrice != null;
+  // Which variants sit on the higher tier, named for the copy.
+  const proNames = g.models.filter((m) => batteryPriceFor(m.name) === proPrice).map((m) => m.name);
+  const proLabel = proNames.length === 2 ? `${proNames[0]} and ${proNames[1]}` : proNames.join(', ');
+  const baseNames = g.models.filter((m) => batteryPriceFor(m.name) === price).map((m) => m.name);
+  const baseLabel = baseNames.length === 2 ? `${baseNames[0]} and ${baseNames[1]}` : baseNames.join(', ');
+  // "from $X" everywhere once a page carries two prices, so the headline figure
+  // is one a customer can actually get.
+  const headline = tiered ? `from $${price}` : `$${price}`;
   return {
     slug: g.slug,
     label: `${g.name} Battery`,
     modelPage: true,
     generation: g,
-    title: `${g.name} Battery Replacement — $${price} Fitted Same-Day, Sydney | Express Repairs`,
-    description: `${g.name} battery replacement for $${price}, fitted and tested in 30–45 minutes at Riverwood Plaza, Sydney. Covers the ${g.variants}. Free battery health check, 6–12 month warranty.`,
+    title: `${g.name} Battery Replacement — ${headline} Fitted Same-Day, Sydney | Express Repairs`,
+    description: tiered
+      ? `${g.name} battery replacement from $${price} ($${proPrice} for the Pro sizes), fitted and tested in 30–45 minutes at Riverwood Plaza, Sydney. Covers the ${g.variants}. Free battery health check, 6–12 month warranty.`
+      : `${g.name} battery replacement for $${price}, fitted and tested in 30–45 minutes at Riverwood Plaza, Sydney. Covers the ${g.variants}. Free battery health check, 6–12 month warranty.`,
     schemaName: `${g.name} Battery Replacement`,
+    // Lowest price a customer on this page can actually pay — matches the
+    // cheapest table row, which prices.test.js pins.
     schemaPrice: String(price),
-    badgePill: `${g.name} · $${price}`,
+    badgePill: `${g.name} · ${headline}`,
     badgeNote: '30–45 min · Free health check · 6–12 mth warranty',
-    h1Html: `<em>${g.name}</em> battery replacement, $${price} fitted.`,
-    sub: `One price across the ${g.variants} — the Pro and Max sizes are not charged extra. Fitted and tested in about half an hour at Riverwood Plaza, after a free battery health check that tells you whether you need one at all.`,
+    h1Html: `<em>${g.name}</em> battery replacement, ${headline} fitted.`,
+    sub: tiered
+      ? `$${price} for the ${baseLabel}; the ${proLabel} take a higher-capacity cell, at $${proPrice}. Fitted and tested in about half an hour at Riverwood Plaza, after a free battery health check that tells you whether you need one at all.`
+      : `One price across the ${g.variants} — the Pro and Max sizes are not charged extra. Fitted and tested in about half an hour at Riverwood Plaza, after a free battery health check that tells you whether you need one at all.`,
     img: '/images/battery-repair.jpg',
     alt: `Technician fitting a replacement battery in an ${g.name}`,
     turnaround: '30–45 min',
@@ -523,17 +543,19 @@ function batteryPage(g) {
     priceNote: g.note,
     rows: g.models.map((m) => ({
       id: m.name.toLowerCase().replace(/[^a-z0-9]+/g, '-'),
-      logo: '', name: m.name, models: m.spec, price, time: '30–45 min',
+      logo: '', name: m.name, models: m.spec, price: batteryPriceFor(m.name), time: '30–45 min',
     })),
     warranties: STD_WARRANTIES(`Most ${g.name} batteries are fitted in 30–45 minutes.`),
     ctaTitle: `${g.name} dying by lunchtime? Fresh battery today.`,
     faqs: [
-      { q: `How much is an ${g.name} battery replacement?`, a: `$${price}, and that is the whole price — the cell, fitting, testing and a 6–12 month warranty. It is the same figure across the ${g.variants}; the larger sizes are not charged extra.` },
+      { q: `How much is an ${g.name} battery replacement?`, a: tiered
+        ? `$${price} for the ${baseLabel}, and $${proPrice} for the ${proLabel} — the Pro sizes take a higher-capacity cell, which costs us more. Either way that is the whole price: the cell, fitting, testing and a 6–12 month warranty, with no separate labour charge.`
+        : `$${price}, and that is the whole price — the cell, fitting, testing and a 6–12 month warranty. It is the same figure across the ${g.variants}; the larger sizes are not charged extra.` },
       { q: 'How do I know the battery is actually the problem?', a: 'Settings → Battery → Battery Health. Below 80% maximum capacity means the cell is worn. A phone that shuts down with charge still showing is another clear sign. We check it free either way — sometimes the real fault is the charging port, and we would rather find that than sell you a battery.' },
       g.extraFaq,
       { q: 'How long does it take?', a: 'About 30–45 minutes. Drop it at Shop 7C inside Riverwood Plaza, do your shopping, and it is generally ready before you have finished. Walk in any time Monday to Saturday.' },
       { q: 'Do you use genuine batteries?', a: `Genuine OEM or premium-grade cells matched to the ${g.name}'s original capacity, tested after fitting and covered by our warranty. We tell you which one your repair uses before we start.` },
-      { q: 'Is it worth it, or should I just upgrade?', a: `For a phone that still gets iOS updates, a $${price} battery against $1,000-plus for a new handset is straightforward. We will give you an honest read if yours has other problems that change the answer — we would rather lose a battery sale than sell you one for a phone that is finished.` },
+      { q: 'Is it worth it, or should I just upgrade?', a: `For a phone that still gets iOS updates, ${tiered ? `a battery from $${price}` : `a $${price} battery`} against $1,000-plus for a new handset is straightforward. We will give you an honest read if yours has other problems that change the answer — we would rather lose a battery sale than sell you one for a phone that is finished.` },
     ],
   };
 }

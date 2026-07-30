@@ -24,8 +24,7 @@ export const ISSUES = z.array(issueSchema).parse([
 //   column, which is what the site quotes; the book's higher OLED tier is an
 //   in-store upsell and is deliberately not advertised here. Tiers step
 //   X/XR/XS/SE/11 $149 -> 12/13/14 $199 -> 15/16/17 $249.
-//   Battery prices are NOT taken from the book — see the note on
-//   BATTERY_PRICES for why.
+//   Batteries are per-model from the same book — Pro/Pro Max cells cost more.
 // - Samsung: we fit GENUINE Samsung parts only, so prices mirror Samsung
 //   Australia's official Repair Cost Estimator (inc GST, July 2026 —
 //   samsung.com/au/support/repair-cost). Cheapest official option per model;
@@ -72,24 +71,21 @@ const SCREEN_PRICES = {
 // flat for S21 and newer + foldables, $79 for A series and pre-S21-era
 // models (Note 20).
 const BATTERY_PRICES = {
-  // Apple — iPhone 11 and newer.
-  //
-  // DELIBERATELY FLAT, and not the master price book's per-model figures. The
-  // book prices Pro/Pro Max cells above the base model of the same generation
-  // ($199 vs $159 on the 15, $129 vs $89 on the 12-14), but the generation
-  // battery landing pages advertise ONE exact price in their title, meta
-  // description, H1 and schema, and the body copy promises "the Pro and Max
-  // sizes are not charged extra". batteryPage() in repairs.js throws rather
-  // than let those two drift apart. Moving battery pricing to per-model means
-  // rewriting or splitting those four indexed pages first - an owner decision,
-  // not a data edit. See claudee/pricing-review/REPAIR-PRICE-COMPARISON.csv.
-  'iPhone 17 Pro Max': 119, 'iPhone 17 Pro': 119, 'iPhone 17': 119, 'iPhone Air': 119,
-  'iPhone 16 Pro Max': 119, 'iPhone 16 Pro': 119, 'iPhone 16 Plus': 119, 'iPhone 16': 119, 'iPhone 16e': 119,
-  'iPhone 15 Pro Max': 119, 'iPhone 15 Pro': 119, 'iPhone 15 Plus': 119, 'iPhone 15': 119,
-  'iPhone 14 Pro Max': 119, 'iPhone 14 Pro': 119, 'iPhone 14 Plus': 119, 'iPhone 14': 119,
-  'iPhone 13 Pro Max': 119, 'iPhone 13 Pro': 119, 'iPhone 13': 119, 'iPhone 13 mini': 119,
-  'iPhone 12 Pro Max': 119, 'iPhone 12 Pro': 119, 'iPhone 12': 119, 'iPhone 12 mini': 119,
-  'iPhone 11 Pro Max': 119, 'iPhone 11 Pro': 119, 'iPhone 11': 119,
+  // Apple — per-model, from the owner's price book. Pro/Pro Max carry a
+  // higher-capacity cell and cost more; the old flat $119 hid that, quoting a
+  // 15 Pro at $119 the counter charges $199 for. Four separate owner documents
+  // agree on these tiers (Xpress_Master_Price_Book.xlsx and the Staff Price
+  // List A4, both 2026-06-29): X-11 $79, 12-14 $89, 12-14 Pro $129,
+  // 15+ $159, 15+ Pro $199.
+  'iPhone 17 Pro Max': 199, 'iPhone 17 Pro': 199, 'iPhone 17': 159, 'iPhone Air': 159,
+  'iPhone 16 Pro Max': 199, 'iPhone 16 Pro': 199, 'iPhone 16 Plus': 159, 'iPhone 16': 159, 'iPhone 16e': 159,
+  'iPhone 15 Pro Max': 199, 'iPhone 15 Pro': 199, 'iPhone 15 Plus': 159, 'iPhone 15': 159,
+  'iPhone 14 Pro Max': 129, 'iPhone 14 Pro': 129, 'iPhone 14 Plus': 89, 'iPhone 14': 89,
+  'iPhone 13 Pro Max': 129, 'iPhone 13 Pro': 129, 'iPhone 13': 89, 'iPhone 13 mini': 89,
+  'iPhone 12 Pro Max': 129, 'iPhone 12 Pro': 129, 'iPhone 12': 89, 'iPhone 12 mini': 89,
+  'iPhone 11 Pro Max': 79, 'iPhone 11 Pro': 79, 'iPhone 11': 79,
+  'iPhone XS Max': 79, 'iPhone XS': 79, 'iPhone XR': 79, 'iPhone X': 79,
+  'iPhone SE (3rd gen)': 79, 'iPhone SE (2nd gen)': 79,
   'Galaxy S25 Ultra': 99, 'Galaxy S25+': 99, 'Galaxy S25 Edge': 99, 'Galaxy S25': 99, 'Galaxy S25 FE': 99,
   'Galaxy S24 Ultra': 99, 'Galaxy S24+': 99, 'Galaxy S24 FE': 99, 'Galaxy S24': 99,
   'Galaxy S23 Ultra': 99, 'Galaxy S23+': 99, 'Galaxy S23': 99, 'Galaxy S23 FE': 99,
