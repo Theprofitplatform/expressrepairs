@@ -19,8 +19,13 @@ export const ISSUES = z.array(issueSchema).parse([
 
 // Per-model "from" prices by issue id. Overrides the per-brand basePrice in
 // the booking widget when the selected model has an entry.
-// - Apple screen tiers per owner: iPhone 11–13 from $149, iPhone 14+ from $199
-//   (X/XR/XS/SE fall through to the $99 brand floor).
+// - Apple prices come from the owner's master price book
+//   (Xpress_Master_Price_Book.xlsx, 2026-06-29): screens are its **Screen LCD**
+//   column, which is what the site quotes; the book's higher OLED tier is an
+//   in-store upsell and is deliberately not advertised here. Tiers step
+//   X/XR/XS/SE/11 $149 -> 12/13/14 $199 -> 15/16/17 $249.
+//   Battery prices are NOT taken from the book — see the note on
+//   BATTERY_PRICES for why.
 // - Samsung: we fit GENUINE Samsung parts only, so prices mirror Samsung
 //   Australia's official Repair Cost Estimator (inc GST, July 2026 —
 //   samsung.com/au/support/repair-cost). Cheapest official option per model;
@@ -28,15 +33,19 @@ export const ISSUES = z.array(issueSchema).parse([
 //   quoted on inspection). A Samsung model with no entry under a priced issue
 //   (e.g. Note 20 — Samsung no longer publishes pricing) shows "Custom quote".
 const SCREEN_PRICES = {
-  // Apple — iPhone 14 and newer
-  'iPhone 17 Pro Max': 199, 'iPhone 17 Pro': 199, 'iPhone 17': 199, 'iPhone Air': 199,
-  'iPhone 16 Pro Max': 199, 'iPhone 16 Pro': 199, 'iPhone 16 Plus': 199, 'iPhone 16': 199, 'iPhone 16e': 199,
-  'iPhone 15 Pro Max': 199, 'iPhone 15 Pro': 199, 'iPhone 15 Plus': 199, 'iPhone 15': 199,
+  // Apple — iPhone 15 and newer (book: Screen LCD $249)
+  'iPhone 17 Pro Max': 249, 'iPhone 17 Pro': 249, 'iPhone 17': 249, 'iPhone Air': 249,
+  'iPhone 16 Pro Max': 249, 'iPhone 16 Pro': 249, 'iPhone 16 Plus': 249, 'iPhone 16': 249, 'iPhone 16e': 249,
+  'iPhone 15 Pro Max': 249, 'iPhone 15 Pro': 249, 'iPhone 15 Plus': 249, 'iPhone 15': 249,
+  // Apple — iPhone 12 to 14 (book: Screen LCD $199)
   'iPhone 14 Pro Max': 199, 'iPhone 14 Pro': 199, 'iPhone 14 Plus': 199, 'iPhone 14': 199,
-  // Apple — iPhone 11 to 13
-  'iPhone 13 Pro Max': 149, 'iPhone 13 Pro': 149, 'iPhone 13': 149, 'iPhone 13 mini': 149,
-  'iPhone 12 Pro Max': 149, 'iPhone 12 Pro': 149, 'iPhone 12': 149, 'iPhone 12 mini': 149,
+  'iPhone 13 Pro Max': 199, 'iPhone 13 Pro': 199, 'iPhone 13': 199, 'iPhone 13 mini': 199,
+  'iPhone 12 Pro Max': 199, 'iPhone 12 Pro': 199, 'iPhone 12': 199, 'iPhone 12 mini': 199,
+  // Apple — iPhone X to 11 (book: Screen LCD $149). X/XR/XS/SE used to fall
+  // through to the $99 brand floor, under-quoting every one of them by $50.
   'iPhone 11 Pro Max': 149, 'iPhone 11 Pro': 149, 'iPhone 11': 149,
+  'iPhone XS Max': 149, 'iPhone XS': 149, 'iPhone XR': 149, 'iPhone X': 149,
+  'iPhone SE (3rd gen)': 149, 'iPhone SE (2nd gen)': 149,
   // Samsung — official Samsung AU genuine-screen pricing (swept 2026-07-10)
   'Galaxy S25 Ultra': 436, 'Galaxy S25+': 360, 'Galaxy S25 Edge': 525, 'Galaxy S25': 303, 'Galaxy S25 FE': 311,
   'Galaxy S24 Ultra': 432, 'Galaxy S24+': 359, 'Galaxy S24 FE': 294, 'Galaxy S24': 315,
@@ -63,7 +72,17 @@ const SCREEN_PRICES = {
 // flat for S21 and newer + foldables, $79 for A series and pre-S21-era
 // models (Note 20).
 const BATTERY_PRICES = {
-  // Apple — iPhone 11 and newer
+  // Apple — iPhone 11 and newer.
+  //
+  // DELIBERATELY FLAT, and not the master price book's per-model figures. The
+  // book prices Pro/Pro Max cells above the base model of the same generation
+  // ($199 vs $159 on the 15, $129 vs $89 on the 12-14), but the generation
+  // battery landing pages advertise ONE exact price in their title, meta
+  // description, H1 and schema, and the body copy promises "the Pro and Max
+  // sizes are not charged extra". batteryPage() in repairs.js throws rather
+  // than let those two drift apart. Moving battery pricing to per-model means
+  // rewriting or splitting those four indexed pages first - an owner decision,
+  // not a data edit. See claudee/pricing-review/REPAIR-PRICE-COMPARISON.csv.
   'iPhone 17 Pro Max': 119, 'iPhone 17 Pro': 119, 'iPhone 17': 119, 'iPhone Air': 119,
   'iPhone 16 Pro Max': 119, 'iPhone 16 Pro': 119, 'iPhone 16 Plus': 119, 'iPhone 16': 119, 'iPhone 16e': 119,
   'iPhone 15 Pro Max': 119, 'iPhone 15 Pro': 119, 'iPhone 15 Plus': 119, 'iPhone 15': 119,
