@@ -260,8 +260,52 @@ Tests, so this cannot rot the way the GBP kit prices did:
 
 The reason the existing 30 pages are a cautionary tale is that nobody set one.
 
-**Set up Google Search Console first** — it is not currently connected, so we are
-flying blind and the Ahrefs `gsc-*` endpoints return nothing. Then:
+**Google Search Console is connected** — corrected 2026-07-30. Earlier notes said
+it was not; the Ahrefs `gsc-*` endpoints on project **10144497** now return live
+data. The verification tag is in `src/layouts/Layout.astro` and `robots.txt`
+points at `sitemap-index.xml`, which serves all 10,349 URLs including the 12 new
+pages. Nothing technical is outstanding.
+
+### Baseline at launch — measured 2026-07-30
+
+GSC has data for **July 2026 only**, so this is a fresh baseline rather than
+evidence of long-term failure:
+
+| Metric | Value |
+|---|---|
+| Impressions (July 2026) | 89 |
+| Clicks | 3 |
+| Average position | 7.1 |
+| Pages appearing in the GSC pages report | **1** — the homepage |
+| Homepage keywords | 16, top: "phone repair near me" |
+
+**The finding that matters more than anything else in this document:** across
+10,349 URLs, the only page in the GSC pages report is the homepage. Not one of the
+6 service pages, 17 suburb pages, 9,000+ shop pages or blog posts registered
+impressions in that window. `roselands phone repair` even shows an impression at
+position 6 — served from the *homepage*, not from `/repairs/screen/roselands/`,
+which exists.
+
+Two readings, and we cannot yet tell which:
+
+1. **Benign** — the property is a month old and Google simply has not worked
+   through a 10,349-URL site on a DR 0.4 domain yet.
+2. **Not benign** — interior pages are crawled but not indexed, or the shop's
+   ~9,000 near-duplicate product URLs are consuming the crawl budget that the ~30
+   pages worth ranking need.
+
+**If it is (2), then page count was never the lever and these 12 pages will not
+rank either, however good they are.** That is the honest risk attached to this
+whole plan, and it is why the criterion below is a stopping rule rather than a
+target.
+
+**Next diagnostic, owner-gated:** Search Console → **Pages** ("Why pages aren't
+indexed"). The Ahrefs API does not expose index coverage, so this has to be read
+in the GSC UI. Indexed-vs-excluded counts and the exclusion reasons will
+distinguish reading (1) from reading (2) in about five minutes, and that answer
+should govern whether Phase C/D happens at all.
+
+Then:
 
 > If Phase A's 6 pages have not registered **impressions in GSC for their primary
 > keywords within 8 weeks** of indexing, stop. Do not build Phase C or D.
@@ -300,5 +344,17 @@ why the GBP and local-link work stays the higher priority in the meantime.
 
 1. Phase A as scoped (6 battery pages), or a smaller trial (say the top 2) first?
 2. Phase B retitles — do now, alongside PR #56, or separately?
-3. Confirm Google Search Console gets connected before Phase A ships, so the kill
-   criterion is actually measurable.
+3. ~~Confirm Google Search Console gets connected~~ — done, it already was. Instead:
+   read the GSC **Pages** report and settle whether interior pages are being
+   indexed at all, because that governs whether Phase C/D is worth building.
+
+---
+
+## Status
+
+- **Phase A + B shipped** 2026-07-30, squash `16e22b6`, live and verified (12/12
+  pages returning 200, all present in the sitemap).
+- **iPhone 11 Pro Max price** confirmed by the owner at $119 battery / $149 screen.
+- **Phase C/D not started**, and deliberately gated on the GSC Pages answer above
+  rather than on the 8-week impressions check alone. If interior pages are not
+  being indexed, building 6 more of them is the wrong move.
