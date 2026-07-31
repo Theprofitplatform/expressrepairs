@@ -9,7 +9,7 @@ import { MODEL_PRICES, ISSUES } from './services.js';
 // Brand rows shared by every service price table (order matters).
 export const BRAND_ROWS = [
   { id: 'apple', logo: '', name: 'Apple iPhone', models: 'iPhone 17 · 15 · 13 · 11 · X · 8 · 7 · 6 · SE' },
-  { id: 'samsung', logo: 'S', name: 'Samsung Galaxy', models: 'S25 Ultra · S23 · S20 · S9 · Z Fold7 · A54 · A11' },
+  { id: 'samsung', logo: 'S', name: 'Samsung Galaxy', models: 'S25 Ultra · S23 · S20 · S9 · A54 · A16 · A11' },
   { id: 'google', logo: 'G', name: 'Google Pixel', models: 'Pixel 8 Pro · 8 · 7 · 7a · 6' },
   { id: 'oppo', logo: 'O', name: 'Oppo', models: 'Find X6 Pro · Reno 10 · A78 · A58' },
   { id: 'huawei', logo: 'H', name: 'Huawei', models: 'P60 Pro · P50 · Mate 50 · Nova 11' },
@@ -57,12 +57,12 @@ export const SERVICES = [
     fromAmount: '$99',
     priceEyebrow: 'Screen repair pricing',
     priceColLabel: 'Screen repair',
-    priceNote: "Prices use original-quality parts and include fitting, testing and warranty. Samsung screens are genuine Samsung parts at Samsung's official Australian pricing; foldable main displays are quoted on inspection. Free diagnostic if you're not sure the screen is the problem.",
+    priceNote: "Prices use original-quality parts and include fitting, testing and warranty. Samsung screens are genuine Samsung parts at Samsung's official Australian pricing; folding Galaxies (Z Fold, Z Flip) are quoted on inspection. Free diagnostic if you're not sure the screen is the problem.",
     rows: rows([99, 211, 129, 99, 99, 99], [549, 525, 399, 349, 349, 349], ['30–60 min', '45–90 min', '30–60 min', '30–60 min', '30–60 min', '30–60 min']),
     warranties: STD_WARRANTIES('Most screens replaced in 30–60 minutes.'),
     ctaTitle: 'Cracked screen? Fixed by this afternoon.',
     faqs: [
-      { q: 'How long does a screen repair take?', a: "Most screen replacements are completed within 30–60 minutes. Foldables and less common models can take longer — we'll give you a firm time estimate the moment you walk in." },
+      { q: 'How long does a screen repair take?', a: "Most screen replacements are completed within 30–60 minutes. Less common models can take longer — we'll give you a firm time estimate the moment you walk in." },
       { q: 'Do you use genuine screens?', a: 'We use a combination of genuine OEM parts and premium aftermarket screens that meet or exceed original specifications. Every screen is warrantied and thoroughly tested before installation.' },
       { q: 'My screen works but the glass is cracked — is that cheaper?', a: "Sometimes. On models where the glass can be separated from the display, a glass-only repair costs less. Bring it in for a free assessment and we'll quote both options." },
       { q: 'Will my data be safe during the repair?', a: "Yes — we don't need to access your data for a screen replacement. We still recommend backing up your device before any service as a precaution." },
@@ -117,8 +117,12 @@ export const SERVICES = [
     fromAmount: '$99',
     priceEyebrow: 'Back glass pricing',
     priceColLabel: 'Back glass',
-    priceNote: 'Prices use colour-matched original-quality panels and include laser removal, fitting, resealing and warranty.',
-    rows: rows([149, 99, 99, 99, 99, 99], [450, 299, 299, 299, 299, 299], ['60–90 min', '60–90 min', '60–90 min', '60–90 min', '60–90 min', '60–90 min']),
+    priceNote: 'Prices use colour-matched original-quality panels and include laser removal, fitting, resealing and warranty. Standard bodies are $99; the iPhone 15/16/17 and the 12–14 Pro and Pro Max backs are $199, because the frame makes laser removal harder.',
+    // Owner 2026-07-31: back glass is "around $199 not more". The Apple band
+    // used to read $149–450 off the quoting sheet, which is not what the
+    // counter charges — and $450 was also well above Apple's own $269 for a
+    // 15/16/17 back, so the page was talking customers out of the job.
+    rows: rows([99, 99, 99, 99, 99, 99], [199, 199, 199, 199, 199, 199], ['60–90 min', '60–90 min', '60–90 min', '60–90 min', '60–90 min', '60–90 min']),
     warranties: STD_WARRANTIES('Most back glass replaced in 60–90 minutes.'),
     ctaTitle: 'Shattered back? Looking factory-fresh by this afternoon.',
     faqs: [
@@ -146,8 +150,8 @@ export const SERVICES = [
     fromCaption: 'Ports from',
     fromAmount: '$39',
     priceEyebrow: 'Charging port pricing',
-    priceColLabel: 'Port replacement',
-    priceNote: "Prices include fitting, testing and warranty. If it's just debris in the port, we'll clean it on the spot for a fraction of the price.",
+    priceColLabel: 'Clean or replace',
+    priceNote: "The 'from' price is a clean and realign — compacted lint is the most common cause and that is all it needs. Replacing a worn port costs more, and more again on the iPhone 15–17 where it is soldered to the board. We check first, free, and tell you which one you need before starting.",
     rows: rows([49, 59, 49, 39, 39, 49], [99, 179, 129, 99, 99, 99], ['45–90 min', '45–90 min', '45–90 min', '45–60 min', '45–90 min', '45–60 min']),
     warranties: STD_WARRANTIES('Most ports cleaned or replaced in 45–90 minutes.'),
     ctaTitle: "Phone won't charge? Sorted same day.",
@@ -177,7 +181,7 @@ export const SERVICES = [
     fromAmount: '$49',
     priceEyebrow: 'Camera repair pricing',
     priceColLabel: 'Camera repair',
-    priceNote: 'Prices use original-quality modules and include fitting, focus calibration, testing and warranty. Cracked lens glass alone is usually cheaper.',
+    priceNote: "The 'from' price is the lens glass over the camera. A failed camera module — blurry, shaking or black images — is a dearer part and sits at the top of the band. Prices use original-quality modules and include fitting, focus calibration, testing and warranty.",
     rows: rows([49, 79, 49, 49, 49, 49], [199, 262, 149, 149, 149, 149], ['45–90 min', '45–90 min', '45–90 min', '45–60 min', '45–90 min', '45–60 min']),
     warranties: STD_WARRANTIES('Most cameras repaired in 45–90 minutes.'),
     ctaTitle: 'Blurry camera? Sharp shots by this afternoon.',
@@ -271,7 +275,7 @@ SERVICES.push(
     slug: 'samsung-screen',
     label: 'Samsung Screen Repair',
     title: 'Samsung Screen Repair Sydney — Genuine Parts, Same-Day | Express Repairs',
-    description: 'Samsung Galaxy screen repair in Sydney with genuine Samsung parts at Samsung’s official Australian pricing. S25, S24, Z Fold, Z Flip and A series — same-day at Riverwood Plaza.',
+    description: 'Samsung Galaxy screen repair in Sydney with genuine Samsung parts at Samsung’s official Australian pricing. S25, S24, S23, S22 and A series — same-day at Riverwood Plaza.',
     schemaName: 'Samsung Galaxy Screen Repair',
     schemaPrice: '211',
     badgePill: 'Genuine Samsung parts',
@@ -286,11 +290,10 @@ SERVICES.push(
     priceEyebrow: 'Samsung screen pricing',
     priceColLabel: 'Screen replacement',
     priceFirstCol: 'Galaxy series',
-    priceNote: 'These are genuine Samsung parts priced from Samsung Australia’s official Repair Cost Estimator (inc GST), not aftermarket panels dressed up as originals. Foldables list the front/cover display — main inner displays are quoted on inspection. Older models Samsung no longer prices (S10, S9, Note 20, A11 era) are quoted on inspection.',
+    priceNote: 'These are genuine Samsung parts priced from Samsung Australia’s official Repair Cost Estimator (inc GST), not aftermarket panels dressed up as originals. Folding Galaxies (Z Fold, Z Flip) and older models Samsung no longer prices (S10, S9, Note 20, A11 era) are quoted on inspection after a free diagnostic, rather than advertising a number we cannot stand behind.',
     rows: [
       { id: 'sg-s2x', logo: 'S', name: 'Galaxy S25 · S24 · S23', models: 'Ultra · Plus · Edge · FE · standard', price: 294, priceTo: 525, time: '45–90 min' },
       { id: 'sg-s2older', logo: 'S', name: 'Galaxy S22 · S21 · S20', models: 'Ultra · Plus · FE · standard', price: 310, priceTo: 447, time: '45–90 min' },
-      { id: 'sg-fold', logo: 'S', name: 'Galaxy Z Fold · Z Flip', models: 'Fold7–Fold3 · Flip7–Flip3 (cover display)', price: 230, priceTo: 330, time: '60–90 min' },
       { id: 'sg-a', logo: 'S', name: 'Galaxy A series', models: 'A73 · A56 · A55 · A35 · A25 · A16 · A05', price: 211, priceTo: 322, time: '45–90 min' },
     ],
     warranties: STD_WARRANTIES('Most Galaxy screens replaced in 45–90 minutes.'),
@@ -298,9 +301,9 @@ SERVICES.push(
     faqs: [
       { q: 'Why does a Samsung screen cost more than an iPhone screen?', a: 'Because we fit genuine Samsung panels. Galaxy displays are curved, bonded OLED assemblies and the genuine part itself costs more than an iPhone display. We charge Samsung Australia’s published part pricing rather than marking it up.' },
       { q: 'Are these really genuine Samsung parts?', a: 'Yes. Our Galaxy screen pricing mirrors Samsung Australia’s official Repair Cost Estimator line for line, because that is the part we are fitting. If you want a cheaper aftermarket option on an older model, ask — we will tell you the trade-off first.' },
-      { q: 'Can you repair a folding Galaxy?', a: 'We replace the front and cover displays on Z Fold and Z Flip models at the prices listed. The inner folding display is a bigger job and we quote it on inspection rather than guessing a number.' },
+      { q: 'Can you repair a folding Galaxy?', a: 'Folding Galaxies are not routine work for us, so we do not advertise a price for them. Bring it in for a free diagnostic and we will tell you honestly whether it is a job we will take — and if it is not, where to go instead.' },
       { q: 'My Galaxy is older than the list — can you still fix it?', a: 'Usually. Samsung stopped publishing prices for the S10, S9, Note 20 and A11-era handsets, so we quote those on inspection after a free diagnostic instead of advertising a number we cannot stand behind.' },
-      { q: 'How long does a Galaxy screen take?', a: 'Most are 45–90 minutes — longer than an iPhone because the panel is bonded and has to be heated out cleanly. Foldables sit at the top of that range.' },
+      { q: 'How long does a Galaxy screen take?', a: 'Most are 45–90 minutes — longer than an iPhone because the panel is bonded and has to be heated out cleanly. Ultra and Plus sizes sit at the top of that range.' },
     ],
   },
   {
@@ -754,7 +757,7 @@ export const LOCAL_PAGES = [
     faqTitle: 'Screen repairs near Kingsgrove — common questions.',
     faqs: [
       { q: 'How do I get to you from Kingsgrove?', a: "It's three stops down the T8 — Kingsgrove, Beverly Hills, Narwee, then Riverwood — and the Plaza is right by the station. By car it's about ten minutes, with free parking when you arrive." },
-      { q: 'How long does a screen repair take?', a: 'Most screens are replaced in 30–60 minutes. Foldables and rarer models can take longer — we’ll give you a firm estimate as soon as you walk in.' },
+      { q: 'How long does a screen repair take?', a: 'Most screens are replaced in 30–60 minutes. Rarer models can take longer — we’ll give you a firm estimate as soon as you walk in.' },
       { q: 'Can I wait while it’s done?', a: 'Most people do — drop it at Shop 7C and grab a coffee in the Plaza. Or leave it and we’ll text when it’s ready.' },
       { q: 'Do you use genuine screens?', a: 'A mix of genuine OEM and premium aftermarket panels that match or beat the original spec. Every screen is tested and warrantied before fitting.' },
       { q: "What's covered under the warranty?", a: 'Parts and workmanship for 6–12 months depending on the repair — excluding new physical or water damage afterwards.' },
@@ -936,7 +939,7 @@ export const LOCAL_PAGES = [
     areaCopy: [
       '<strong>By car:</strong> roughly ten minutes via Stoney Creek Rd and King Georges Rd toward Belmore Rd. Riverwood Plaza has <strong>free customer parking</strong> off Belmore Rd — a welcome change from circling the Westfield car park. Drop your phone at <strong>Shop 7C</strong> near the Woolworths end.',
       '<strong>Why come to us instead of a mall kiosk:</strong> we’re a dedicated repair shop, not a counter between phone cases. Free diagnostic, the price confirmed before we start, original-quality parts, and a 6–12 month warranty in writing on every screen.',
-      '<strong>Walk-ins welcome, Mon–Sat.</strong> Call ahead for the newest flagships and foldables so we have your exact screen ready.',
+      '<strong>Walk-ins welcome, Mon–Sat.</strong> Call ahead for the newest flagships so we have your exact screen ready.',
     ],
     areaFacts: [
       { label: 'By car', value: '~10 min drive' },
@@ -950,7 +953,7 @@ export const LOCAL_PAGES = [
     faqs: [
       { q: 'How do I get to you from Hurstville?', a: "It's about a ten-minute drive via Stoney Creek Rd and King Georges Rd to Belmore Rd — and unlike the Westfield, Riverwood Plaza has free customer parking." },
       { q: 'Why not just use a kiosk at the Westfield?', a: 'We’re a dedicated repair shop with a free diagnostic, the price confirmed before any work starts, original-quality parts and a written 6–12 month warranty — not a quick counter job between phone-case sales.' },
-      { q: 'How long does a screen repair take?', a: 'Most screens are replaced in 30–60 minutes. Foldables and the newest flagships can take longer — we’ll give you a firm estimate as soon as you arrive.' },
+      { q: 'How long does a screen repair take?', a: 'Most screens are replaced in 30–60 minutes. The newest flagships can take longer — we’ll give you a firm estimate as soon as you arrive.' },
       { q: 'Do you use genuine screens?', a: 'A mix of genuine OEM and premium aftermarket panels that match or beat the original spec. Every screen is tested and warrantied before fitting.' },
       { q: "What's covered under the warranty?", a: 'Parts and workmanship for 6–12 months depending on the repair, excluding new physical or water damage afterwards.' },
     ],

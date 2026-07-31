@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Icon, BrandLogo } from './icons.jsx';
 import { BRANDS } from '../data/brands.js';
-import { ISSUES, MODEL_PRICES } from '../data/services.js';
+import { ISSUES, MODEL_PRICES, isFoldable } from '../data/services.js';
 import { SITE } from '../data/site.js';
 import { sendLead } from '../lib/sendLead.js';
 
@@ -29,8 +29,21 @@ export function BookingWidget() {
   // else uses the per-brand starting price (cheapest model). Both are
   // confirmed on inspection. Samsung parts are genuine-only, so a Samsung
   // model without an official Samsung price for a priced issue (e.g. Note 20)
-  // is quoted on inspection — same as "Other" phones.
-  const needsQuote = isOther || (brand?.id === 'samsung' && issue && MODEL_PRICES[issue.id] && modelPrice == null);
+  // is quoted on inspection — same as "Other" phones. Foldables are quoted on
+  // inspection for EVERY issue, not just the priced ones: the shop doesn't
+  // routinely take that work, and the flat Samsung basePrice ($99 back glass,
+  // $59 port) is meaningless on a Fold.
+  //
+  // The Samsung rule only applies to a table that actually prices Samsung. The
+  // back glass table is Apple-only, and without this check every Galaxy would
+  // have flipped from "$99" to "Custom quote" the moment that table was added —
+  // a missing entry means "no official price for this model", not "this table
+  // ignores your brand".
+  const table = issue ? MODEL_PRICES[issue.id] : undefined;
+  const tableCoversSamsung = !!table && Object.keys(table).some((m) => m.startsWith('Galaxy'));
+  const needsQuote = isOther
+    || isFoldable(model)
+    || (brand?.id === 'samsung' && tableCoversSamsung && modelPrice == null);
   const quoteLabel = needsQuote ? 'Custom quote' : (price > 0 ? `from $${price}` : 'Free');
   const deviceLabel = brand ? (isOther ? model : `${brand.name} ${model}`) : '';
   const back = () => setStep(s => Math.max(s - 1, 0));
@@ -128,6 +141,12 @@ export function BookingWidget() {
               <span style={{fontSize:14, color:'var(--text-muted)'}}>Estimate</span>
               <div className="quote-price">{quoteLabel}</div>
             </div>
+            {/* Some issues quote a floor that is the cheapest version of the job,
+                not the job itself — a port clean rather than a port replacement,
+                lens glass rather than the camera module. Saying so here is the
+                whole point: the customer reads "from $49" and assumes it covers
+                the repair, then hears a different number at the counter. */}
+            {!needsQuote && issue?.quoteNote && <div className="quote-note">{issue.quoteNote}</div>}
             <div className="quote-note">{isOther ? "We'll confirm the exact price the moment we see your phone. One last step to book." : 'Final price confirmed on inspection. One last step to book.'}</div>
 
             <div style={{display:'flex', gap:10, marginTop:16}}>

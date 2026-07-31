@@ -17,6 +17,9 @@ export const issueSchema = z.object({
   label: z.string(),
   emoji: z.string(),
   basePrice: priceMap,
+  // What the "from" price actually buys, when that is not the whole job.
+  // Rendered under the widget's estimate. See ISSUES in services.js.
+  quoteNote: z.string().optional(),
 });
 
 export const repairCardSchema = z.object({

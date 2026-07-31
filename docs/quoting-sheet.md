@@ -2,7 +2,9 @@
 
 **How to use:** find the model group, read across to the repair. Prices are **GST-inclusive sell prices** to quote the customer. Tiers are anchored to the last 12 months of real sales — **adjust any that don't match your current parts cost.** Always do the free diagnostic first; water damage and motherboard jobs are quoted after assessment.
 
-_Updated 26 Jun 2026. Prices marked ~ are estimated from tier (thin sales data) — confirm/correct._
+_Updated 31 Jul 2026. **Folding Galaxies (Z Fold / Z Flip) are not routine work — never quote a number, book a free diagnostic and let the tech decide.** iPhone screen and battery prices below are superseded by `src/data/services.js` (master price book, PRs #58/#59) — that file is the authority, not this sheet._
+
+_Originally 26 Jun 2026. Prices marked ~ are estimated from tier (thin sales data) — confirm/correct._
 
 ---
 
@@ -30,8 +32,7 @@ _Updated 26 Jun 2026. Prices marked ~ are estimated from tier (thin sales data) 
 | S21 / S22 Ultra | **$399–499** |
 | S23 / S24 / S25 Ultra | **$499–599** |
 | Note 20 / Note 20 Ultra | **$299–399** |
-| Z Flip (5 / 6 / 7) | **$329–449** |
-| Z Fold inner screen (5 / 6 / 7) | **$549–790** |
+| Z Flip / Z Fold (any) | **Do not quote — inspect first** |
 
 ### Other brands
 | Brand | Screen |
@@ -62,7 +63,8 @@ _Updated 26 Jun 2026. Prices marked ~ are estimated from tier (thin sales data) 
 |---|---|
 | Samsung A-series | **$59–79** |
 | Samsung S / Note (standard) | **$79–99** |
-| Samsung S Ultra / Fold / Flip | **$99–149** |
+| Samsung S Ultra | **$99–149** |
+| Samsung Z Fold / Z Flip | **Do not quote — inspect first** |
 | Pixel / Oppo / Huawei / Motorola | ~$59–99 |
 | iPad | $120–249 |
 
@@ -72,14 +74,17 @@ _Updated 26 Jun 2026. Prices marked ~ are estimated from tier (thin sales data) 
 
 | Model group | Back glass |
 |---|---|
-| iPhone X–14 (standard) | **$99–149** |
-| iPhone 12–14 Pro / Pro Max | **$199–299** |
-| iPhone 15 / 16 / 17 (all) | **$349–450** |
+| iPhone X–14 (standard) | **$99** |
+| iPhone 12–14 Pro / Pro Max | **$199** |
+| iPhone 15 / 16 / 17 (all) | **$199** |
 | Samsung A-series / older | **$99** |
 | Samsung S (standard) | **$149–220** |
-| Samsung S Ultra / Fold / Flip | **$220–350** |
+| Samsung S Ultra | **$220–350** |
+| Samsung Z Fold / Z Flip | **Do not quote — inspect first** |
 
-> iPhone 15+ back glass is dearer — the frame makes laser removal harder.
+> iPhone 15+ and 12–14 Pro backs are dearer — the frame makes laser removal harder.
+> **$199 is the ceiling** (owner, 31 Jul 2026). This table previously said $349–450 for
+> 15–17, which is not what the counter charges — and was above Apple's own $269.
 
 ---
 
@@ -92,7 +97,8 @@ _Updated 26 Jun 2026. Prices marked ~ are estimated from tier (thin sales data) 
 | iPhone — port replace (15–17, soldered) | **$99–149** |
 | Samsung A-series — replace | **$59–79** |
 | Samsung S / Note — replace | **$79** |
-| Samsung S Ultra / Fold | **$99–179** |
+| Samsung S Ultra | **$99–179** |
+| Samsung Z Fold / Z Flip | **Do not quote — inspect first** |
 | iPad — port | **$120–179** |
 
 > Always test with a known-good cable first — a free clean often fixes it.
