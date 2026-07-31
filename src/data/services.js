@@ -8,9 +8,17 @@ import { issueSchema, repairCardSchema } from './schema.js';
 export const ISSUES = z.array(issueSchema).parse([
   { id: 'screen', label: 'Screen Repair', emoji: '📱', basePrice: { apple: 99, samsung: 99, google: 129, oppo: 99, huawei: 99, motorola: 99, other: 0 } },
   { id: 'battery', label: 'Battery', emoji: '🔋', basePrice: { apple: 59, samsung: 59, google: 59, oppo: 59, huawei: 59, motorola: 59, other: 0 } },
-  { id: 'backglass', label: 'Back Glass', emoji: '✨', basePrice: { apple: 149, samsung: 99, google: 99, oppo: 99, huawei: 99, motorola: 99, other: 0 } },
-  { id: 'port', label: 'Charging Port', emoji: '🔌', basePrice: { apple: 49, samsung: 59, google: 49, oppo: 39, huawei: 39, motorola: 49, other: 0 } },
-  { id: 'camera', label: 'Camera', emoji: '📸', basePrice: { apple: 49, samsung: 79, google: 49, oppo: 49, huawei: 49, motorola: 49, other: 0 } },
+  { id: 'backglass', label: 'Back Glass', emoji: '✨', basePrice: { apple: 99, samsung: 99, google: 99, oppo: 99, huawei: 99, motorola: 99, other: 0 } },
+  // Owner 2026-08-01: the port floor is a CLEAN AND REALIGN, not a repair -
+  // "some people don't know the difference". Replacing a worn or soldered port
+  // costs more. The service page explains this; the widget used to show a bare
+  // "from $49" and let the customer assume it covered a replacement.
+  { id: 'port', label: 'Charging Port', emoji: '🔌', basePrice: { apple: 49, samsung: 59, google: 49, oppo: 39, huawei: 39, motorola: 49, other: 0 },
+    quoteNote: 'This is a clean and realign, which fixes most charging faults. If the port itself needs replacing that costs more — we check first, free, and tell you which one it is before touching anything.' },
+  // Same shape: the camera floor is the LENS GLASS only. The camera module
+  // behind it is a much dearer part (Samsung's own rear modules run to $364).
+  { id: 'camera', label: 'Camera', emoji: '📸', basePrice: { apple: 49, samsung: 79, google: 49, oppo: 49, huawei: 49, motorola: 49, other: 0 },
+    quoteNote: 'This covers the lens glass over the camera. If the camera module itself has failed — blurry, shaking or black images — that is a dearer part, quoted after a free check.' },
   { id: 'water', label: 'Water Damage', emoji: '💧', basePrice: { apple: 149, samsung: 149, google: 149, oppo: 149, huawei: 149, motorola: 149, other: 0 } },
   { id: 'speaker', label: 'Speaker', emoji: '🔊', basePrice: { apple: 49, samsung: 49, google: 49, oppo: 49, huawei: 49, motorola: 49, other: 0 } },
   { id: 'diagnostic', label: 'Free Diagnostic', emoji: '🔍', basePrice: { apple: 0, samsung: 0, google: 0, oppo: 0, huawei: 0, motorola: 0, other: 0 } },
@@ -28,8 +36,8 @@ export const ISSUES = z.array(issueSchema).parse([
 // - Samsung: we fit GENUINE Samsung parts only, so prices mirror Samsung
 //   Australia's official Repair Cost Estimator (inc GST, July 2026 —
 //   samsung.com/au/support/repair-cost). Cheapest official option per model;
-//   foldable screens list the front/cover display (main display costs more,
-//   quoted on inspection). A Samsung model with no entry under a priced issue
+//   folding Galaxies (Z Fold, Z Flip) carry no advertised price at all - see
+//   isFoldable below. A Samsung model with no entry under a priced issue
 //   (e.g. Note 20 — Samsung no longer publishes pricing) shows "Custom quote".
 const SCREEN_PRICES = {
   // Apple — iPhone 15 and newer (book: Screen LCD $249)
@@ -52,11 +60,6 @@ const SCREEN_PRICES = {
   'Galaxy S22 Ultra': 401, 'Galaxy S22+': 323, 'Galaxy S22': 359,
   'Galaxy S21 Ultra': 447, 'Galaxy S21+': 319, 'Galaxy S21': 328, 'Galaxy S21 FE': 358,
   'Galaxy S20 Ultra': 410, 'Galaxy S20+': 361, 'Galaxy S20': 381, 'Galaxy S20 FE': 310,
-  'Galaxy Z Fold7': 319, 'Galaxy Z Flip7': 292,
-  'Galaxy Z Fold6': 330, 'Galaxy Z Flip6': 260,
-  'Galaxy Z Fold5': 244, 'Galaxy Z Flip5': 278,
-  'Galaxy Z Fold4': 256, 'Galaxy Z Flip4': 230,
-  'Galaxy Z Fold3': 305, 'Galaxy Z Flip3': 230,
   'Galaxy A73': 322, 'Galaxy A57': 294, 'Galaxy A56': 283, 'Galaxy A55': 279, 'Galaxy A54': 313,
   'Galaxy A53': 310, 'Galaxy A52': 249, 'Galaxy A37': 321, 'Galaxy A36': 318, 'Galaxy A35': 278,
   'Galaxy A34': 316, 'Galaxy A33': 310, 'Galaxy A26': 280, 'Galaxy A25': 279, 'Galaxy A23': 248,
@@ -68,7 +71,7 @@ const SCREEN_PRICES = {
 
 // Battery replacement — owner pricing (2026-07). Apple: iPhone 11 and newer
 // from $119 (X/XR/XS/SE fall through to the $59 brand floor). Samsung: $99
-// flat for S21 and newer + foldables, $79 for A series and pre-S21-era
+// flat for S21 and newer, $79 for A series and pre-S21-era
 // models (Note 20).
 const BATTERY_PRICES = {
   // Apple — per-model, from the owner's price book. Pro/Pro Max carry a
@@ -93,11 +96,6 @@ const BATTERY_PRICES = {
   'Galaxy S21 Ultra': 99, 'Galaxy S21+': 99, 'Galaxy S21': 99, 'Galaxy S21 FE': 99,
   'Galaxy S20 Ultra': 99, 'Galaxy S20+': 99, 'Galaxy S20': 99, 'Galaxy S20 FE': 99,
   'Galaxy S10+': 79, 'Galaxy S10': 79, 'Galaxy S10e': 79, 'Galaxy S9+': 79, 'Galaxy S9': 79,
-  'Galaxy Z Fold7': 99, 'Galaxy Z Flip7': 99,
-  'Galaxy Z Fold6': 99, 'Galaxy Z Flip6': 99,
-  'Galaxy Z Fold5': 99, 'Galaxy Z Flip5': 99,
-  'Galaxy Z Fold4': 99, 'Galaxy Z Flip4': 99,
-  'Galaxy Z Fold3': 99, 'Galaxy Z Flip3': 99,
   'Galaxy A73': 79, 'Galaxy A71': 79, 'Galaxy A57': 79, 'Galaxy A56': 79, 'Galaxy A55': 79,
   'Galaxy A54': 79, 'Galaxy A53': 79, 'Galaxy A52': 79, 'Galaxy A51': 79, 'Galaxy A37': 79,
   'Galaxy A36': 79, 'Galaxy A35': 79, 'Galaxy A34': 79, 'Galaxy A33': 79, 'Galaxy A32': 79,
@@ -107,7 +105,48 @@ const BATTERY_PRICES = {
   'Galaxy Note 20 Ultra': 79, 'Galaxy Note 20': 79,
 };
 
-export const MODEL_PRICES = { screen: SCREEN_PRICES, battery: BATTERY_PRICES };
+// Back glass — Apple only, per model. The widget used to quote a flat $149 for
+// every iPhone off the brand floor, which is both over the $99 the older
+// standard bodies actually cost and under the newer ones. Owner 2026-07-31:
+// "back glass are around $199 not more" — $199 is the CEILING, so 15/16/17 and
+// the 12-14 Pro bodies sit there and everything older/standard stays $99.
+// That also supersedes docs/quoting-sheet.md, which still banded 15-17 at
+// $349-450; the owner says that is simply not what the counter charges.
+// Samsung is deliberately absent — the same quoting sheet prices Galaxy back
+// glass at $99-350 and it has now been wrong once, so those bands need the
+// owner's eye before they go on the site. Samsung keeps the $99 brand floor.
+const BACKGLASS_PRICES = {
+  'iPhone 17 Pro Max': 199, 'iPhone 17 Pro': 199, 'iPhone 17': 199, 'iPhone Air': 199,
+  'iPhone 16 Pro Max': 199, 'iPhone 16 Pro': 199, 'iPhone 16 Plus': 199, 'iPhone 16': 199, 'iPhone 16e': 199,
+  'iPhone 15 Pro Max': 199, 'iPhone 15 Pro': 199, 'iPhone 15 Plus': 199, 'iPhone 15': 199,
+  // 12-14 Pro / Pro Max only — the standard bodies of the same generation are
+  // the cheaper job and stay at $99.
+  'iPhone 14 Pro Max': 199, 'iPhone 14 Pro': 199,
+  'iPhone 13 Pro Max': 199, 'iPhone 13 Pro': 199,
+  'iPhone 12 Pro Max': 199, 'iPhone 12 Pro': 199,
+  'iPhone 14 Plus': 99, 'iPhone 14': 99,
+  'iPhone 13': 99, 'iPhone 13 mini': 99,
+  'iPhone 12': 99, 'iPhone 12 mini': 99,
+  'iPhone 11 Pro Max': 99, 'iPhone 11 Pro': 99, 'iPhone 11': 99,
+  'iPhone XS Max': 99, 'iPhone XS': 99, 'iPhone XR': 99, 'iPhone X': 99,
+  'iPhone SE (3rd gen)': 99, 'iPhone SE (2nd gen)': 99,
+  // The 8 was the first iPhone to go back to a glass back (for wireless
+  // charging). The 7/6s/6 in the picker are aluminium unibodies — there is no
+  // back glass to replace, that is a housing swap — so they are deliberately
+  // absent and floor at the $99 brand price if anyone picks the combination.
+  'iPhone 8 Plus': 99, 'iPhone 8': 99,
+};
+
+export const MODEL_PRICES = { screen: SCREEN_PRICES, battery: BATTERY_PRICES, backglass: BACKGLASS_PRICES };
+
+// The shop does not do Z Fold / Z Flip work as a matter of course (owner,
+// 2026-07-31), so no foldable gets an advertised number on any issue — a Fold
+// back glass or charging port is nothing like the flat Samsung `basePrice` the
+// widget would otherwise fall back to. Removing the entries above only covers
+// screen and battery, which is why this predicate exists and the widget checks
+// it before reading basePrice. The models stay selectable so the lead still
+// lands and the counter can decline in person.
+export const isFoldable = (model) => /^Galaxy Z (Fold|Flip)/.test(model || '');
 
 export const REPAIR_CARDS = z.array(repairCardSchema).parse([
   { id: 'screen', title: 'Screen Repair', desc: 'Cracked or shattered? Back to mint in under an hour. Genuine Samsung screens at official Samsung pricing.', from: 'from $99', img: '/images/screen-repair.jpg', tag: 'Most Popular', size: 'hero' },
