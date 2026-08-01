@@ -22,12 +22,12 @@ const withDiscount = (price) => (price * 0.9).toFixed(2);
 
 const schema = breadcrumbSchema([
   { name: 'Home', path: '/' },
-  { name: 'Business NBN', path: '/nbn/' },
+  { name: 'NBN Plans', path: '/nbn/' },
 ]);
 ---
 <Layout
-  title="Business NBN Plans — No Lock-in, Unlimited Data & Static IP | Express Repairs"
-  description="Business-grade NBN with no lock-in contracts: unlimited data, free static IP and a free business phone number. Local support from our Riverwood store."
+  title="NBN Plans for Home & Business — No Lock-in, Unlimited Data | Express Repairs"
+  description="NBN plans for home and business with no lock-in contracts: unlimited data, free static IP and a free phone number. Local support from our Riverwood store."
   path="/nbn/"
   schema={schema}
   htmlAttrs={{ 'data-palette': 'electric-blue', 'data-fontpair': 'jakarta', 'data-dark': 'false' }}
@@ -41,17 +41,17 @@ const schema = breadcrumbSchema([
         <nav class="breadcrumb" aria-label="Breadcrumb">
           <a href="/">Home</a>
           <span class="crumb-sep">/</span>
-          <span class="crumb-current">Business NBN</span>
+          <span class="crumb-current">NBN Plans</span>
         </nav>
         <span class="hero-badge">
           <span class="hero-badge-pill">New</span>
-          <span>Business NBN · No lock-in · Free static IP</span>
+          <span>NBN for home &amp; business · No lock-in · Free static IP</span>
         </span>
         <h1 class="hero-title" style="font-size: clamp(38px, 5.2vw, 62px); max-width: 760px;">
-          Business NBN, <em>without the lock-in</em>.
+          Fast NBN for home and business, <em>without the lock-in</em>.
         </h1>
         <p class="hero-sub">
-          Month-to-month business-grade NBN with unlimited data and a free static IP on every plan — and a local team you can actually call. Tell us your address and we'll confirm the fastest plan available.
+          Month-to-month NBN with unlimited data and a free static IP on every plan — and a local team you can actually call. Tell us your address and we'll confirm the fastest plan available.
         </p>
         <div class="hero-ctas">
           <a href="#plans" class="btn btn-primary btn-lg">See plans</a>
@@ -62,7 +62,7 @@ const schema = breadcrumbSchema([
 
     <section class="section" id="plans" style="background: var(--bg-soft);">
       <div class="container-wide">
-        <span class="eyebrow">Business NBN Plans</span>
+        <span class="eyebrow">NBN Plans</span>
         <h2 class="section-title" style="margin-top: 14px;">Pick your speed. Everything else is included.</h2>
         <p class="section-lede">Every plan is month-to-month — no lock-in, no exit fees. Prices per month inc. GST.</p>
 
@@ -96,7 +96,7 @@ const schema = breadcrumbSchema([
               <div class="plan-data">Typical business-hour speed {p.typical}</div>
               <ul class="plan-features">
                 {p.features.map((f) => <li>{f}</li>)}
-                <li>Free business phone number (VoIP)</li>
+                <li>Free phone number (VoIP)</li>
               </ul>
               <p class="nbn-blurb">{p.blurb}</p>
               <a href={`?plan=${encodeURIComponent(p.name)}#enquire`} class={`btn ${p.featured ? 'btn-primary' : 'btn-ghost'} btn-block`}>
@@ -107,8 +107,8 @@ const schema = breadcrumbSchema([
         </div>
 
         <p class="plan-footer-note">
-          Not sure which speed suits your business? Call <a href={SITE.phoneHref} style="color: var(--brand-700); font-weight: 700;">{SITE.phone}</a> and we'll size it with you.
-          Typical business-hour speeds shown; actual speeds depend on your NBN technology and address.
+          Not sure which speed suits you? Call <a href={SITE.phoneHref} style="color: var(--brand-700); font-weight: 700;">{SITE.phone}</a> and we'll size it with you.
+          Typical business-hour speeds shown (9am–5pm); speeds during the evening busy period may differ, and actual speeds depend on your NBN technology and address.
           See our <a href="/nbn/terms/" style="color: var(--brand-700); font-weight: 700;">NBN service terms</a>.
         </p>
       </div>
@@ -116,10 +116,10 @@ const schema = breadcrumbSchema([
 
     <section class="section" id="phone">
       <div class="container-wide">
-        <span class="eyebrow">Business Phone Included</span>
-        <h2 class="section-title" style="margin-top: 14px;">Keep your business number. It rides along free.</h2>
+        <span class="eyebrow">Phone Line Included</span>
+        <h2 class="section-title" style="margin-top: 14px;">Keep your number. It rides along free.</h2>
         <p class="section-lede">
-          Every NBN plan includes a business phone (VoIP) number at no extra cost — port your existing
+          Every NBN plan includes a phone (VoIP) number at no extra cost — port your existing
           number over for free, or we'll give you a new one. Calls are pay-as-you-go, or add unlimited calling:
         </p>
         <div class="nbn-voip-card">

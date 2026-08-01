@@ -17,14 +17,14 @@ export const HANDSET_PLANS = z.array(planSchema).parse([
   { name: 'ULTIMATE', price: 84, data: '160GB', features: ['Download speeds capped at 250Mbps', '+ Up to 1000GB Data Bank', 'Unlimited Talk & Text (AU)', 'International calls to 20 countries', '"Unlimited" international calls included', 'Data Gifting up to 50%'] },
 ]);
 
-// Business-grade NBN plans (resold). `price` is the month-to-month list rate
+// NBN plans for home & business (resold). `price` is the month-to-month list rate
 // inc GST — no lock-in contracts.
 export const NBN_PLANS = z.array(nbnPlanSchema).parse([
-  { name: 'NBN 50/20', typical: '50/17 Mbps', price: 94, blurb: 'For basic web, email & EFTPOS', features: ['No lock-in — cancel anytime', 'Unlimited data', 'Free static IP', '2 free speed-upgrade days every month'] },
+  { name: 'NBN 50/20', typical: '50/17 Mbps', price: 94, blurb: 'For basic web, email & streaming', features: ['No lock-in — cancel anytime', 'Unlimited data', 'Free static IP', '2 free speed-upgrade days every month'] },
   { name: 'NBN 250/100', typical: '250/85 Mbps', price: 109, blurb: 'For VoIP calls, cloud apps & backups', features: ['No lock-in — cancel anytime', 'Unlimited data', 'Free static IP', 'Enhanced service level agreement included', '2 free speed-upgrade days every month'] },
   { name: 'NBN 500/50', typical: '500/40 Mbps', price: 104, featured: true, blurb: 'For video calls & fast downloads', features: ['No lock-in — cancel anytime', 'Unlimited data', 'Free static IP', '2 free speed-upgrade days every month'] },
-  { name: 'NBN 750/50', typical: '750/40 Mbps', price: 114, blurb: 'For multi-user offices & cloud usage', features: ['No lock-in — cancel anytime', 'Unlimited data', 'Free static IP', '2 free speed-upgrade days every month'] },
-  { name: 'NBN 1000/100', typical: '860/85 Mbps', price: 129, blurb: 'For heavy downloads & many users', features: ['No lock-in — cancel anytime', 'Unlimited data', 'Free static IP'] },
+  { name: 'NBN 750/50', typical: '750/40 Mbps', price: 114, blurb: 'For busy households & offices', features: ['No lock-in — cancel anytime', 'Unlimited data', 'Free static IP', '2 free speed-upgrade days every month'] },
+  { name: 'NBN 1000/100', typical: '860/85 Mbps', price: 129, blurb: 'For gamers, heavy downloads & many users', features: ['No lock-in — cancel anytime', 'Unlimited data', 'Free static IP'] },
   { name: 'NBN 500/200', typical: '500/170 Mbps', price: 139, blurb: 'For upload-heavy work — video, CCTV, sync', features: ['No lock-in — cancel anytime', 'Unlimited data', 'Free static IP', 'Pro service level agreement included'] },
   { name: 'NBN 1000/400', typical: '860/340 Mbps', price: 163, blurb: 'For serious upload & multi-site work', features: ['No lock-in — cancel anytime', 'Unlimited data', 'Free static IP', 'Pro service level agreement included'] },
   { name: 'NBN 2000/200', typical: '1700/170 Mbps', price: 209, blurb: 'For the fastest downloads available', features: ['No lock-in — cancel anytime', 'Unlimited data', 'Free static IP'] },

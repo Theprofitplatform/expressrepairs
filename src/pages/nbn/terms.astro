@@ -15,13 +15,13 @@ const navLinks = [
 
 const schema = breadcrumbSchema([
   { name: 'Home', path: '/' },
-  { name: 'Business NBN', path: '/nbn/' },
+  { name: 'NBN Plans', path: '/nbn/' },
   { name: 'Service Terms', path: '/nbn/terms/' },
 ]);
 ---
 <Layout
   title="NBN Service Terms | Express Repairs"
-  description="Terms of service for Express Repairs business NBN plans: billing, speeds, fair use, cancellation and complaints."
+  description="Terms of service for Express Repairs NBN plans: billing, speeds, fair use, cancellation and complaints."
   path="/nbn/terms/"
   schema={schema}
   htmlAttrs={{ 'data-palette': 'electric-blue', 'data-fontpair': 'jakarta', 'data-dark': 'false' }}
@@ -34,7 +34,7 @@ const schema = breadcrumbSchema([
         <nav class="breadcrumb" aria-label="Breadcrumb">
           <a href="/">Home</a>
           <span class="crumb-sep">/</span>
-          <a href="/nbn/">Business NBN</a>
+          <a href="/nbn/">NBN Plans</a>
           <span class="crumb-sep">/</span>
           <span class="crumb-current">Service Terms</span>
         </nav>
@@ -50,7 +50,7 @@ const schema = breadcrumbSchema([
 
         <h2>1. The service</h2>
         <p>
-          We sell business-grade broadband delivered over the nbn® network, supplied to us by an established
+          We sell broadband for homes and businesses delivered over the nbn® network, supplied to us by an established
           Australian wholesale network provider. We handle your sign-up, billing and account queries; network
           faults are handled by our wholesale partner's support team, and we'll help you lodge and chase a fault
           whenever you need us to. Every plan includes unlimited data and one free static IPv4 address.
@@ -75,8 +75,9 @@ const schema = breadcrumbSchema([
 
         <h2>3. Speeds</h2>
         <p>
-          The speeds shown on our plans are <strong>typical business-hour speeds</strong> as measured by our
-          wholesale partner. Your actual speed depends on your nbn technology type, the wiring at your premises,
+          The speeds shown on our plans are <strong>typical business-hour speeds</strong> (9am–5pm weekdays) as
+          measured by our wholesale partner; speeds during the evening busy period may differ. Your actual speed
+          depends on your nbn technology type, the wiring at your premises,
           your modem, Wi‑Fi conditions and network congestion. If your connection can't reach the typical speed
           of the plan you chose, tell us — we'll move you to a cheaper plan that matches what your line can do,
           or you can cancel without penalty.
@@ -113,9 +114,9 @@ const schema = breadcrumbSchema([
           the current eSLA response targets when you sign up.
         </p>
 
-        <h2>8. Business phone (VoIP)</h2>
+        <h2>8. Phone (VoIP)</h2>
         <ul>
-          <li>Every plan includes one business phone (VoIP) number — port your existing number in for free, or take a new one.</li>
+          <li>Every plan includes one phone (VoIP) number — port your existing number in for free, or take a new one.</li>
           <li>Without the call pack, calls are charged at pay-as-you-go VoIP rates; we'll give you the current rate card when you sign up. The optional Unlimited Call Pack is $10/mth inc GST and covers unlimited local, national, 13/1300 and Australian mobile calls, plus international landline calls to the 12 listed countries.</li>
           <li>The phone service runs over your broadband: <strong>it will not work during a power or network outage, and that includes calls to 000</strong>. Keep a charged mobile phone available for emergencies.</li>
           <li>If you cancel your NBN plan, the phone service (and its number, unless you port it out first) is cancelled with it. Ask us before cancelling and we'll help you port your number out so you don't lose it.</li>
