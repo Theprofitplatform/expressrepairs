@@ -1,6 +1,6 @@
 import { describe, it, expect, beforeAll } from 'vitest';
 import { execSync } from 'node:child_process';
-import { readFileSync, existsSync } from 'node:fs';
+import { readFileSync, existsSync, readdirSync } from 'node:fs';
 import { TRACKING } from '../src/data/tracking.js';
 
 let html = '';
@@ -382,6 +382,21 @@ describe('built shop mega menu', () => {
     for (const hook of ['data-cascade', 'data-col', 'data-head', 'data-cat', 'data-fam']) {
       expect(script, hook).toContain(hook);
     }
+  });
+
+  // Three things have to name the same width: the query that hides the
+  // desktop row, the one that shows the hamburger, and isDrawer() in
+  // shop-menu.js. When the first two drifted apart, 481-900px rendered no
+  // navigation at all — no links, no toggle — and nothing failed.
+  it('hides the desktop row, shows the toggle and stacks the cascade at one width', () => {
+    const css = readdirSync('dist/_astro')
+      .filter((f) => f.endsWith('.css'))
+      .map((f) => readFileSync(`dist/_astro/${f}`, 'utf8'))
+      .find((c) => c.includes('.nav-toggle{display:grid'));
+    expect(css, 'bundled nav css').toBeTruthy();
+    const width = /@media\(max-width:(\d+)px\)\{\.nav-links\{display:none\}\.nav-toggle\{display:grid/.exec(css);
+    expect(width, 'links hidden and toggle shown in the same query').toBeTruthy();
+    expect(readFileSync('dist/shop-menu.js', 'utf8')).toContain(`max-width: ${width[1]}px`);
   });
 
   it('serves the cascade as JSON with only pages that exist', () => {
