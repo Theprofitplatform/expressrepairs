@@ -7,7 +7,6 @@ const INTERESTS = [
   'Refurbished Samsung',
   'New phone',
   'Trade-in quote',
-  'Not sure yet',
 ];
 
 // Phone sales enquiry form. Reuses the /api/lead contract as-is: what they're
