@@ -72,6 +72,7 @@ export function Nav() {
         </a>
         <nav className="nav-links" id="nav-menu">
           <a href="/repairs/">Repairs</a>
+          <a href="/phones/">Phones</a>
           <a href="#plans">Plans</a>
           <a href="/nbn/">NBN</a>
           <a href="#accessories">Accessories</a>
