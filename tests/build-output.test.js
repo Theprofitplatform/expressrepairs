@@ -280,8 +280,13 @@ describe('built NBN page', () => {
 
   it('homepage cross-sell banner shows the real cheapest plan price', async () => {
     const { NBN_PLANS } = await import('../src/data/plans.js');
+    const cheapest = Math.min(...NBN_PLANS.map((p) => p.price));
+    // Guard the data, not just the template: an empty/typo'd NBN_PLANS would
+    // otherwise render "from $Infinity/mth" and the derived assertion would pass.
+    expect(Number.isInteger(cheapest)).toBe(true);
+    expect(cheapest).toBeGreaterThan(0);
     expect(html).toContain('Need internet too?');
-    expect(html).toContain(`from $${Math.min(...NBN_PLANS.map((p) => p.price))}/mth`);
+    expect(html).toContain(`from $${cheapest}/mth`);
   });
 
   it('builds the NBN service terms with the legal entity and TIO details', () => {
