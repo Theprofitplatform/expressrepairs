@@ -278,6 +278,12 @@ describe('built NBN page', () => {
     expect(html).toContain('href="/nbn/"');
   });
 
+  it('homepage cross-sell banner shows the real cheapest plan price', async () => {
+    const { NBN_PLANS } = await import('../src/data/plans.js');
+    expect(html).toContain('Need internet too?');
+    expect(html).toContain(`from $${Math.min(...NBN_PLANS.map((p) => p.price))}/mth`);
+  });
+
   it('builds the NBN service terms with the legal entity and TIO details', () => {
     const terms = readFileSync('dist/nbn/terms/index.html', 'utf8');
     expect(terms).toContain('Mertel Pty');
