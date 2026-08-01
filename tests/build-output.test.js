@@ -263,6 +263,12 @@ describe('built NBN page', () => {
     expect(sm).toContain('/nbn/');
   });
 
+  it('is framed for home AND business, not business-only', () => {
+    const nbn = readFileSync('dist/nbn/index.html', 'utf8');
+    expect(nbn).toContain('home and business');
+    expect(nbn).not.toMatch(/business-grade/i);
+  });
+
   it('never mentions TeleChoice — mobile and NBN are separate products', () => {
     expect(readFileSync('dist/nbn/index.html', 'utf8')).not.toMatch(/telechoice/i);
     expect(readFileSync('dist/nbn/terms/index.html', 'utf8')).not.toMatch(/telechoice/i);
@@ -284,7 +290,7 @@ describe('built NBN page', () => {
 
   it('advertises the VoIP inclusion and guards the emergency-call warning', () => {
     const nbn = readFileSync('dist/nbn/index.html', 'utf8');
-    expect(nbn).toContain('Free business phone number');
+    expect(nbn).toContain('Free phone number');
     expect(nbn).toContain('Unlimited Call Pack');
     const terms = readFileSync('dist/nbn/terms/index.html', 'utf8');
     expect(terms).toContain('calls to 000');
