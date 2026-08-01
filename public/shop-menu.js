@@ -26,7 +26,7 @@ if (nav && mega) {
 
   // The drawer stacks the columns, so a tap on a category has to open it
   // rather than follow its link. Matches the CSS breakpoint in global.css.
-  const isDrawer = () => window.matchMedia('(max-width: 480px)').matches;
+  const isDrawer = () => window.matchMedia('(max-width: 1080px)').matches;
 
   const load = () => {
     if (tree) return Promise.resolve(tree);

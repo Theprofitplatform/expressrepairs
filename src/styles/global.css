@@ -298,37 +298,17 @@ input, select, textarea { font-family: inherit; font-size: inherit; color: inher
 
 .nav-toggle { display: none; }
 
-@media (max-width: 900px) {
+/* One breakpoint for "desktop row off, drawer on". They used to be two: the
+   links hid at 900px but the toggle only appeared at 480px, so 481-900px had
+   no navigation at all. 1080 and not 1000 because the homepage row measures
+   996px with nine links — a tenth would silently reopen the sideways-scroll
+   band this closed. Keep in sync with isDrawer() in public/shop-menu.js. */
+@media (max-width: 1080px) {
   .nav-links { display:none; }
-  .nav-phone span { display: none; }
-  /* The toggle costs 48px of the top row; without this the brand wraps to two
-     lines at 375px and the nav grows past its own --nav-h. */
-  /* The toggle costs 48px of the top row. Slim the brand to pay for it —
-     adding gap to .nav-inner instead would push the toggle off-screen, since
-     space-between only distributes space that's left over, and there is none.
-     Not solved by hiding .nav-phone either: the homepage, product, cart and
-     thanks pages have no sticky call bar, and calls are the main conversion. */
-  .brand { white-space: nowrap; font-size: 16px; gap: 8px; }
-  .brand-mark { width: 30px; height: 30px; border-radius: 9px; }
-}
 
-/* At 375px the row is still exactly full — measured brand right edge 204 ==
-   .nav-cta left edge 204, with the content eating 21px of the container's own
-   right padding. Nothing incremental covers that, so the wordmark scales down
-   one more step on phones. Chosen over the alternatives because it removes
-   nothing: hiding the wordmark costs brand identity, and dropping the nav CTA
-   costs a sticky conversion point that the hero button doesn't replace once
-   you've scrolled. */
-@media (max-width: 480px) {
-  .brand { font-size: 14px; gap: 6px; }
-  .brand-mark { width: 26px; height: 26px; border-radius: 8px; }
-  .brand-mark svg { width: 15px; height: 15px; }
-
-  /* Mobile drawer. Below 900px there was no nav at all — the links existed
-     only in the desktop row. The toggle reveals the same .nav-links element,
-     so the two nav implementations and the shop mega menu all come along
-     without duplicating any markup. */
-  .nav-cta { gap: 8px; }
+  /* The toggle reveals the same .nav-links element, so both nav
+     implementations (SiteNav.astro and the homepage Nav in sections.jsx) and
+     the shop mega menu come along without duplicating any markup. */
   .nav-toggle {
     display: grid; place-items: center;
     width: 36px; height: 36px; padding: 0;
@@ -357,7 +337,7 @@ input, select, textarea { font-family: inherit; font-size: inherit; color: inher
   /* The shop panel rides inside the drawer — flatten it from a hovering
      4-column overlay into a plain stacked block. The cascade columns stack
      under the categories, which is why the script turns the first tap on a
-     category into an expand instead of a navigation (same 480px breakpoint). */
+     category into an expand instead of a navigation (same breakpoint). */
   .nav[data-open="true"] .mega-panel {
     position: static; opacity: 1; visibility: visible; transform: none;
     box-shadow: none; border-bottom: 0; max-height: none; overflow: visible;
@@ -373,6 +353,35 @@ input, select, textarea { font-family: inherit; font-size: inherit; color: inher
   .nav[data-open="true"] .mega-col--fly:has(.cascade:empty) { display: none; }
   .nav[data-open="true"] .cascade--scroll { max-height: none; }
   .nav[data-open="true"] .cascade-row { padding: 10px 8px; font-size: 15px; }
+}
+
+@media (max-width: 900px) {
+  .nav-phone span { display: none; }
+  /* The toggle costs 48px of the top row; without this the brand wraps to two
+     lines at 375px and the nav grows past its own --nav-h. */
+  /* The toggle costs 48px of the top row. Slim the brand to pay for it —
+     adding gap to .nav-inner instead would push the toggle off-screen, since
+     space-between only distributes space that's left over, and there is none.
+     Not solved by hiding .nav-phone either: the homepage, product, cart and
+     thanks pages have no sticky call bar, and calls are the main conversion. */
+  .brand { white-space: nowrap; font-size: 16px; gap: 8px; }
+  .brand-mark { width: 30px; height: 30px; border-radius: 9px; }
+}
+
+/* At 375px the row is still exactly full — measured brand right edge 204 ==
+   .nav-cta left edge 204, with the content eating 21px of the container's own
+   right padding. Nothing incremental covers that, so the wordmark scales down
+   one more step on phones. Chosen over the alternatives because it removes
+   nothing: hiding the wordmark costs brand identity, and dropping the nav CTA
+   costs a sticky conversion point that the hero button doesn't replace once
+   you've scrolled. */
+@media (max-width: 480px) {
+  .brand { font-size: 14px; gap: 6px; }
+  .brand-mark { width: 26px; height: 26px; border-radius: 8px; }
+  .brand-mark svg { width: 15px; height: 15px; }
+
+  /* The toggle costs 36px of a row that is already exactly full at 375px. */
+  .nav-cta { gap: 8px; }
 }
 
 /* ============ Hero ============ */
