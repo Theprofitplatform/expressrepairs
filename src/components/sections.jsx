@@ -72,13 +72,11 @@ export function Nav() {
         </a>
         <nav className="nav-links" id="nav-menu">
           <a href="/repairs/">Repairs</a>
-          <a href="#plans">Plans</a>
+          <a href="/phones/">Phones</a>
+          <a href="/plans/">Plans</a>
           <a href="/nbn/">NBN</a>
-          <a href="#accessories">Accessories</a>
           <a href="/shop/">Catalogue</a>
           <a href="/blog/">Blog</a>
-          <a href="#visit">Visit</a>
-          <a href="#faq">FAQ</a>
         </nav>
         <div className="nav-cta">
           <a href={SITE.phoneHref} className="nav-phone">
@@ -202,7 +200,7 @@ export function RepairServices() {
   );
 }
 
-export function Plans() {
+export function Plans({ ctaHref = '#contact' }) {
   const [mode, setMode] = useState('sim');
   const [intlOpen, setIntlOpen] = useState(false);
   const plans = mode === 'sim' ? SIM_PLANS : HANDSET_PLANS;
@@ -235,7 +233,7 @@ export function Plans() {
               <ul className="plan-features">
                 {p.features.map((f, i) => <li key={i}>{f}</li>)}
               </ul>
-              <a href="#contact" className={`btn ${p.featured ? 'btn-primary' : 'btn-ghost'} btn-block`}>
+              <a href={ctaHref} className={`btn ${p.featured ? 'btn-primary' : 'btn-ghost'} btn-block`}>
                 Choose {p.name}
               </a>
             </div>

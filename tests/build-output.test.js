@@ -292,6 +292,49 @@ describe('built NBN page', () => {
   });
 });
 
+describe('built phones page', () => {
+  const phones = () => readFileSync('dist/phones/index.html', 'utf8');
+
+  it('sells both new and refurbished with the 12-month warranty and trade-ins', () => {
+    const p = phones();
+    expect(p).toContain('12-month warranty');
+    expect(p).toContain('Refurbished');
+    expect(p).toContain('sealed');
+    expect(p).toContain('Trade-in');
+    expect(p).toContain('Australian Consumer Law');
+    // Stock churns daily — the page must never promise a price list.
+    expect(p).not.toMatch(/\$\d+\s*(for|—)?\s*(iPhone|Galaxy)/i);
+  });
+
+  it('is linked from the homepage nav, the footer and the sitemap', () => {
+    expect(html).toContain('href="/phones/"');
+    expect(phones()).toContain('href="/phones/"'); // footer self-link via SiteFooter
+    expect(readFileSync('dist/sitemap-0.xml', 'utf8')).toContain('/phones/');
+  });
+});
+
+describe('built plans page', () => {
+  it('renders every SIM plan with its price, linked from the homepage nav', async () => {
+    const { SIM_PLANS } = await import('../src/data/plans.js');
+    const plans = readFileSync('dist/plans/index.html', 'utf8');
+    for (const p of SIM_PLANS) {
+      expect(plans).toContain(p.name);
+      expect(plans).toContain(`>${p.price}<`);
+    }
+    expect(html).toContain('href="/plans/"');
+    expect(readFileSync('dist/sitemap-0.xml', 'utf8')).toContain('/plans/');
+  });
+
+  it('homepage header nav no longer carries the Accessories/Visit/FAQ anchor links', () => {
+    // Footer quick-links may still anchor to these sections — only the nav dropped them.
+    const nav = html.match(/<nav class="nav-links"[\s\S]*?<\/nav>/)[0];
+    expect(nav).not.toContain('Accessories');
+    expect(nav).not.toContain('Visit');
+    expect(nav).not.toContain('FAQ');
+    expect(nav).toContain('href="/plans/"');
+  });
+});
+
 describe('built shop mega menu', () => {
   // The panel is inlined into every /shop/* page, so a link that stops
   // resolving breaks ~10,000 pages at once. shopMenu.test.js checks the data;
