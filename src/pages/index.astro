@@ -5,7 +5,9 @@ import { BrandsStrip, WhyUs, Testimonials, Warranty, FAQ, Store, Contact, Footer
 import { localBusinessSchema, faqPageSchema } from '../lib/seo.js';
 import { SITE } from '../data/site.js';
 import { FAQS, HOURS } from '../data/content.js';
+import { NBN_PLANS } from '../data/plans.js';
 
+const nbnFrom = Math.min(...NBN_PLANS.map((p) => p.price));
 const schema = [localBusinessSchema(SITE, HOURS), faqPageSchema(FAQS)];
 const description =
   'Same-day phone repairs in Sydney — screen, battery, charging port and more, backed by a 6–12 month warranty. Free 20-second quote.';
@@ -25,6 +27,16 @@ const description =
     <Hero client:load />
     <RepairServices />
     <Plans client:visible />
+    {/* ponytail: static cross-sell strip, promote to a JSX section if it ever needs data */}
+    <section class="nbn-crosssell" aria-label="NBN plans">
+      <div class="container-wide nbn-crosssell-inner">
+        <p class="nbn-crosssell-text">
+          <strong>Need internet too?</strong> Home &amp; business NBN from ${nbnFrom}/mth — no lock-in,
+          unlimited data, free static IP.
+        </p>
+        <a href="/nbn/" class="btn btn-primary">See NBN plans</a>
+      </div>
+    </section>
     <Accessories />
     <BrandsStrip />
     <WhyUs />
@@ -40,3 +52,17 @@ const description =
     Call {SITE.phone}
   </a>
 </Layout>
+
+<style>
+  .nbn-crosssell {
+    background: var(--bg-soft);
+    border-block: 1px solid var(--border);
+    padding: 28px 0;
+  }
+  .nbn-crosssell-inner {
+    display: flex; align-items: center; justify-content: center;
+    gap: 12px 28px; flex-wrap: wrap; text-align: center;
+  }
+  .nbn-crosssell-text { margin: 0; font-size: 17px; color: var(--text-muted); }
+  .nbn-crosssell-text strong { color: var(--text); }
+</style>
