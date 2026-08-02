@@ -8,10 +8,11 @@ dist/
 .gstack/
 _worker.bundle
 
-<<<<<<< HEAD
 # SDD scratch workspace (subagent-driven-development)
 .superpowers/
-=======
+
 # private supplier catalogue extracts (contain cost prices — repo is public)
 .supplier-data/
->>>>>>> 2c34767 (feat(staff): supplier order tool at /staff/order/)
+
+# local code-graph tooling output (regenerate with `graphify update .`)
+graphify-out/
