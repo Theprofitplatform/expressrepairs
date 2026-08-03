@@ -100,7 +100,7 @@ const schema = [
       <ShopFilters model={modelKey} brands={brandCounts} tags={tagChips} />
 
       <div class="acc-grid acc-grid--dense" style="margin-top: 24px;">
-        {page.data.map((p) => <ProductCard p={p} />)}
+        {page.data.map((p, i) => <ProductCard p={p} eager={i < 8} priority={i === 0} />)}
       </div>
 
       <div id="pagination" style="display: flex; align-items: center; justify-content: center; gap: 24px; margin-top: 40px;">
