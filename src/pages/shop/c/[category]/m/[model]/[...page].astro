@@ -8,6 +8,7 @@ import ProductCard from '../../../../../../components/ProductCard.astro';
 import { PRODUCTS } from '../../../../../../data/products.js';
 import { slugifyCategory, deviceModel, modelGroups } from '../../../../../../lib/shop.js';
 import { breadcrumbSchema, itemListSchema } from '../../../../../../lib/seo.js';
+import { NAV_LINKS } from '../../../../../../data/site.js';
 
 export function getStaticPaths({ paginate }) {
   const categories = [...new Set(PRODUCTS.map((p) => p.category))];
@@ -34,11 +35,6 @@ const brandCounts = [...new Set(bucket.map((p) => p.brand).filter(Boolean))]
   .sort()
   .map((name) => ({ name, count: bucket.filter((p) => p.brand === name).length }));
 
-const navLinks = [
-  { label: 'Repairs', href: '/repairs/' },
-  { label: 'Catalogue', href: '/shop/' },
-];
-
 const schema = [
   breadcrumbSchema([
     { name: 'Home', path: '/' },
@@ -56,7 +52,7 @@ const schema = [
   schema={schema}
   htmlAttrs={{ 'data-palette': 'electric-blue', 'data-fontpair': 'jakarta', 'data-dark': 'false' }}
 >
-  <SiteNav links={navLinks} ctaHref="/shop/cart/" mega />
+  <SiteNav links={NAV_LINKS} ctaHref="/shop/cart/" mega />
 
   <main id="main-content" class="section-tight">
     <div class="container-wide">

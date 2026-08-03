@@ -2,11 +2,7 @@
 import Layout from '../../layouts/Layout.astro';
 import SiteNav from '../../components/SiteNav.astro';
 import SiteFooter from '../../components/SiteFooter.astro';
-
-const navLinks = [
-  { label: 'Repairs', href: '/repairs/' },
-  { label: 'Catalogue', href: '/shop/' },
-];
+import { NAV_LINKS } from '../../data/site.js';
 // This page is also functions/api/checkout.js's Stripe success_url
 // (/shop/thanks/?session_id=…), currently unused since checkout is disabled.
 // If Stripe is re-enabled: the copy below assumes no payment has been taken
@@ -20,7 +16,7 @@ const navLinks = [
   noindex
   htmlAttrs={{ 'data-palette': 'electric-blue', 'data-fontpair': 'jakarta', 'data-dark': 'false' }}
 >
-  <SiteNav links={navLinks} ctaHref="/shop/" mega />
+  <SiteNav links={NAV_LINKS} ctaHref="/shop/" mega />
 
   <main id="main-content" class="section">
     <div class="container">
