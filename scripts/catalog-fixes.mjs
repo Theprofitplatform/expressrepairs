@@ -69,10 +69,11 @@ const NAME_FIXES = [
   // DXPOS shelf-location codes pasted into the product name ("[BWS1-31]
   // Case-Mate Tough Clear | iPhone 14 Pro"). Internal stock-finding jargon,
   // never customer-facing — and it hides the maker from brand inference.
-  // Repeated because a few rows carry two ("[TOL1-2] [PT-115] …"). The
+  // Repeated because a few rows carry two ("[TOL1-2] [PT-115] …"). Also covers
+  // letter-mix and colon forms ("[BW-A01]", "[L:B2-2]", "[I3-11-1]"). The
   // letters-then-space form "[PACK 10]" is deliberately NOT matched: that is a
   // quantity, and it is what the trade-only filter keys on.
-  [/^(\s*\[[A-Z]{1,4}\d*-?\d*\]\s*)+/, ''],
+  [/^(\s*\[[A-Z]{1,4}\d{0,2}(?::[A-Z0-9]+)?(?:-[A-Z0-9]+)*\]\s*)+/, ''],
   // encoding artifacts
   [/＆/g, ' & '], [/Ⅴ/g, 'V'],
   // typos and one-off broken names
