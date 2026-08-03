@@ -122,7 +122,11 @@ export function Hero() {
             </div>
             <div className="trust-row">
               <div className="avatars" aria-hidden="true">
-                {['LB','RT','SM','JK','TE'].map(ini => <span key={ini} className="avatar-initials">{ini}</span>)}
+                {/* Initials of real Google reviewers (LOCAL_REVIEWS in src/data/repairs.js:
+                    Margaret Dasivla, Margad T., Natasa Bejatovic, Sagar Acharya, Kathleen
+                    Kennedy). Kept as literals — repairs.js is ~110KB of page data, too heavy
+                    to import into this client:load island for five decorative chips. */}
+                {['MD','MT','NB','SA','KK'].map(ini => <span key={ini} className="avatar-initials">{ini}</span>)}
               </div>
               <div className="trust-text">
                 <div className="stars">★★★★★ <strong style={{marginLeft:6}}>4.9/5</strong></div>

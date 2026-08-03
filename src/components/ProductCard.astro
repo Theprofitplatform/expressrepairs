@@ -3,7 +3,9 @@
 // in ShopFilters.astro — keep both in sync.
 import { fmtPrice } from '../data/products.js';
 import { gridThumb } from '../shop/search-core.js';
-const { p } = Astro.props;
+// `eager` for above-the-fold cards (first row or two of a grid) so they don't
+// paint as blank boxes; `priority` for the very first card only.
+const { p, eager = false, priority = false } = Astro.props;
 ---
 <div class="acc-card" data-brand={p.brand}>
   <a href={`/shop/${p.id}/`} class="acc-card-link">
@@ -12,11 +14,12 @@ const { p } = Astro.props;
         src={gridThumb(p.thumb)}
         onerror={`this.onerror=null;this.src=${JSON.stringify(p.thumb)}`}
         alt={p.name}
-        loading="lazy"
+        loading={eager ? 'eager' : 'lazy'}
+        fetchpriority={priority ? 'high' : undefined}
         decoding="async"
         width="400"
         height="300"
-        style="width: 100%; height: auto; aspect-ratio: 4 / 3; object-fit: contain; background: #fff; padding: 12px; box-sizing: border-box;"
+        style="width: 100%; height: auto; aspect-ratio: 4 / 3; object-fit: contain; background: #f1f5f9; padding: 12px; box-sizing: border-box;"
       />
     </div>
     <div class="acc-body">

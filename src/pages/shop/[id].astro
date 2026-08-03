@@ -77,8 +77,8 @@ const schema = [
             <p style="margin-top: 8px; font-size: 0.95rem;">
               <span style="color: var(--brand-700);" aria-hidden="true">★★★★★</span>{' '}
               {googleProfile
-                ? <a href={googleProfile} rel="noopener">{SITE.rating.value} rated by {SITE.rating.count}+ local customers on Google</a>
-                : <span>{SITE.rating.value} rated by {SITE.rating.count}+ local customers on Google</span>}
+                ? <a href={googleProfile} rel="noopener">Our store: {SITE.rating.value}★ on Google ({SITE.rating.count} reviews)</a>
+                : <span>Our store: {SITE.rating.value}★ on Google ({SITE.rating.count} reviews)</span>}
             </p>
           )}
           {inStock && (
