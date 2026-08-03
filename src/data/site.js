@@ -1,5 +1,17 @@
 import { siteSchema } from './schema.js';
 
+// Canonical header nav — one list for the homepage Nav() and every SiteNav
+// page, so shop pages can't drift into a stripped-down menu that strands
+// shoppers away from Plans/NBN/Phones. "Catalogue" label is an owner decision.
+export const NAV_LINKS = [
+  { label: 'Repairs', href: '/repairs/' },
+  { label: 'Phones', href: '/phones/' },
+  { label: 'Plans', href: '/plans/' },
+  { label: 'NBN', href: '/nbn/' },
+  { label: 'Catalogue', href: '/shop/' },
+  { label: 'Blog', href: '/blog/' },
+];
+
 // Real NAP — Mertel Pty Ltd (ABN 88 644 567 019) trading as Xpress Phone Repairs,
 // the former Metro Wireless Vodafone dealer at Riverwood Plaza.
 export const SITE = siteSchema.parse({

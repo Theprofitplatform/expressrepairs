@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { Icon } from './icons.jsx';
 import { BookingWidget } from './BookingWidget.jsx';
 import { isOpenNow } from '../lib/hours.js';
-import { SITE } from '../data/site.js';
+import { SITE, NAV_LINKS } from '../data/site.js';
 import { HOURS } from '../data/content.js';
 import { REPAIR_CARDS } from '../data/services.js';
 import { SIM_PLANS, HANDSET_PLANS } from '../data/plans.js';
@@ -71,12 +71,9 @@ export function Nav() {
           {SITE.name}
         </a>
         <nav className="nav-links" id="nav-menu">
-          <a href="/repairs/">Repairs</a>
-          <a href="/phones/">Phones</a>
-          <a href="/plans/">Plans</a>
-          <a href="/nbn/">NBN</a>
-          <a href="/shop/">Catalogue</a>
-          <a href="/blog/">Blog</a>
+          {NAV_LINKS.map((l) => (
+            <a key={l.href} href={l.href}>{l.label}</a>
+          ))}
         </nav>
         <div className="nav-cta">
           <a href={SITE.phoneHref} className="nav-phone">
