@@ -22,28 +22,6 @@
     "sku": "195949506079"
   },
   {
-    "id": "X-00192",
-    "name": "Apple USB-A to Lightning Cable — 1M",
-    "category": "Cables & Charging",
-    "brand": "Apple",
-    "priceCents": 2995,
-    "image": "https://mobilemall.com.au/media/catalog/product/cache/d6d55d0333314389277ff64759832085/l/i/lightning-usb-cable---original-100ass.jpg",
-    "thumb": "https://mobilemall.com.au/media/catalog/product/cache/d6d55d0333314389277ff64759832085/l/i/lightning-usb-cable---original-100ass.jpg",
-    "inStock": true,
-    "sku": "190198531704"
-  },
-  {
-    "id": "X-00193",
-    "name": "Apple USB-A to Lightning Cable — 2M",
-    "category": "Cables & Charging",
-    "brand": "Apple",
-    "priceCents": 3995,
-    "image": "https://mobilemall.com.au/media/catalog/product/cache/d6d55d0333314389277ff64759832085/l/i/lightning-usb-cable---original-100ass.jpg",
-    "thumb": "https://mobilemall.com.au/media/catalog/product/cache/d6d55d0333314389277ff64759832085/l/i/lightning-usb-cable---original-100ass.jpg",
-    "inStock": true,
-    "sku": "885909627448"
-  },
-  {
     "id": "X-00196",
     "name": "Apple USB-C to 3.5mm Headphone Adapter",
     "category": "Audio",
@@ -86,28 +64,6 @@
     "thumb": "https://img.expressrepairs.com.au/products/X-00331.webp",
     "inStock": true,
     "sku": "10008639"
-  },
-  {
-    "id": "X-00329",
-    "name": "BLACKTECH USB-A to Lightning Fast Charging Cable — 1m",
-    "category": "Cables & Charging",
-    "brand": "BLACKTECH",
-    "priceCents": 1995,
-    "image": "https://mobilemall.com.au/media/catalog/product/cache/d6d55d0333314389277ff64759832085/b/l/blacktech-usb-a-to-lightning-cable-100cm-aa_2.jpg",
-    "thumb": "https://mobilemall.com.au/media/catalog/product/cache/d6d55d0333314389277ff64759832085/b/l/blacktech-usb-a-to-lightning-cable-100cm-aa_2.jpg",
-    "inStock": true,
-    "sku": "662225456873"
-  },
-  {
-    "id": "X-00335",
-    "name": "BLACKTECH USB-A to USB-C Fast Charging Cable — 2M",
-    "category": "Cables & Charging",
-    "brand": "BLACKTECH",
-    "priceCents": 2995,
-    "image": "https://mobilemall.com.au/media/catalog/product/cache/d6d55d0333314389277ff64759832085/b/l/blacktech-usb-a-to-usb-c-cable-200cm-aa.jpg",
-    "thumb": "https://mobilemall.com.au/media/catalog/product/cache/d6d55d0333314389277ff64759832085/b/l/blacktech-usb-a-to-usb-c-cable-200cm-aa.jpg",
-    "inStock": true,
-    "sku": "662225456903"
   },
   {
     "id": "X-00320",
@@ -163,39 +119,6 @@
     "thumb": "https://www.hoco.com.au/web/image/product.template/7123/image_256",
     "inStock": true,
     "sku": "6942007635509"
-  },
-  {
-    "id": "X-00552",
-    "name": "hoco. Data Cable X120 PVC USB-C - White",
-    "category": "Cables & Charging",
-    "brand": "hoco.",
-    "priceCents": 1995,
-    "image": "https://mobilemall.com.au/media/catalog/product/cache/d6d55d0333314389277ff64759832085/1/0/10018348.pt01.jpg",
-    "thumb": "https://mobilemall.com.au/media/catalog/product/cache/d6d55d0333314389277ff64759832085/1/0/10018348.pt01.jpg",
-    "inStock": true,
-    "sku": "6942007658911"
-  },
-  {
-    "id": "X-00650",
-    "name": "hoco. PD20W + QC3.0 Fast Charger Dual Type C +Type",
-    "category": "Cables & Charging",
-    "brand": "hoco.",
-    "priceCents": 2995,
-    "image": "https://mobilemall.com.au/media/catalog/product/cache/d6d55d0333314389277ff64759832085/b/l/blacktech-nu1-_.jpg",
-    "thumb": "https://mobilemall.com.au/media/catalog/product/cache/d6d55d0333314389277ff64759832085/b/l/blacktech-nu1-_.jpg",
-    "inStock": true,
-    "sku": "6942007616614"
-  },
-  {
-    "id": "X-00721",
-    "name": "hoco. X88 USB-A to lightining cable",
-    "category": "Cables & Charging",
-    "brand": "hoco.",
-    "priceCents": 1995,
-    "image": "https://mobilemall.com.au/media/catalog/product/cache/d6d55d0333314389277ff64759832085/6/9/6931474783318.a.jpg",
-    "thumb": "https://mobilemall.com.au/media/catalog/product/cache/d6d55d0333314389277ff64759832085/6/9/6931474783318.a.jpg",
-    "inStock": true,
-    "sku": "6931474783318"
   },
   {
     "id": "X-00488",
@@ -264,17 +187,6 @@
     "sku": "6942007608886"
   },
   {
-    "id": "X-00632",
-    "name": "hoco. M1 Max Stereo Bluetooth V5 Lightning Wired Earphone with Microphone",
-    "category": "Audio",
-    "brand": "hoco.",
-    "priceCents": 2495,
-    "image": "https://mobilemall.com.au/media/catalog/product/cache/d6d55d0333314389277ff64759832085/1/0/10014009.a.jpg",
-    "thumb": "https://mobilemall.com.au/media/catalog/product/cache/d6d55d0333314389277ff64759832085/1/0/10014009.a.jpg",
-    "inStock": true,
-    "sku": "6931474754684"
-  },
-  {
     "id": "X-00634",
     "name": "hoco. M101 Crystal USB-C - White Earphones",
     "category": "Audio",
@@ -284,17 +196,6 @@
     "thumb": "https://mobilemall.com.au/media/catalog/product/cache/d6d55d0333314389277ff64759832085/h/o/hoco-m101-usb-c-16.jpg",
     "inStock": true,
     "sku": "6931474782366"
-  },
-  {
-    "id": "X-00643",
-    "name": "hoco. M111 Plug And Play Primero Digital Lightning",
-    "category": "Cables & Charging",
-    "brand": "hoco.",
-    "priceCents": 1995,
-    "image": "https://mobilemall.com.au/media/catalog/product/cache/d6d55d0333314389277ff64759832085/1/0/10012597.pt01.jpg",
-    "thumb": "https://mobilemall.com.au/media/catalog/product/cache/d6d55d0333314389277ff64759832085/1/0/10012597.pt01.jpg",
-    "inStock": true,
-    "sku": "6942007606639"
   },
   {
     "id": "X-00665",
@@ -341,28 +242,6 @@
     "sku": "6931474725790"
   },
   {
-    "id": "X-00681",
-    "name": "hoco. UA17 Lightning to USB-A OTG Adapter 6931474761989 - Black",
-    "category": "Cables & Charging",
-    "brand": "hoco.",
-    "priceCents": 2495,
-    "image": "https://mobilemall.com.au/media/catalog/product/cache/d6d55d0333314389277ff64759832085/h/o/hoco-ua17-usb-a-a.jpg",
-    "thumb": "https://mobilemall.com.au/media/catalog/product/cache/d6d55d0333314389277ff64759832085/h/o/hoco-ua17-usb-a-a.jpg",
-    "inStock": true,
-    "sku": "6931474761989"
-  },
-  {
-    "id": "X-00688",
-    "name": "hoco. Universal Capacitive TouchScreen Stylus Pen",
-    "category": "Accessories",
-    "brand": "hoco.",
-    "priceCents": 1995,
-    "image": "https://mobilemall.com.au/media/catalog/product/cache/d6d55d0333314389277ff64759832085/h/o/hoco-gm103-black.jpg",
-    "thumb": "https://mobilemall.com.au/media/catalog/product/cache/d6d55d0333314389277ff64759832085/h/o/hoco-gm103-black.jpg",
-    "inStock": true,
-    "sku": "6931474767110"
-  },
-  {
     "id": "X-00701",
     "name": "hoco. WA16 Flexible series bamboo pattern band for iWatch (42/44/45/49mm) Rose Gold",
     "category": "Accessories",
@@ -394,17 +273,6 @@
     "thumb": "https://www.hoco.com.au/web/image/product.template/4071/image_256",
     "inStock": true,
     "sku": "15290"
-  },
-  {
-    "id": "X-01350",
-    "name": "Powerbank hoco. 20000 mAh 2A with built-in cables USB A ...",
-    "category": "Cables & Charging",
-    "brand": "hoco.",
-    "priceCents": 5995,
-    "image": "https://mobilemall.com.au/media/catalog/product/cache/d6d55d0333314389277ff64759832085/1/0/10018409.main.jpg",
-    "thumb": "https://mobilemall.com.au/media/catalog/product/cache/d6d55d0333314389277ff64759832085/1/0/10018409.main.jpg",
-    "inStock": true,
-    "sku": "6942007653374"
   },
   {
     "id": "X-01582",
@@ -559,17 +427,6 @@
     "thumb": "https://img.expressrepairs.com.au/products/X-01800.webp",
     "inStock": true,
     "sku": "10019006"
-  },
-  {
-    "id": "X-01817",
-    "name": "Samsung USB-C to USB Cable (White) 1M",
-    "category": "Cables & Charging",
-    "brand": "Samsung",
-    "priceCents": 2995,
-    "image": "https://mobilemall.com.au/media/catalog/product/cache/d6d55d0333314389277ff64759832085/s/a/samsung-usb-a-to-usb-c-cable---100cm-ass.jpg",
-    "thumb": "https://mobilemall.com.au/media/catalog/product/cache/d6d55d0333314389277ff64759832085/s/a/samsung-usb-a-to-usb-c-cable---100cm-ass.jpg",
-    "inStock": true,
-    "sku": "6935152052000"
   },
   {
     "id": "X-00011",
