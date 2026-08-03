@@ -1,5 +1,71 @@
 [
   {
+    "id": "X-00004",
+    "name": "2in1 Msafe Airvent/Windscreen Universal Phone Holder",
+    "category": "Accessories",
+    "brand": "",
+    "priceCents": 3995,
+    "image": "https://www.hoco.com.au/web/image/product.template/7551/image_1024",
+    "thumb": "https://www.hoco.com.au/web/image/product.template/7551/image_256",
+    "inStock": true,
+    "sku": "649275269714"
+  },
+  {
+    "id": "X-00055",
+    "name": "Apple EarPods (Lightning Connector)",
+    "category": "Cables & Charging",
+    "brand": "Apple",
+    "priceCents": 2995,
+    "image": "https://mobilemall.com.au/media/catalog/product/cache/d6d55d0333314389277ff64759832085/e/a/earpods-with-lightning-connector---originalas.jpg",
+    "thumb": "https://mobilemall.com.au/media/catalog/product/cache/d6d55d0333314389277ff64759832085/e/a/earpods-with-lightning-connector---originalas.jpg",
+    "inStock": true,
+    "sku": "195949506079"
+  },
+  {
+    "id": "X-00192",
+    "name": "Apple USB-A to Lightning Cable — 1M",
+    "category": "Cables & Charging",
+    "brand": "Apple",
+    "priceCents": 2995,
+    "image": "https://mobilemall.com.au/media/catalog/product/cache/d6d55d0333314389277ff64759832085/l/i/lightning-usb-cable---original-100ass.jpg",
+    "thumb": "https://mobilemall.com.au/media/catalog/product/cache/d6d55d0333314389277ff64759832085/l/i/lightning-usb-cable---original-100ass.jpg",
+    "inStock": true,
+    "sku": "190198531704"
+  },
+  {
+    "id": "X-00193",
+    "name": "Apple USB-A to Lightning Cable — 2M",
+    "category": "Cables & Charging",
+    "brand": "Apple",
+    "priceCents": 3995,
+    "image": "https://mobilemall.com.au/media/catalog/product/cache/d6d55d0333314389277ff64759832085/l/i/lightning-usb-cable---original-100ass.jpg",
+    "thumb": "https://mobilemall.com.au/media/catalog/product/cache/d6d55d0333314389277ff64759832085/l/i/lightning-usb-cable---original-100ass.jpg",
+    "inStock": true,
+    "sku": "885909627448"
+  },
+  {
+    "id": "X-00196",
+    "name": "Apple USB-C to 3.5mm Headphone Adapter",
+    "category": "Audio",
+    "brand": "Apple",
+    "priceCents": 1495,
+    "image": "https://mobilemall.com.au/media/catalog/product/cache/d6d55d0333314389277ff64759832085/a/p/apple-usb-c-to-3.5mm-cable-a.jpg",
+    "thumb": "https://mobilemall.com.au/media/catalog/product/cache/d6d55d0333314389277ff64759832085/a/p/apple-usb-c-to-3.5mm-cable-a.jpg",
+    "inStock": true,
+    "sku": "195949332883"
+  },
+  {
+    "id": "X-00298",
+    "name": "BLACKTECH 2C1A 120W PD QC Adapter With Smart IC - White (SAA APPROVED Australia Safety Product)",
+    "category": "Cables & Charging",
+    "brand": "BLACKTECH",
+    "priceCents": 9999,
+    "image": "https://mobilemall.com.au/media/catalog/product/cache/d6d55d0333314389277ff64759832085/1/0/10011611-ac-255c1-au-pd120w.jpg",
+    "thumb": "https://mobilemall.com.au/media/catalog/product/cache/d6d55d0333314389277ff64759832085/1/0/10011611-ac-255c1-au-pd120w.jpg",
+    "inStock": true,
+    "sku": "662225486597"
+  },
+  {
     "id": "X-00311",
     "name": "BLACKTECH Braided USB-A to Micro-USB Fast Charging Cable 30cm - White",
     "category": "Cables & Charging",
@@ -20,6 +86,336 @@
     "thumb": "https://img.expressrepairs.com.au/products/X-00331.webp",
     "inStock": true,
     "sku": "10008639"
+  },
+  {
+    "id": "X-00329",
+    "name": "BLACKTECH USB-A to Lightning Fast Charging Cable — 1m",
+    "category": "Cables & Charging",
+    "brand": "BLACKTECH",
+    "priceCents": 1995,
+    "image": "https://mobilemall.com.au/media/catalog/product/cache/d6d55d0333314389277ff64759832085/b/l/blacktech-usb-a-to-lightning-cable-100cm-aa_2.jpg",
+    "thumb": "https://mobilemall.com.au/media/catalog/product/cache/d6d55d0333314389277ff64759832085/b/l/blacktech-usb-a-to-lightning-cable-100cm-aa_2.jpg",
+    "inStock": true,
+    "sku": "662225456873"
+  },
+  {
+    "id": "X-00335",
+    "name": "BLACKTECH USB-A to USB-C Fast Charging Cable — 2M",
+    "category": "Cables & Charging",
+    "brand": "BLACKTECH",
+    "priceCents": 2995,
+    "image": "https://mobilemall.com.au/media/catalog/product/cache/d6d55d0333314389277ff64759832085/b/l/blacktech-usb-a-to-usb-c-cable-200cm-aa.jpg",
+    "thumb": "https://mobilemall.com.au/media/catalog/product/cache/d6d55d0333314389277ff64759832085/b/l/blacktech-usb-a-to-usb-c-cable-200cm-aa.jpg",
+    "inStock": true,
+    "sku": "662225456903"
+  },
+  {
+    "id": "X-00320",
+    "name": "Blacktech Round Car Air Vent Cradle Mount Mobile Phone",
+    "category": "Accessories",
+    "brand": "",
+    "priceCents": 2995,
+    "image": "https://mobilemall.com.au/media/catalog/product/cache/d6d55d0333314389277ff64759832085/b/l/blacktech-round-air-outlet-holder-aa.jpg",
+    "thumb": "https://mobilemall.com.au/media/catalog/product/cache/d6d55d0333314389277ff64759832085/b/l/blacktech-round-air-outlet-holder-aa.jpg",
+    "inStock": true,
+    "sku": "662225484074"
+  },
+  {
+    "id": "X-00401",
+    "name": "Coco Heavy Duty Ring Handle Stand | A11 Plus/A9 Plus (Green)",
+    "category": "Accessories",
+    "brand": "Coco",
+    "priceCents": 3995,
+    "image": "https://www.hoco.com.au/web/image/product.template/8022/image_1024",
+    "thumb": "https://www.hoco.com.au/web/image/product.template/8022/image_256",
+    "inStock": true,
+    "sku": "CHDR-A11-GR"
+  },
+  {
+    "id": "X-00402",
+    "name": "Coco Heavy Duty Ring Handle Stand | A11 Plus/A9 Plus (Navy)",
+    "category": "Accessories",
+    "brand": "Coco",
+    "priceCents": 3995,
+    "image": "https://www.hoco.com.au/web/image/product.template/8022/image_1024",
+    "thumb": "https://www.hoco.com.au/web/image/product.template/8022/image_256",
+    "inStock": true,
+    "sku": "CHDR-A11-NV"
+  },
+  {
+    "id": "X-00487",
+    "name": "H56 Show ring magnetic car holder (air outlet) | hoco. AU",
+    "category": "Accessories",
+    "brand": "hoco.",
+    "priceCents": 2995,
+    "image": "https://www.hoco.com.au/web/image/product.template/7258/image_1024",
+    "thumb": "https://www.hoco.com.au/web/image/product.template/7258/image_256",
+    "inStock": true,
+    "sku": "6942007637565"
+  },
+  {
+    "id": "X-00540",
+    "name": "hoco. CQ13 Triumph 3-in-1 travel folding wireless fast ...",
+    "category": "Cables & Charging",
+    "brand": "hoco.",
+    "priceCents": 7900,
+    "image": "https://www.hoco.com.au/web/image/product.template/7123/image_1024",
+    "thumb": "https://www.hoco.com.au/web/image/product.template/7123/image_256",
+    "inStock": true,
+    "sku": "6942007635509"
+  },
+  {
+    "id": "X-00552",
+    "name": "hoco. Data Cable X120 PVC USB-C - White",
+    "category": "Cables & Charging",
+    "brand": "hoco.",
+    "priceCents": 1995,
+    "image": "https://mobilemall.com.au/media/catalog/product/cache/d6d55d0333314389277ff64759832085/1/0/10018348.pt01.jpg",
+    "thumb": "https://mobilemall.com.au/media/catalog/product/cache/d6d55d0333314389277ff64759832085/1/0/10018348.pt01.jpg",
+    "inStock": true,
+    "sku": "6942007658911"
+  },
+  {
+    "id": "X-00650",
+    "name": "hoco. PD20W + QC3.0 Fast Charger Dual Type C +Type",
+    "category": "Cables & Charging",
+    "brand": "hoco.",
+    "priceCents": 2995,
+    "image": "https://mobilemall.com.au/media/catalog/product/cache/d6d55d0333314389277ff64759832085/b/l/blacktech-nu1-_.jpg",
+    "thumb": "https://mobilemall.com.au/media/catalog/product/cache/d6d55d0333314389277ff64759832085/b/l/blacktech-nu1-_.jpg",
+    "inStock": true,
+    "sku": "6942007616614"
+  },
+  {
+    "id": "X-00721",
+    "name": "hoco. X88 USB-A to lightining cable",
+    "category": "Cables & Charging",
+    "brand": "hoco.",
+    "priceCents": 1995,
+    "image": "https://mobilemall.com.au/media/catalog/product/cache/d6d55d0333314389277ff64759832085/6/9/6931474783318.a.jpg",
+    "thumb": "https://mobilemall.com.au/media/catalog/product/cache/d6d55d0333314389277ff64759832085/6/9/6931474783318.a.jpg",
+    "inStock": true,
+    "sku": "6931474783318"
+  },
+  {
+    "id": "X-00488",
+    "name": "Hanman Folio | Samsung Tab A11 Plus (Black)",
+    "category": "Tablet & iPad Cases",
+    "brand": "Hanman",
+    "priceCents": 3995,
+    "image": "https://www.hoco.com.au/web/image/product.template/8020/image_1024",
+    "thumb": "https://www.hoco.com.au/web/image/product.template/8020/image_256",
+    "inStock": true,
+    "sku": "HMF-A11-BK"
+  },
+  {
+    "id": "X-00509",
+    "name": "hoco. 3.5mm to Microphone Clear Sound Format Best for ...",
+    "category": "Audio",
+    "brand": "hoco.",
+    "priceCents": 2495,
+    "image": "https://mobilemall.com.au/media/catalog/product/cache/d6d55d0333314389277ff64759832085/h/o/hoco-l14-3.5mm-a.jpg",
+    "thumb": "https://mobilemall.com.au/media/catalog/product/cache/d6d55d0333314389277ff64759832085/h/o/hoco-l14-3.5mm-a.jpg",
+    "inStock": true,
+    "sku": "6931474761132"
+  },
+  {
+    "id": "X-00550",
+    "name": "hoco. CW6 Pro 15W Wireless Charger - Black",
+    "category": "Cables & Charging",
+    "brand": "hoco.",
+    "priceCents": 3995,
+    "image": "https://mobilemall.com.au/media/catalog/product/cache/d6d55d0333314389277ff64759832085/h/o/hoco-cw6-pro-a.jpg",
+    "thumb": "https://mobilemall.com.au/media/catalog/product/cache/d6d55d0333314389277ff64759832085/h/o/hoco-cw6-pro-a.jpg",
+    "inStock": true,
+    "sku": "6931474755032"
+  },
+  {
+    "id": "X-00590",
+    "name": "hoco. H77 View folding magnetic ring car holder",
+    "category": "Accessories",
+    "brand": "hoco.",
+    "priceCents": 2495,
+    "image": "https://www.hoco.com.au/web/image/product.template/7366/image_1024",
+    "thumb": "https://www.hoco.com.au/web/image/product.template/7366/image_256",
+    "inStock": true,
+    "sku": "6942007647878"
+  },
+  {
+    "id": "X-00606",
+    "name": "hoco. J115 5000mAh Journey Power Bank - Black",
+    "category": "Cables & Charging",
+    "brand": "hoco.",
+    "priceCents": 3995,
+    "image": "https://mobilemall.com.au/media/catalog/product/cache/d6d55d0333314389277ff64759832085/h/o/hoco-j115-1.jpg",
+    "thumb": "https://mobilemall.com.au/media/catalog/product/cache/d6d55d0333314389277ff64759832085/h/o/hoco-j115-1.jpg",
+    "inStock": true,
+    "sku": "6942007602358"
+  },
+  {
+    "id": "X-00630",
+    "name": "hoco. LS36 USB-C to 3.5mm Adapter - Black",
+    "category": "Cables & Charging",
+    "brand": "hoco.",
+    "priceCents": 1495,
+    "image": "https://mobilemall.com.au/media/catalog/product/cache/d6d55d0333314389277ff64759832085/h/o/hoco-ls36-usbc-1_1.jpg",
+    "thumb": "https://mobilemall.com.au/media/catalog/product/cache/d6d55d0333314389277ff64759832085/h/o/hoco-ls36-usbc-1_1.jpg",
+    "inStock": true,
+    "sku": "6942007608886"
+  },
+  {
+    "id": "X-00632",
+    "name": "hoco. M1 Max Stereo Bluetooth V5 Lightning Wired Earphone with Microphone",
+    "category": "Audio",
+    "brand": "hoco.",
+    "priceCents": 2495,
+    "image": "https://mobilemall.com.au/media/catalog/product/cache/d6d55d0333314389277ff64759832085/1/0/10014009.a.jpg",
+    "thumb": "https://mobilemall.com.au/media/catalog/product/cache/d6d55d0333314389277ff64759832085/1/0/10014009.a.jpg",
+    "inStock": true,
+    "sku": "6931474754684"
+  },
+  {
+    "id": "X-00634",
+    "name": "hoco. M101 Crystal USB-C - White Earphones",
+    "category": "Audio",
+    "brand": "hoco.",
+    "priceCents": 1995,
+    "image": "https://mobilemall.com.au/media/catalog/product/cache/d6d55d0333314389277ff64759832085/h/o/hoco-m101-usb-c-16.jpg",
+    "thumb": "https://mobilemall.com.au/media/catalog/product/cache/d6d55d0333314389277ff64759832085/h/o/hoco-m101-usb-c-16.jpg",
+    "inStock": true,
+    "sku": "6931474782366"
+  },
+  {
+    "id": "X-00643",
+    "name": "hoco. M111 Plug And Play Primero Digital Lightning",
+    "category": "Cables & Charging",
+    "brand": "hoco.",
+    "priceCents": 1995,
+    "image": "https://mobilemall.com.au/media/catalog/product/cache/d6d55d0333314389277ff64759832085/1/0/10012597.pt01.jpg",
+    "thumb": "https://mobilemall.com.au/media/catalog/product/cache/d6d55d0333314389277ff64759832085/1/0/10012597.pt01.jpg",
+    "inStock": true,
+    "sku": "6942007606639"
+  },
+  {
+    "id": "X-00665",
+    "name": "hoco. Q50 Victory PD20W power bank with cable ...",
+    "category": "Cables & Charging",
+    "brand": "hoco.",
+    "priceCents": 5995,
+    "image": "https://www.hoco.com.au/web/image/product.template/7953/image_1024",
+    "thumb": "https://www.hoco.com.au/web/image/product.template/7953/image_256",
+    "inStock": true,
+    "sku": "6942007667807"
+  },
+  {
+    "id": "X-00668",
+    "name": "hoco. Speaker BS45",
+    "category": "Audio",
+    "brand": "hoco.",
+    "priceCents": 3500,
+    "image": "https://www.hoco.com.au/web/image/product.template/3748/image_1024",
+    "thumb": "https://www.hoco.com.au/web/image/product.template/3748/image_256",
+    "inStock": true,
+    "sku": "10452"
+  },
+  {
+    "id": "X-00669",
+    "name": "hoco. True Wireless Earbuds EW24",
+    "category": "Audio",
+    "brand": "hoco.",
+    "priceCents": 5995,
+    "image": "https://mobilemall.com.au/media/catalog/product/cache/d6d55d0333314389277ff64759832085/h/o/hoco-ew24-a_1.jpg",
+    "thumb": "https://mobilemall.com.au/media/catalog/product/cache/d6d55d0333314389277ff64759832085/h/o/hoco-ew24-a_1.jpg",
+    "inStock": true,
+    "sku": "6931474771803"
+  },
+  {
+    "id": "X-00672",
+    "name": "hoco. USB-C to Adapter HB14",
+    "category": "Cables & Charging",
+    "brand": "hoco.",
+    "priceCents": 3995,
+    "image": "https://mobilemall.com.au/media/catalog/product/cache/d6d55d0333314389277ff64759832085/h/o/hoco-hb14-a.jpg",
+    "thumb": "https://mobilemall.com.au/media/catalog/product/cache/d6d55d0333314389277ff64759832085/h/o/hoco-hb14-a.jpg",
+    "inStock": true,
+    "sku": "6931474725790"
+  },
+  {
+    "id": "X-00681",
+    "name": "hoco. UA17 Lightning to USB-A OTG Adapter 6931474761989 - Black",
+    "category": "Cables & Charging",
+    "brand": "hoco.",
+    "priceCents": 2495,
+    "image": "https://mobilemall.com.au/media/catalog/product/cache/d6d55d0333314389277ff64759832085/h/o/hoco-ua17-usb-a-a.jpg",
+    "thumb": "https://mobilemall.com.au/media/catalog/product/cache/d6d55d0333314389277ff64759832085/h/o/hoco-ua17-usb-a-a.jpg",
+    "inStock": true,
+    "sku": "6931474761989"
+  },
+  {
+    "id": "X-00688",
+    "name": "hoco. Universal Capacitive TouchScreen Stylus Pen",
+    "category": "Accessories",
+    "brand": "hoco.",
+    "priceCents": 1995,
+    "image": "https://mobilemall.com.au/media/catalog/product/cache/d6d55d0333314389277ff64759832085/h/o/hoco-gm103-black.jpg",
+    "thumb": "https://mobilemall.com.au/media/catalog/product/cache/d6d55d0333314389277ff64759832085/h/o/hoco-gm103-black.jpg",
+    "inStock": true,
+    "sku": "6931474767110"
+  },
+  {
+    "id": "X-00701",
+    "name": "hoco. WA16 Flexible series bamboo pattern band for iWatch (42/44/45/49mm) Rose Gold",
+    "category": "Accessories",
+    "brand": "hoco.",
+    "priceCents": 2495,
+    "image": "https://www.hoco.com.au/web/image/product.template/6837/image_1024",
+    "thumb": "https://www.hoco.com.au/web/image/product.template/6837/image_256",
+    "inStock": true,
+    "sku": "6931474792952"
+  },
+  {
+    "id": "X-01186",
+    "name": "IROO WB1 | TWS BlueTooth 5.3",
+    "category": "Audio",
+    "brand": "iRoo",
+    "priceCents": 5995,
+    "image": "https://www.hoco.com.au/web/image/product.template/6751/image_1024",
+    "thumb": "https://www.hoco.com.au/web/image/product.template/6751/image_256",
+    "inStock": true,
+    "sku": "17526"
+  },
+  {
+    "id": "X-01159",
+    "name": "IRoo P15 Wireless Selfie Stick",
+    "category": "Accessories",
+    "brand": "iRoo",
+    "priceCents": 2995,
+    "image": "https://www.hoco.com.au/web/image/product.template/4071/image_1024",
+    "thumb": "https://www.hoco.com.au/web/image/product.template/4071/image_256",
+    "inStock": true,
+    "sku": "15290"
+  },
+  {
+    "id": "X-01350",
+    "name": "Powerbank hoco. 20000 mAh 2A with built-in cables USB A ...",
+    "category": "Cables & Charging",
+    "brand": "hoco.",
+    "priceCents": 5995,
+    "image": "https://mobilemall.com.au/media/catalog/product/cache/d6d55d0333314389277ff64759832085/1/0/10018409.main.jpg",
+    "thumb": "https://mobilemall.com.au/media/catalog/product/cache/d6d55d0333314389277ff64759832085/1/0/10018409.main.jpg",
+    "inStock": true,
+    "sku": "6942007653374"
+  },
+  {
+    "id": "X-01582",
+    "name": "Samsung 25W Power Adapter (Black)",
+    "category": "Cables & Charging",
+    "brand": "Samsung",
+    "priceCents": 3995,
+    "image": "https://www.hoco.com.au/web/image/product.template/7308/image_1024",
+    "thumb": "https://www.hoco.com.au/web/image/product.template/7308/image_256",
+    "inStock": true,
+    "sku": "8806094912135"
   },
   {
     "id": "X-01687",
@@ -165,6 +561,39 @@
     "sku": "10019006"
   },
   {
+    "id": "X-01817",
+    "name": "Samsung USB-C to USB Cable (White) 1M",
+    "category": "Cables & Charging",
+    "brand": "Samsung",
+    "priceCents": 2995,
+    "image": "https://mobilemall.com.au/media/catalog/product/cache/d6d55d0333314389277ff64759832085/s/a/samsung-usb-a-to-usb-c-cable---100cm-ass.jpg",
+    "thumb": "https://mobilemall.com.au/media/catalog/product/cache/d6d55d0333314389277ff64759832085/s/a/samsung-usb-a-to-usb-c-cable---100cm-ass.jpg",
+    "inStock": true,
+    "sku": "6935152052000"
+  },
+  {
+    "id": "X-00011",
+    "name": "hoco. HW11 Jenny three-axis linkage wireless",
+    "category": "Cables & Charging",
+    "brand": "hoco.",
+    "priceCents": 5995,
+    "image": "https://www.hoco.com.au/web/image/product.template/6921/image_1024",
+    "thumb": "https://www.hoco.com.au/web/image/product.template/6921/image_256",
+    "inStock": true,
+    "sku": "6942007611497"
+  },
+  {
+    "id": "X-00736",
+    "name": "hoco. UA43A USB-C Male to HDMI Male Cable conversion cable - Metal Grey",
+    "category": "Cables & Charging",
+    "brand": "hoco.",
+    "priceCents": 2995,
+    "image": "https://mobilemall.com.au/media/catalog/product/cache/d6d55d0333314389277ff64759832085/1/0/10019709.pt02.jpg",
+    "thumb": "https://mobilemall.com.au/media/catalog/product/cache/d6d55d0333314389277ff64759832085/1/0/10019709.pt02.jpg",
+    "inStock": true,
+    "sku": "6942007671507"
+  },
+  {
     "id": "X-00739",
     "name": "hoco. X109 USB-C to USB-C Silicone 60W charging data cable C to C L 1M - White",
     "category": "Cables & Charging",
@@ -275,6 +704,17 @@
     "sku": "10018317"
   },
   {
+    "id": "X-00808",
+    "name": "iPhone 13 / 13 Pro / 14 / 16e / 17e LITO D20 Tempered Glass Screen Protector - Clear",
+    "category": "Screen Protection",
+    "brand": "Apple",
+    "priceCents": 2495,
+    "image": "https://mobilemall.com.au/media/catalog/product/cache/d6d55d0333314389277ff64759832085/1/0/10018305.main.aa_2.png",
+    "thumb": "https://mobilemall.com.au/media/catalog/product/cache/d6d55d0333314389277ff64759832085/1/0/10018305.main.aa_2.png",
+    "inStock": true,
+    "sku": "9361195012737"
+  },
+  {
     "id": "X-00855",
     "name": "iPhone 14 Pro Max BLACKTECH Mag Case (MagSafe Compatible) - Clear",
     "category": "Cases & Covers",
@@ -284,6 +724,17 @@
     "thumb": "https://img.expressrepairs.com.au/products/X-00855.webp",
     "inStock": true,
     "sku": "10010590"
+  },
+  {
+    "id": "X-00871",
+    "name": "iPhone 16 Pro / iPhone 16 Pro Max hoco. G13 Camera Anti-Glare Tempered Glass - Clear",
+    "category": "Screen Protection",
+    "brand": "Apple",
+    "priceCents": 2495,
+    "image": "https://mobilemall.com.au/media/catalog/product/cache/d6d55d0333314389277ff64759832085/1/0/10011562.pt01.jpg",
+    "thumb": "https://mobilemall.com.au/media/catalog/product/cache/d6d55d0333314389277ff64759832085/1/0/10011562.pt01.jpg",
+    "inStock": true,
+    "sku": "6942007637312"
   },
   {
     "id": "X-00878",
@@ -352,6 +803,28 @@
     "sku": "10018307"
   },
   {
+    "id": "X-00963",
+    "name": "iPhone BLACKTECH Stay Glitter Case - Clear",
+    "category": "Cases & Covers",
+    "brand": "Apple",
+    "priceCents": 3995,
+    "image": "https://mobilemall.com.au/media/catalog/product/cache/d6d55d0333314389277ff64759832085/1/0/10017903-2.main.jpg",
+    "thumb": "https://mobilemall.com.au/media/catalog/product/cache/d6d55d0333314389277ff64759832085/1/0/10017903-2.main.jpg",
+    "inStock": true,
+    "sku": "662225477069"
+  },
+  {
+    "id": "X-00970",
+    "name": "iPhone BLACKTECH Symmetry Case — 14 Pro",
+    "category": "Cases & Covers",
+    "brand": "Apple",
+    "priceCents": 3995,
+    "image": "https://mobilemall.com.au/media/catalog/product/cache/d6d55d0333314389277ff64759832085/b/l/blacktech-d30-black-aa_1.jpg",
+    "thumb": "https://mobilemall.com.au/media/catalog/product/cache/d6d55d0333314389277ff64759832085/b/l/blacktech-d30-black-aa_1.jpg",
+    "inStock": true,
+    "sku": "662225476017"
+  },
+  {
     "id": "X-01136",
     "name": "iPhone X / XS / 11 Pro BLACKTECH Privacy 9D Full Cover Tempered Glass - Black",
     "category": "Screen Protection",
@@ -372,6 +845,50 @@
     "thumb": "https://img.expressrepairs.com.au/products/X-01138.webp",
     "inStock": true,
     "sku": "10008469"
+  },
+  {
+    "id": "X-01139",
+    "name": "iPhone XR / 11 hoco. G9 Full screen HD tempered glass - Black",
+    "category": "Screen Protection",
+    "brand": "Apple",
+    "priceCents": 2995,
+    "image": "https://mobilemall.com.au/media/catalog/product/cache/d6d55d0333314389277ff64759832085/1/0/10015511.main_1.jpg",
+    "thumb": "https://mobilemall.com.au/media/catalog/product/cache/d6d55d0333314389277ff64759832085/1/0/10015511.main_1.jpg",
+    "inStock": true,
+    "sku": "6931474771209"
+  },
+  {
+    "id": "X-01148",
+    "name": "iRoo B08L | Lightning USB Cable - 1 Meter",
+    "category": "Cables & Charging",
+    "brand": "iRoo",
+    "priceCents": 1995,
+    "image": "https://www.hoco.com.au/web/image/product.template/4053/image_1024",
+    "thumb": "https://www.hoco.com.au/web/image/product.template/4053/image_256",
+    "inStock": true,
+    "sku": "6383022414104"
+  },
+  {
+    "id": "X-01163",
+    "name": "iRoo R10 Maxgrip Car holder",
+    "category": "Accessories",
+    "brand": "iRoo",
+    "priceCents": 3495,
+    "image": "https://www.hoco.com.au/web/image/product.template/4076/image_1024",
+    "thumb": "https://www.hoco.com.au/web/image/product.template/4076/image_256",
+    "inStock": true,
+    "sku": "6383022413428"
+  },
+  {
+    "id": "X-01165",
+    "name": "iRoo R103 MagSafe Magnetic Holder",
+    "category": "Accessories",
+    "brand": "iRoo",
+    "priceCents": 3995,
+    "image": "https://www.hoco.com.au/web/image/product.template/4075/image_1024",
+    "thumb": "https://www.hoco.com.au/web/image/product.template/4075/image_256",
+    "inStock": true,
+    "sku": "6383022434836"
   },
   {
     "id": "X-03459",
@@ -4409,6 +4926,17 @@
     "thumb": "https://img.expressrepairs.com.au/products/X-08323.webp",
     "inStock": true,
     "sku": "10008169"
+  },
+  {
+    "id": "X-11449",
+    "name": "Outdoor Waterproof Solar Powered | Firefly Lights Garden Lights Color Changing RGB [PACK of 2]",
+    "category": "Accessories",
+    "brand": "",
+    "priceCents": 1900,
+    "image": "https://www.hoco.com.au/web/image/product.template/6233/image_1024",
+    "thumb": "https://www.hoco.com.au/web/image/product.template/6233/image_256",
+    "inStock": true,
+    "sku": "HOCO-6233"
   },
   {
     "id": "X-07829",
@@ -19754,6 +20282,138 @@
     "thumb": "https://img.expressrepairs.com.au/products/X-08082.webp",
     "inStock": true,
     "sku": "10008941"
+  },
+  {
+    "id": "X-10147",
+    "name": "Smart Flip Folio | iPad 7/8/9 (10.2)",
+    "category": "Tablet & iPad Cases",
+    "brand": "Apple",
+    "priceCents": 1450,
+    "image": "https://www.hoco.com.au/web/image/product.template/6880/image_1024",
+    "thumb": "https://www.hoco.com.au/web/image/product.template/6880/image_256",
+    "inStock": true,
+    "sku": "HOCO-6880"
+  },
+  {
+    "id": "X-10146",
+    "name": "Smart Flip Folio | iPad A16 2025 | iPad 10/iPad 11 (10.9)",
+    "category": "Tablet & iPad Cases",
+    "brand": "Apple",
+    "priceCents": 1450,
+    "image": "https://www.hoco.com.au/web/image/product.template/6881/image_1024",
+    "thumb": "https://www.hoco.com.au/web/image/product.template/6881/image_256",
+    "inStock": true,
+    "sku": "HOCO-6881"
+  },
+  {
+    "id": "X-10139",
+    "name": "Smart Flip Folio | Air4/Air5/Pro 11",
+    "category": "Cases & Covers",
+    "brand": "",
+    "priceCents": 1450,
+    "image": "https://www.hoco.com.au/web/image/product.template/6882/image_1024",
+    "thumb": "https://www.hoco.com.au/web/image/product.template/6882/image_256",
+    "inStock": true,
+    "sku": "HOCO-6882"
+  },
+  {
+    "id": "X-10137",
+    "name": "Smart Flip Folio | Air1/Air2/5/6/Pro 9.7",
+    "category": "Cases & Covers",
+    "brand": "",
+    "priceCents": 1450,
+    "image": "https://www.hoco.com.au/web/image/product.template/6883/image_1024",
+    "thumb": "https://www.hoco.com.au/web/image/product.template/6883/image_256",
+    "inStock": true,
+    "sku": "HOCO-6883"
+  },
+  {
+    "id": "X-10135",
+    "name": "Smart Flip Folio | iPad Air 3/Pro (10.5)",
+    "category": "Tablet & iPad Cases",
+    "brand": "Apple",
+    "priceCents": 1450,
+    "image": "https://www.hoco.com.au/web/image/product.template/6884/image_1024",
+    "thumb": "https://www.hoco.com.au/web/image/product.template/6884/image_256",
+    "inStock": true,
+    "sku": "HOCO-6884"
+  },
+  {
+    "id": "X-10145",
+    "name": "Smart Flip Folio | iPad 12.9 (2018-2021)",
+    "category": "Tablet & iPad Cases",
+    "brand": "Apple",
+    "priceCents": 3500,
+    "image": "https://www.hoco.com.au/web/image/product.template/6885/image_1024",
+    "thumb": "https://www.hoco.com.au/web/image/product.template/6885/image_256",
+    "inStock": true,
+    "sku": "HOCO-6885"
+  },
+  {
+    "id": "X-11351",
+    "name": "Hanman Folio | iPad 7/8/9 (10.2)",
+    "category": "Tablet & iPad Cases",
+    "brand": "Hanman",
+    "priceCents": 3500,
+    "image": "https://www.hoco.com.au/web/image/product.template/3537/image_1024",
+    "thumb": "https://www.hoco.com.au/web/image/product.template/3537/image_256",
+    "inStock": true,
+    "sku": "HOCO-3537"
+  },
+  {
+    "id": "X-10890",
+    "name": "OtterBox Defender | Samsung Galaxy S8 - Purple",
+    "category": "Cases & Covers",
+    "brand": "Samsung",
+    "priceCents": 3500,
+    "image": "https://www.hoco.com.au/web/image/product.template/4457/image_1024",
+    "thumb": "https://www.hoco.com.au/web/image/product.template/4457/image_256",
+    "inStock": true,
+    "sku": "HOCO-4457"
+  },
+  {
+    "id": "X-11184",
+    "name": "Mercury Canvas Diary | Samsung Galaxy S8 Plus",
+    "category": "Cases & Covers",
+    "brand": "Samsung",
+    "priceCents": 1000,
+    "image": "https://www.hoco.com.au/web/image/product.template/4469/image_1024",
+    "thumb": "https://www.hoco.com.au/web/image/product.template/4469/image_256",
+    "inStock": true,
+    "sku": "HOCO-4469"
+  },
+  {
+    "id": "X-11640",
+    "name": "Mercury Rich Diary | Samsung S8 Plus",
+    "category": "Cases & Covers",
+    "brand": "Samsung",
+    "priceCents": 1000,
+    "image": "https://www.hoco.com.au/web/image/product.template/4470/image_1024",
+    "thumb": "https://www.hoco.com.au/web/image/product.template/4470/image_256",
+    "inStock": true,
+    "sku": "HOCO-4470"
+  },
+  {
+    "id": "X-09108",
+    "name": "hoco. Y30 Smart sports watch (call version)",
+    "category": "Accessories",
+    "brand": "hoco.",
+    "priceCents": 7500,
+    "image": "https://www.hoco.com.au/web/image/product.template/7524/image_1024",
+    "thumb": "https://www.hoco.com.au/web/image/product.template/7524/image_256",
+    "inStock": true,
+    "sku": "HOCO-7524"
+  },
+  {
+    "id": "X-10669",
+    "name": "Xiaomi Power Strip 3 | Universal Sockets /w 3 fast charging USB ports - AU Plug",
+    "category": "Cables & Charging",
+    "brand": "",
+    "priceCents": 3900,
+    "image": "https://www.hoco.com.au/web/image/product.template/5727/image_1024",
+    "thumb": "https://www.hoco.com.au/web/image/product.template/5727/image_256",
+    "inStock": true,
+    "sku": "HOCO-5727"
   },
   {
     "id": "X-06173",
