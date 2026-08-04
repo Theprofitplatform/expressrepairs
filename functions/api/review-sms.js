@@ -54,12 +54,19 @@ export function normalizeAuMobile(raw) {
 // Sign-off uses a plain hyphen, not an em-dash: a single non-GSM-7 character
 // (like "—") forces the whole SMS into UCS-2 (67 chars/segment vs 153), adding
 // a billable segment. Keeping the template GSM-7 keeps it to ~2 segments.
+//
+// The opt-out line is a Spam Act requirement. It points at the shop mobile
+// rather than saying "reply STOP", because the 'Xpress' alphanumeric sender
+// cannot receive replies — carriers block them. The shop mobile takes both
+// calls and texts, so it is a channel that actually works today.
+// 233 chars with a short name, 270 at the 40-char name cap — both under the
+// 306-char two-segment ceiling, so the opt-out costs nothing.
 export function buildReviewMessage(name, reviewLink) {
   const safeName = oneLine(name, 40) || 'there';
   return (
     `Hi ${safeName}, thanks for choosing Xpress Phone Repairs at Riverwood Plaza! ` +
     `If you're happy with the repair, a quick Google review means a lot to us: ` +
-    `${reviewLink} - The team`
+    `${reviewLink} - The team. To opt out, call or text 0415 303 300.`
   );
 }
 
