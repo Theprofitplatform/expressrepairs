@@ -282,6 +282,21 @@ describe('POST /api/review-sms — PIN rate limiting', () => {
     expect(spy).not.toHaveBeenCalled();
   });
 
+  it('records a PII-free log entry after a successful send', async () => {
+    clickSendOk();
+    const kv = makeFakeKv();
+    const res = await onRequest({
+      request: reqFrom('20.0.0.4', { body: { pin: PIN, mobile: '0412345678', name: 'Sam' } }),
+      env: { ...FULL_ENV, ORDERS_KV: kv },
+    });
+    expect(res.status).toBe(200);
+    const key = [...kv.putOptions.keys()].find((k) => k.startsWith('reviewsms:'));
+    expect(key).toBeTruthy();
+    // Must never carry the customer's number or name.
+    expect(key).not.toContain('412345678');
+    expect(await kv.get(key)).toBe(JSON.stringify({ sent: true }));
+  });
+
   it('a correct PIN clears that IP counter', async () => {
     const spy = clickSendOk();
     const kv = makeFakeKv();

@@ -132,5 +132,21 @@ export async function onRequest({ request, env }) {
     return json(503, { ok: false, error: 'Could not send right now.' });
   }
 
+  // Bookkeeping only — the shop's own count, independent of ClickSend's history.
+  // Key-per-send mirrors lead.js: a daily counter would be a read-modify-write
+  // race. Deliberately PII-free: no phone number, no name, no message body.
+  if (env.ORDERS_KV) {
+    try {
+      await env.ORDERS_KV.put(
+        `reviewsms:${new Date().toISOString()}:${crypto.randomUUID().slice(0, 8)}`,
+        JSON.stringify({ sent: true }),
+        { expirationTtl: 60 * 60 * 24 * 730 },
+      );
+    } catch (err) {
+      // Never fail a delivered SMS over bookkeeping.
+      console.error('ORDERS_KV review-sms count failed', err);
+    }
+  }
+
   return json(200, { ok: true, to });
 }
