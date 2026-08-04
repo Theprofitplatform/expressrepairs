@@ -54,12 +54,19 @@ export function normalizeAuMobile(raw) {
 // Sign-off uses a plain hyphen, not an em-dash: a single non-GSM-7 character
 // (like "—") forces the whole SMS into UCS-2 (67 chars/segment vs 153), adding
 // a billable segment. Keeping the template GSM-7 keeps it to ~2 segments.
+//
+// The opt-out line is a Spam Act requirement. It points at the shop mobile
+// rather than saying "reply STOP", because the 'Xpress' alphanumeric sender
+// cannot receive replies — carriers block them. The shop mobile takes both
+// calls and texts, so it is a channel that actually works today.
+// 233 chars with a short name, 270 at the 40-char name cap — both under the
+// 306-char two-segment ceiling, so the opt-out costs nothing.
 export function buildReviewMessage(name, reviewLink) {
   const safeName = oneLine(name, 40) || 'there';
   return (
     `Hi ${safeName}, thanks for choosing Xpress Phone Repairs at Riverwood Plaza! ` +
     `If you're happy with the repair, a quick Google review means a lot to us: ` +
-    `${reviewLink} - The team`
+    `${reviewLink} - The team. To opt out, call or text 0415 303 300.`
   );
 }
 
@@ -123,6 +130,22 @@ export async function onRequest({ request, env }) {
   } catch (err) {
     console.error('ClickSend request error', err);
     return json(503, { ok: false, error: 'Could not send right now.' });
+  }
+
+  // Bookkeeping only — the shop's own count, independent of ClickSend's history.
+  // Key-per-send mirrors lead.js: a daily counter would be a read-modify-write
+  // race. Deliberately PII-free: no phone number, no name, no message body.
+  if (env.ORDERS_KV) {
+    try {
+      await env.ORDERS_KV.put(
+        `reviewsms:${new Date().toISOString()}:${crypto.randomUUID().slice(0, 8)}`,
+        JSON.stringify({ sent: true }),
+        { expirationTtl: 60 * 60 * 24 * 730 },
+      );
+    } catch (err) {
+      // Never fail a delivered SMS over bookkeeping.
+      console.error('ORDERS_KV review-sms count failed', err);
+    }
   }
 
   return json(200, { ok: true, to });
