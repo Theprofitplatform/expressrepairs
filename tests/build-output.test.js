@@ -257,6 +257,24 @@ describe('built shop thanks page', () => {
   });
 });
 
+describe('Google Customer Reviews badge', () => {
+  const BADGE = 'merchantwidget.js';
+
+  it('ships on shop pages, gated to desktop', () => {
+    const cart = readFileSync('dist/shop/cart/index.html', 'utf8');
+    expect(cart).toContain(BADGE);
+    expect(cart).toContain('merchant_id: 5832297258');
+    // On mobile Google centres the widget over .mobile-call-cta / .buy-bar, so
+    // it must never start below the 720px breakpoint those bars appear at.
+    expect(cart).toContain("matchMedia('(min-width: 721px)')");
+  });
+
+  it('stays off non-shop pages (they would show "no rating available")', () => {
+    expect(html).not.toContain(BADGE); // homepage
+    expect(readFileSync('dist/repairs/screen/index.html', 'utf8')).not.toContain(BADGE);
+  });
+});
+
 describe('built NBN page', () => {
   it('renders every plan card with its list price', async () => {
     const { NBN_PLANS } = await import('../src/data/plans.js');
