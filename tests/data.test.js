@@ -6,6 +6,7 @@ import { FAQS, HOURS } from '../src/data/content.js';
 import { SIM_PLANS, HANDSET_PLANS } from '../src/data/plans.js';
 import { ACCESSORIES, BRAND_TILES } from '../src/data/accessories.js';
 import { TESTIMONIALS, WARRANTIES } from '../src/data/content.js';
+import { VERIFIED_REVIEWS } from '../src/data/reviews.js';
 
 describe('data integrity', () => {
   it('imports without throwing (Zod parse passed)', () => {
@@ -57,6 +58,41 @@ describe('data integrity', () => {
     for (const t of TESTIMONIALS) {
       expect(t.text.length).toBeGreaterThan(40);
     }
+  });
+});
+
+// Fabricated testimonials survived two audits here: the June 2026 cleanup fixed
+// the suburb pages and missed the homepage's separate array, then PR #70 matched
+// on the "Verified Customer" label and left three fakes wearing a "Google Review"
+// one. The old tests passed on all of it — they only checked length and
+// non-emptiness. These check provenance instead.
+describe('review provenance', () => {
+  it('the homepage renders verified reviews by identity, not by copy', () => {
+    // Object identity, so pasting a lookalike row into content.js fails here —
+    // matching on name/text would let a fabricated entry through.
+    for (const t of TESTIMONIALS) {
+      expect(VERIFIED_REVIEWS).toContain(t);
+    }
+  });
+
+  it('there is no second review array to hide a fake in', () => {
+    expect(TESTIMONIALS.length).toBeLessThanOrEqual(VERIFIED_REVIEWS.length);
+  });
+
+  it('every review is sourced to Google, never a "Verified Customer" placeholder', () => {
+    // No name-shape heuristic here on purpose: "Sarah M." was fabricated but
+    // "Margad T." is a real reviewer, and Google displays plenty of genuine
+    // names that way. Provenance is the check that works; initials are not.
+    for (const r of VERIFIED_REVIEWS) {
+      expect(r.source).toBe('Google Review');
+    }
+  });
+
+  it('aggregateRating still matches the documented GBP snapshot', () => {
+    // Emitted as real structured data on the homepage and every suburb/service
+    // page. If the GBP count has moved, update SITE.rating AND the snapshot date
+    // in src/data/reviews.js — never guess a number here.
+    expect(SITE.rating).toEqual({ value: 4.9, count: 17, best: 5 });
   });
 });
 
