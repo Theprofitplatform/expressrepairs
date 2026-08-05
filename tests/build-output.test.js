@@ -289,21 +289,28 @@ describe('rating copy tracks SITE.rating', () => {
   });
 });
 
-describe('Google Customer Reviews badge', () => {
+describe('Google Customer Reviews seller-rating badge', () => {
   const BADGE = 'merchantwidget.js';
 
-  it('ships on shop pages, gated to desktop', () => {
-    const cart = readFileSync('dist/shop/cart/index.html', 'utf8');
-    expect(cart).toContain(BADGE);
-    expect(cart).toContain('merchant_id: 5832297258');
-    // On mobile Google centres the widget over .mobile-call-cta / .buy-bar, so
-    // it must never start below the 720px breakpoint those bars appear at.
-    expect(cart).toContain("matchMedia('(min-width: 721px)')");
+  // The badge shipped before there was a rating to put in it: Google needs ~100
+  // reviews in a rolling 12 months before it shows one, so it rendered "no
+  // rating available" on every desktop shop page — a trust mark saying we have
+  // no trust. It also made privacy.astro's "the Google Customer Reviews script
+  // runs on the order confirmation page only" a false statement.
+  //
+  // The /shop/thanks/ opt-in above is what actually collects the reviews and is
+  // unaffected. Put the badge back once a rating exists — and when you do,
+  // delete this test AND fix section 4 of privacy.astro in the same change.
+  it('is not shipped anywhere', () => {
+    expect(html).not.toContain(BADGE); // homepage
+    for (const p of ['shop/cart', 'shop', 'shop/thanks', 'repairs/screen']) {
+      expect(readFileSync(`dist/${p}/index.html`, 'utf8')).not.toContain(BADGE);
+    }
   });
 
-  it('stays off non-shop pages (they would show "no rating available")', () => {
-    expect(html).not.toContain(BADGE); // homepage
-    expect(readFileSync('dist/repairs/screen/index.html', 'utf8')).not.toContain(BADGE);
+  it('privacy policy still scopes the Google review script to the thanks page', () => {
+    const privacy = readFileSync('dist/privacy/index.html', 'utf8');
+    expect(privacy).toContain("doesn't run anywhere else on the site");
   });
 });
 
