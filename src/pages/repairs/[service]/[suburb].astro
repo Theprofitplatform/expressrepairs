@@ -105,7 +105,7 @@ const mapsHref = `https://maps.google.com/?q=${encodeURIComponent(SITE.mapsQuery
           </div>
           <div class="trust-row">
             <div class="trust-text">
-              <div class="stars">★★★★★ <strong style="margin-left: 6px;">4.9/5</strong></div>
+              <div class="stars">★★★★★ <strong style="margin-left: 6px;">{SITE.rating.value.toFixed(1)}/5</strong></div>
               <div set:html={page.trust}></div>
             </div>
           </div>
