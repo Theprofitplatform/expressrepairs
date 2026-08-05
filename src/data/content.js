@@ -6,11 +6,11 @@ import { VERIFIED_REVIEWS } from './reviews.js';
 // list — see src/data/reviews.js for why that matters.
 //
 // Removed 2026-08-05: Livio Bruno, Rikki Thomson and Teri Elley, which had sat
-// here labelled "Google Review". None appear among the reviewers verified
-// against the Google Business Profile, and the first two were the fabricated
-// testimonials the June 2026 suburb-page audit removed — they survived here
-// only because this array was never audited. Unverified is treated as
-// fabricated.
+// here labelled "Google Review". Confirmed fabricated the same day by reading
+// the full Google Business Profile list — none of the three appears among the
+// 22 real reviews. The first two were the same fabricated testimonials the June
+// 2026 suburb-page audit removed; they survived here only because this array
+// was never audited.
 export const TESTIMONIALS = VERIFIED_REVIEWS.slice(0, 3);
 
 export const WARRANTIES = z.array(warrantySchema).parse([

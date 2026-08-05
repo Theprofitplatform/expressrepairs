@@ -45,8 +45,9 @@ export const SITE = siteSchema.parse({
   ],
   // ⚠️ Star rich-results: `count` is the REAL Google review count — this emits a
   // genuine aggregateRating on the homepage and every suburb/service page, so a
-  // guessed number here is fabricated structured data. Owner-reported 2026-08-05:
-  // 5★, 22 reviews (was 4.9★/17 from the GBP on 2026-06-24).
+  // guessed number here is fabricated structured data. Read off the live GBP
+  // listing on 2026-08-05: 5.0★, 22 reviews, every one of them 5★ (was 4.9★/17
+  // on 2026-06-24).
   //
   // Nothing hardcodes these figures any more — the homepage trust row, the two
   // stat blocks and the suburb trust row all read `SITE.rating.value`, because
