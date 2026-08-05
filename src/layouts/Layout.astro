@@ -24,6 +24,12 @@ const url = canonical(path);
 const ogImage = image ? absoluteUrl(image) : null;
 const jsonld = Array.isArray(schema) ? schema : [schema];
 
+// Google Customer Reviews badge is scoped to the shop — it rates the store, and
+// until ratings accumulate it renders "no rating available", which repair
+// customers don't need to see. Build-time check: the scripts aren't emitted at
+// all elsewhere. Every page under src/pages/shop/ passes a `path`.
+const shopBadge = path.startsWith('/shop/');
+
 const FONTS_HREF =
   'https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=DM+Sans:wght@400;500;600;700&display=swap';
 ---
@@ -83,6 +89,28 @@ const FONTS_HREF =
   <body>
     <a href="#main-content" class="skip-link">Skip to content</a>
     <slot />
+
+    {shopBadge && (
+      <>
+        <script id="merchantWidgetScript" src="https://www.gstatic.com/shopping/merchant/merchantwidget.js" defer></script>
+        <script is:inline>
+          // Google Customer Reviews seller-rating badge, shop pages only.
+          // Desktop only on purpose: on mobile Google centres the widget at the
+          // bottom of the viewport, which is exactly where .mobile-call-cta and
+          // the product page's .buy-bar live (both ≤720px). Google asks that the
+          // widget not be obscured, and we're not burying the call CTA under it,
+          // so below the breakpoint we simply never start it.
+          merchantWidgetScript.addEventListener('load', function () {
+            if (!window.matchMedia('(min-width: 721px)').matches) return;
+            merchantwidget.start({
+              merchant_id: 5832297258,
+              position: 'RIGHT_BOTTOM',
+              region: 'AU',
+            });
+          });
+        </script>
+      </>
+    )}
     <script>
       // Mobile nav toggle. One delegated handler in the layout covers both nav
       // implementations — SiteNav.astro (inner pages) and the homepage Nav in

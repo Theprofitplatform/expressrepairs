@@ -4,12 +4,7 @@ import SiteNav from '../../components/SiteNav.astro';
 import SiteFooter from '../../components/SiteFooter.astro';
 import MobileCta from '../../components/MobileCta.astro';
 import { breadcrumbSchema } from '../../lib/seo.js';
-
-const navLinks = [
-  { label: 'Repairs', href: '/repairs/' },
-  { label: 'Blog', href: '/blog/' },
-  { label: 'Catalogue', href: '/shop/' },
-];
+import { NAV_LINKS } from '../../data/site.js';
 
 const schema = breadcrumbSchema([
   { name: 'Home', path: '/' },
@@ -24,7 +19,7 @@ const schema = breadcrumbSchema([
   schema={schema}
   htmlAttrs={{ 'data-palette': 'electric-blue', 'data-fontpair': 'jakarta', 'data-dark': 'false' }}
 >
-  <SiteNav links={navLinks} ctaHref="/shop/cart/" mega />
+  <SiteNav links={NAV_LINKS} ctaHref="/shop/cart/" mega />
 
   <main id="main-content" class="section-tight">
     <div class="container-wide">

@@ -26,9 +26,21 @@ describe('buildReviewMessage', () => {
     expect(msg).toContain('Hi Sam,');
     expect(msg).toContain('Xpress Phone Repairs at Riverwood Plaza');
     expect(msg).toContain('https://g.page/r/abc/review');
-    // Plain-hyphen sign-off (GSM-7, not an em-dash) and it must be the very end
-    // of the message — trailing content would push the SMS to another segment.
-    expect(msg).toMatch(/ - The team$/);
+    // Plain-hyphen sign-off (GSM-7, not an em-dash).
+    expect(msg).toContain(' - The team.');
+    // Spam Act: every commercial SMS needs a working opt-out. The Xpress alpha
+    // tag can't receive replies, so the opt-out points at the shop mobile.
+    expect(msg).toContain('To opt out, call or text 0415 303 300.');
+  });
+
+  it('stays within 2 GSM-7 segments even with the longest allowed name', () => {
+    const msg = buildReviewMessage('x'.repeat(40), 'https://g.page/r/Ce96yvDNgJmJEAI/review');
+    // 2 concatenated GSM-7 segments = 153 * 2. Exceeding this bills a 3rd.
+    // These chars live in GSM-7's extension table and cost 2 septets each.
+    const septets = msg.length + (msg.match(/[[\]{}\\~^|€]/g) || []).length;
+    expect(septets).toBeLessThanOrEqual(306);
+    // Any non-GSM-7 char (em dash, smart quote) silently halves capacity.
+    expect(msg).toMatch(/^[ -~\n]*$/);
   });
 
   it('falls back to "there" for a blank name and strips control chars', () => {
@@ -268,6 +280,21 @@ describe('POST /api/review-sms — PIN rate limiting', () => {
     expect(overLimitWrong.status).toBe(429);
     expect(await kv.get(`pinfail:${ip}`)).toBe(String(PIN_MAX_FAILS)); // must not keep counting past the cap
     expect(spy).not.toHaveBeenCalled();
+  });
+
+  it('records a PII-free log entry after a successful send', async () => {
+    clickSendOk();
+    const kv = makeFakeKv();
+    const res = await onRequest({
+      request: reqFrom('20.0.0.4', { body: { pin: PIN, mobile: '0412345678', name: 'Sam' } }),
+      env: { ...FULL_ENV, ORDERS_KV: kv },
+    });
+    expect(res.status).toBe(200);
+    const key = [...kv.putOptions.keys()].find((k) => k.startsWith('reviewsms:'));
+    expect(key).toBeTruthy();
+    // Must never carry the customer's number or name.
+    expect(key).not.toContain('412345678');
+    expect(await kv.get(key)).toBe(JSON.stringify({ sent: true }));
   });
 
   it('a correct PIN clears that IP counter', async () => {

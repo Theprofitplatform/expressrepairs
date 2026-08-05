@@ -9,6 +9,7 @@ import { PRODUCTS } from '../../../../data/products.js';
 import { slugifyCategory, modelGroups } from '../../../../lib/shop.js';
 import { breadcrumbSchema, itemListSchema } from '../../../../lib/seo.js';
 import { CURATED_TAGS, MIN_TAG_PAGE_PRODUCTS } from '../../../../lib/tags.js';
+import { NAV_LINKS } from '../../../../data/site.js';
 
 export function getStaticPaths({ paginate }) {
   const categories = [...new Set(PRODUCTS.map((p) => p.category))];
@@ -20,11 +21,6 @@ export function getStaticPaths({ paginate }) {
 
 const { page, category } = Astro.props;
 const { category: categorySlug } = Astro.params;
-
-const navLinks = [
-  { label: 'Repairs', href: '/repairs/' },
-  { label: 'Catalogue', href: '/shop/' },
-];
 
 const schema = [
   breadcrumbSchema([
@@ -54,7 +50,7 @@ const tagChips = CURATED_TAGS.map((t) => ({
   schema={schema}
   htmlAttrs={{ 'data-palette': 'electric-blue', 'data-fontpair': 'jakarta', 'data-dark': 'false' }}
 >
-  <SiteNav links={navLinks} ctaHref="/shop/cart/" mega />
+  <SiteNav links={NAV_LINKS} ctaHref="/shop/cart/" mega />
 
   <main id="main-content" class="section-tight">
     <div class="container-wide">
@@ -72,7 +68,7 @@ const tagChips = CURATED_TAGS.map((t) => ({
       <ShopFilters category={category} categorySlug={categorySlug} brands={brandCounts} models={models} tags={tagChips} />
 
       <div class="acc-grid acc-grid--dense" data-category={category} style="margin-top: 24px;">
-        {page.data.map((p) => <ProductCard p={p} />)}
+        {page.data.map((p, i) => <ProductCard p={p} eager={i < 8} priority={i === 0} />)}
       </div>
 
       <div id="pagination" style="display: flex; align-items: center; justify-content: center; gap: 24px; margin-top: 40px;">

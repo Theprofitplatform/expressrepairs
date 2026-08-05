@@ -50,6 +50,17 @@ export default function ShopCartPage() {
         currency: 'AUD',
         num_items: cartCount(Object.fromEntries(lines)),
       });
+      // Hand the Google Customer Reviews opt-in on /shop/thanks/ what it needs.
+      // ponytail: order id is client-generated — Google only needs it unique
+      // per order for survey dedup, nothing here reads it back.
+      try {
+        const days = form.fulfilment === 'delivery' ? 7 : 3;
+        sessionStorage.setItem('gcr-order', JSON.stringify({
+          order_id: 'XR' + Date.now().toString(36).toUpperCase(),
+          email: form.email,
+          estimated_delivery_date: new Date(Date.now() + days * 864e5).toISOString().slice(0, 10),
+        }));
+      } catch { /* storage blocked — opt-in just won't render */ }
       location.href = '/shop/thanks/';
       return;
     }

@@ -2,11 +2,7 @@
 import Layout from '../../layouts/Layout.astro';
 import SiteNav from '../../components/SiteNav.astro';
 import SiteFooter from '../../components/SiteFooter.astro';
-
-const navLinks = [
-  { label: 'Repairs', href: '/repairs/' },
-  { label: 'Catalogue', href: '/shop/' },
-];
+import { NAV_LINKS } from '../../data/site.js';
 // This page is also functions/api/checkout.js's Stripe success_url
 // (/shop/thanks/?session_id=…), currently unused since checkout is disabled.
 // If Stripe is re-enabled: the copy below assumes no payment has been taken
@@ -20,7 +16,7 @@ const navLinks = [
   noindex
   htmlAttrs={{ 'data-palette': 'electric-blue', 'data-fontpair': 'jakarta', 'data-dark': 'false' }}
 >
-  <SiteNav links={navLinks} ctaHref="/shop/" mega />
+  <SiteNav links={NAV_LINKS} ctaHref="/shop/" mega />
 
   <main id="main-content" class="section">
     <div class="container">
@@ -34,6 +30,30 @@ const navLinks = [
   </main>
 
   <SiteFooter />
+
+  <!--
+    Google Customer Reviews opt-in (merchant 5832297258). The cart stashes the
+    order details in sessionStorage just before redirecting here; a visitor who
+    lands on this page without them has no order to survey, so it no-ops.
+    Inline + non-module so renderOptIn exists before platform.js calls it.
+  -->
+  <script is:inline>
+    window.renderOptIn = function () {
+      let order = null;
+      try { order = JSON.parse(sessionStorage.getItem('gcr-order')); } catch { return; }
+      if (!order || !order.email) return;
+      window.gapi.load('surveyoptin', function () {
+        window.gapi.surveyoptin.render({
+          merchant_id: 5832297258,
+          order_id: order.order_id,
+          email: order.email,
+          delivery_country: 'AU',
+          estimated_delivery_date: order.estimated_delivery_date,
+        });
+      });
+    };
+  </script>
+  <script is:inline src="https://apis.google.com/js/platform.js?onload=renderOptIn" async defer></script>
 
   <script>
     import { clearCart } from '../../shop/cart-store.js';

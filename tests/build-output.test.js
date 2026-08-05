@@ -246,6 +246,33 @@ describe('built shop thanks page', () => {
   it('tells the customer we will call to confirm and take payment', () => {
     expect(thanks()).toContain('call you to confirm');
   });
+
+  it('ships the Google Customer Reviews opt-in inline (not bundled/deferred)', () => {
+    // Astro would hoist a plain <script> into a module bundle, which loads too
+    // late for platform.js?onload=renderOptIn to find the callback.
+    const html = thanks();
+    expect(html).toContain('window.renderOptIn');
+    expect(html).toContain('merchant_id: 5832297258');
+    expect(html).toContain('apis.google.com/js/platform.js?onload=renderOptIn');
+  });
+});
+
+describe('Google Customer Reviews badge', () => {
+  const BADGE = 'merchantwidget.js';
+
+  it('ships on shop pages, gated to desktop', () => {
+    const cart = readFileSync('dist/shop/cart/index.html', 'utf8');
+    expect(cart).toContain(BADGE);
+    expect(cart).toContain('merchant_id: 5832297258');
+    // On mobile Google centres the widget over .mobile-call-cta / .buy-bar, so
+    // it must never start below the 720px breakpoint those bars appear at.
+    expect(cart).toContain("matchMedia('(min-width: 721px)')");
+  });
+
+  it('stays off non-shop pages (they would show "no rating available")', () => {
+    expect(html).not.toContain(BADGE); // homepage
+    expect(readFileSync('dist/repairs/screen/index.html', 'utf8')).not.toContain(BADGE);
+  });
 });
 
 describe('built NBN page', () => {
