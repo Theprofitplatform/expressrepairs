@@ -31,6 +31,30 @@ import { NAV_LINKS } from '../../data/site.js';
 
   <SiteFooter />
 
+  <!--
+    Google Customer Reviews opt-in (merchant 5832297258). The cart stashes the
+    order details in sessionStorage just before redirecting here; a visitor who
+    lands on this page without them has no order to survey, so it no-ops.
+    Inline + non-module so renderOptIn exists before platform.js calls it.
+  -->
+  <script is:inline>
+    window.renderOptIn = function () {
+      let order = null;
+      try { order = JSON.parse(sessionStorage.getItem('gcr-order')); } catch { return; }
+      if (!order || !order.email) return;
+      window.gapi.load('surveyoptin', function () {
+        window.gapi.surveyoptin.render({
+          merchant_id: 5832297258,
+          order_id: order.order_id,
+          email: order.email,
+          delivery_country: 'AU',
+          estimated_delivery_date: order.estimated_delivery_date,
+        });
+      });
+    };
+  </script>
+  <script is:inline src="https://apis.google.com/js/platform.js?onload=renderOptIn" async defer></script>
+
   <script>
     import { clearCart } from '../../shop/cart-store.js';
     // The order request has been emailed to the shop; the cart's job is done.
