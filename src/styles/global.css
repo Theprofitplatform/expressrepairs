@@ -701,18 +701,7 @@ input, select, textarea { font-family: inherit; font-size: inherit; color: inher
 }
 .bento-card:hover .bento-arrow { color: #fff; transform: translateX(3px); }
 
-/* ============ Accessories ============ */
-.acc-visual {
-  aspect-ratio: 4/3; background: var(--surface);
-  display:grid; place-items:center; position: relative; overflow:hidden;
-}
-.acc-img {
-  position:absolute; inset:0; background-size:cover; background-position:center;
-  transition: transform .4s ease;
-}
-.acc-card:hover .acc-img { transform: scale(1.05); }
-
-/* ============ Accessories grid (legacy name) ============ */
+/* ============ Accessories grid ============ */
 .acc-grid { display:grid; grid-template-columns: repeat(3, 1fr); gap: 20px; }
 @media (max-width: 900px) { .acc-grid { grid-template-columns: repeat(2, 1fr); } }
 @media (max-width: 560px) { .acc-grid { grid-template-columns: 1fr; } }
