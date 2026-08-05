@@ -2,6 +2,7 @@ import { describe, it, expect, beforeAll } from 'vitest';
 import { execSync } from 'node:child_process';
 import { readFileSync, existsSync, readdirSync } from 'node:fs';
 import { TRACKING } from '../src/data/tracking.js';
+import { SITE } from '../src/data/site.js';
 
 let html = '';
 beforeAll(() => {
@@ -254,6 +255,37 @@ describe('built shop thanks page', () => {
     expect(html).toContain('window.renderOptIn');
     expect(html).toContain('merchant_id: 5832297258');
     expect(html).toContain('apis.google.com/js/platform.js?onload=renderOptIn');
+  });
+});
+
+describe('rating copy tracks SITE.rating', () => {
+  // The visible "4.9★" figures were hardcoded in four places while the real
+  // number lived in SITE.rating, so a data-only update shipped a stale claim on
+  // every page that mattered. These assert the rendered copy is the data.
+  const shown = SITE.rating.value.toFixed(1); // "5.0", not "5"
+  // React SSR splits `{value}/5` with an empty comment, so the visible text is
+  // contiguous but the HTML string isn't. Comments aren't rendered — drop them.
+  const text = (markup) => markup.replace(/<!--.*?-->/g, '');
+  // NB: a bare /4\.9/ would match coordinates inside the Google logo's SVG path,
+  // hence anchoring to the ★ and /5 suffixes.
+  const STALE = /\b4\.9\s*(★|\/5)/;
+
+  it('homepage trust row and stat blocks render the configured rating', () => {
+    expect(text(html)).toContain(`${shown}/5`);
+    expect(text(html)).toContain(`${shown}★`);
+    expect(text(html)).not.toMatch(STALE);
+  });
+
+  it('suburb pages render it too', () => {
+    const suburb = text(readFileSync('dist/repairs/screen/riverwood/index.html', 'utf8'));
+    expect(suburb).toContain(`${shown}/5`);
+    expect(suburb).not.toMatch(STALE);
+  });
+
+  it('aggregateRating JSON-LD carries the same numbers as the visible copy', () => {
+    const lb = jsonLdBlocks(html).find((b) => b['@type'] === 'LocalBusiness');
+    expect(lb.aggregateRating.ratingValue).toBe(String(SITE.rating.value));
+    expect(lb.aggregateRating.reviewCount).toBe(String(SITE.rating.count));
   });
 });
 

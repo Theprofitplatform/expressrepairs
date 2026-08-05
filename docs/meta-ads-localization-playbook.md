@@ -5,7 +5,7 @@ _Snapshot: first ~7 days of delivery (to 25 Jun 2026). Spend $187.15 · 12,093 i
 
 This is the working doc for making the ads **more local** and fixing two tracking/budget
 issues found during the audit. Store NAP used throughout: **Shop 7C, Riverwood Plaza,
-257 Belmore Rd, Riverwood NSW 2210 · 0415 303 300 · 4.9★ (17) · 1,000+ locals**.
+257 Belmore Rd, Riverwood NSW 2210 · 0415 303 300 · 5.0★ (22) · 1,000+ locals**.
 
 ---
 
@@ -91,7 +91,7 @@ Primary text first, then **Headline**.
 ### A. Fix the winning challenger (currently blank) — Call ad
 > Cracked screen? See the before & after. 📱 We replace most phone screens in **30–60 min while you
 > wait** — right here at **Riverwood Plaza** (Shop 7C, 257 Belmore Rd). Original-quality parts,
-> 6–12 month warranty, free diagnostic. Rated **4.9★ by 1,000+ local customers**.
+> 6–12 month warranty, free diagnostic. Rated **5.0★ by 1,000+ local customers**.
 > 📞 Tap **Call Now** — 0415 303 300.
 
 **Headline:** Same-Day Screen Repair — Riverwood Plaza
@@ -99,7 +99,7 @@ Primary text first, then **Headline**.
 ### B. Local call ad — broad "phone repairs"
 > 📱 Cracked screen, dead battery, dud charging port? Get it sorted **today** at **Xpress Phone Repairs,
 > Riverwood** — inside Metro Wireless, Shop 7C / 257 Belmore Rd. iPhone, Samsung, Pixel & more, most
-> done while you wait. Free diagnostic · no fix, no fee · 6–12 mo warranty. **4.9★, 1,000+ locals.**
+> done while you wait. Free diagnostic · no fix, no fee · 6–12 mo warranty. **5.0★, 1,000+ locals.**
 > 📞 Tap **Call Now**: 0415 303 300.
 
 **Headline:** Phone Repairs in Riverwood — Call Today
@@ -108,7 +108,7 @@ Primary text first, then **Headline**.
 Swap `{Suburb}` and the travel line per suburb (travel facts from §5):
 > Cracked screen in **{Suburb}**? We're {travel} at **Riverwood Plaza** — most screens replaced in
 > **30–60 min** with original-quality parts, fitted, tested and warrantied while you wait. Free
-> diagnostic, no fix–no fee. **4.9★, 1,000+ St George locals.**
+> diagnostic, no fix–no fee. **5.0★, 1,000+ St George locals.**
 
 **Headline:** Same-Day Screen Repair near {Suburb}
 
@@ -122,7 +122,7 @@ Examples for the travel line:
 ### D. Suburb traffic ad — Battery (→ `…/repairs/battery/<suburb>/`; pages exist for Padstow, Riverwood, Hurstville, Beverly Hills, Kingsgrove)
 > Phone dying before lunch in **{Suburb}**? A fresh, quality battery brings it back to all-day life —
 > fitted in **30–45 min** at **Riverwood Plaza**, {travel}. Warranty included, free battery health
-> check. **4.9★, 1,000+ locals.**
+> check. **5.0★, 1,000+ locals.**
 
 **Headline:** Same-Day Battery Replacement near {Suburb}
 

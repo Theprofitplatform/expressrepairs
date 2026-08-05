@@ -117,7 +117,7 @@ in the GBP service entry: `/repairs/iphone-screen/`, `/repairs/samsung-screen/`,
 2. **🔋 Phone dying by lunchtime?** Same-day battery replacement from $59 — fresh original-quality cells, free battery health check. Drop it off and pick it up charged. → link `/repairs/battery/`
 3. **💧 Dropped your phone in water?** Skip the rice — power it off, don't charge it, and bring it straight in. Free assessment, board-level clean. → link `/repairs/water-damage/`
 4. **🔍 Not sure what's wrong?** Free diagnostic at Riverwood Plaza — we'll tell you what it needs and the price before any work starts. → link `/repairs/`
-5. **⭐ Rated 4.9 by local customers.** Same-day repairs, original-quality parts, warranty in writing. See why Riverwood trusts us. → button: **Call now**
+5. **⭐ Rated 5.0 by local customers.** Same-day repairs, original-quality parts, warranty in writing. See why Riverwood trusts us. → button: **Call now**
 6. **🕖 Late night Thursdays.** Open till 7pm Thursdays and Mon–Sat for walk-in repairs at Shop 7C, Riverwood Plaza. → link `/repairs/screen/riverwood/`
 
 ---

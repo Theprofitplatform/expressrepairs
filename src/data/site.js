@@ -43,7 +43,13 @@ export const SITE = siteSchema.parse({
     'https://www.facebook.com/people/Xpress-Repairs/61590991947576/',
     'https://www.instagram.com/xpressrepairs.riverwood/',
   ],
-  // ⚠️ Star rich-results: `count` is the REAL Google review count, verified from
-  // the GBP listing on 2026-06-24 (4.9★, 17 reviews) — emits a genuine aggregateRating.
-  rating: { value: 4.9, count: 17, best: 5 },
+  // ⚠️ Star rich-results: `count` is the REAL Google review count — this emits a
+  // genuine aggregateRating on the homepage and every suburb/service page, so a
+  // guessed number here is fabricated structured data. Owner-reported 2026-08-05:
+  // 5★, 22 reviews (was 4.9★/17 from the GBP on 2026-06-24).
+  //
+  // Nothing hardcodes these figures any more — the homepage trust row, the two
+  // stat blocks and the suburb trust row all read `SITE.rating.value`, because
+  // four copies of "4.9" in markup is four places to ship a stale claim from.
+  rating: { value: 5, count: 22, best: 5 },
 });

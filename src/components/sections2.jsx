@@ -46,7 +46,7 @@ export function WhyUs() {
             <div className="stat-row">
               <div className="stat"><div className="stat-num">6–12mo</div><div className="stat-label">Warranty</div></div>
               <div className="stat"><div className="stat-num">5,000+</div><div className="stat-label">Repairs done</div></div>
-              <div className="stat"><div className="stat-num">4.9★</div><div className="stat-label">Google rating</div></div>
+              <div className="stat"><div className="stat-num">{SITE.rating.value.toFixed(1)}★</div><div className="stat-label">Google rating</div></div>
             </div>
           </div>
 
@@ -125,7 +125,7 @@ export function Testimonials() {
         </div>
 
         <div className="t-stats">
-          <div className="t-stat"><div className="t-stat-num">4.9★</div><div className="t-stat-label">Average rating</div></div>
+          <div className="t-stat"><div className="t-stat-num">{SITE.rating.value.toFixed(1)}★</div><div className="t-stat-label">Average rating</div></div>
           <div className="t-stat"><div className="t-stat-num">1,000+</div><div className="t-stat-label">Happy customers</div></div>
           <div className="t-stat"><div className="t-stat-num">5,000+</div><div className="t-stat-label">Repairs completed</div></div>
           <div className="t-stat"><div className="t-stat-num">Same Day</div><div className="t-stat-label">Service available</div></div>
