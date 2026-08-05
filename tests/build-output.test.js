@@ -530,3 +530,17 @@ describe('support page', () => {
     expect(html).not.toMatch(/7 days/i);
   });
 });
+
+describe('privacy policy discloses every third party the code talks to', () => {
+  // The policy drifted twice already: Google Customer Reviews (thanks.astro
+  // ships the customer's email to apis.google.com) and ClickSend (review-sms.js
+  // ships their mobile) both shipped without a policy line. If you add a vendor
+  // that receives personal information, name it here and in /privacy/.
+  const VENDORS = ['Cloudflare', 'Resend', 'ClickSend', 'Google Customer Reviews'];
+  it(`names ${VENDORS.join(', ')}`, () => {
+    const html = readFileSync('dist/privacy/index.html', 'utf8');
+    for (const v of VENDORS) expect(html).toContain(v);
+    // Spam Act: the SMS opt-out route has to be stated, not just implemented.
+    expect(html).toContain('0415 303 300');
+  });
+});
