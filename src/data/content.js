@@ -1,16 +1,17 @@
 import { z } from 'zod';
-import { testimonialSchema, warrantySchema, faqSchema, hoursSchema } from './schema.js';
+import { warrantySchema, faqSchema, hoursSchema } from './schema.js';
+import { VERIFIED_REVIEWS } from './reviews.js';
 
-// Initials avatars (real review photos can replace these). Do NOT use stock /
-// AI faces next to a "Google Review" label — keep these authentic.
-export const TESTIMONIALS = z.array(testimonialSchema).parse([
-  { name: 'Livio Bruno', source: 'Google Review', initials: 'LB', text: 'Excellent — the best service. Got my iPhone screen fixed in under an hour. Quality is amazing and the price was very reasonable. Highly recommend!' },
-  { name: 'Rikki Thomson', source: 'Google Review', initials: 'RT', text: 'Today I had the most wonderful customer service experience. The team went above and beyond on my Samsung repair. Explained everything clearly and the repair was perfect.' },
-  { name: 'Teri Elley', source: 'Google Review', initials: 'TE', text: "Outstanding service from the whole crew. Fixed my phone's charging port same day and gave me tips to prevent it again. Professional and friendly!" },
-  // "Verified Customer" placeholders (Sarah M. / James K. / Michael R.) removed
-  // 2026-08 — could not be verified against the Google Business Profile or any
-  // external source; site policy requires real, attributable reviews only.
-]);
+// The homepage shows the first three verified reviews. It does NOT keep its own
+// list — see src/data/reviews.js for why that matters.
+//
+// Removed 2026-08-05: Livio Bruno, Rikki Thomson and Teri Elley, which had sat
+// here labelled "Google Review". None appear among the reviewers verified
+// against the Google Business Profile, and the first two were the fabricated
+// testimonials the June 2026 suburb-page audit removed — they survived here
+// only because this array was never audited. Unverified is treated as
+// fabricated.
+export const TESTIMONIALS = VERIFIED_REVIEWS.slice(0, 3);
 
 export const WARRANTIES = z.array(warrantySchema).parse([
   { title: '6–12 Month Warranty', desc: 'All repairs covered by manufacturer-grade warranty.' },
