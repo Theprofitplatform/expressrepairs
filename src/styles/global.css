@@ -703,7 +703,7 @@ input, select, textarea { font-family: inherit; font-size: inherit; color: inher
 
 /* ============ Accessories ============ */
 .acc-visual {
-  aspect-ratio: 4/3; background: var(--ink-25);
+  aspect-ratio: 4/3; background: var(--surface);
   display:grid; place-items:center; position: relative; overflow:hidden;
 }
 .acc-img {
@@ -729,7 +729,7 @@ input, select, textarea { font-family: inherit; font-size: inherit; color: inher
 }
 .acc-card:hover { transform: translateY(-3px); box-shadow: var(--shadow-md); }
 .acc-visual {
-  aspect-ratio: 4/3; background: var(--ink-25);
+  aspect-ratio: 4/3; background: var(--surface);
   display:grid; place-items:center; position: relative; overflow:hidden;
 }
 .acc-img { position:absolute; inset:0; background-size:cover; background-position:center; transition: transform .4s ease; }
