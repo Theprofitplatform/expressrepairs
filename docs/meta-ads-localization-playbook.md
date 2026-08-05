@@ -5,7 +5,7 @@ _Snapshot: first ~7 days of delivery (to 25 Jun 2026). Spend $187.15 · 12,093 i
 
 This is the working doc for making the ads **more local** and fixing two tracking/budget
 issues found during the audit. Store NAP used throughout: **Shop 7C, Riverwood Plaza,
-257 Belmore Rd, Riverwood NSW 2210 · 0415 303 300 · 5.0★ (22) · 1,000+ locals**.
+257 Belmore Rd, Riverwood NSW 2210 · 0415 303 300 · 5.0★ (21) · 1,000+ locals**.
 
 ---
 

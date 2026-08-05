@@ -22,14 +22,16 @@ import { testimonialSchema } from './schema.js';
 //   - Never pair these with stock or AI-generated faces. Initials only.
 //
 // Re-verified against the full Google Business Profile review list on
-// 2026-08-05: all 22 reviews read, all 5★ (hence SITE.rating 5.0/22).
+// 2026-08-05: every review read, all 5★ (hence SITE.rating 5.0/21). The list
+// was 22 that morning; the owner then deleted a review left by an account in
+// the business's own name, because Google prohibits self-reviews.
 //
 // Ordered newest first, matching the GBP. The homepage takes the first three,
 // so it shows the most recent — recency is the honest ordering, and it beats
 // hand-picking the flattering ones.
 //
-// The other 13 of the 22 are not here because they carry no usable text: nine
-// are star-only or under the 40-character floor that tests/data.test.js
+// The other 12 are not here because they carry no usable text: they are
+// star-only or under the 40-character floor that tests/data.test.js
 // enforces ("Good service", "Best phone repair shop"). Real, just not quotable.
 export const VERIFIED_REVIEWS = z.array(testimonialSchema).parse([
   { initials: 'LT', name: 'Lana Tsoukalas', source: 'Google Review', text: 'The service is awesome. Been coming here since I lived in the area, won’t be disappointed.' },

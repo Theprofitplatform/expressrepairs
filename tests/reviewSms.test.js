@@ -41,7 +41,7 @@ describe('buildReviewMessage', () => {
   });
 
   it('asks for a specific detail, not just a star rating', () => {
-    // 13 of the shop's 22 reviews were unquotable four-word ratings. Prompting
+    // 12 of the shop's 21 reviews are unquotable four-word ratings. Prompting
     // for the actual repair produces better testimonials and better local SEO.
     expect(buildReviewMessage('Sam', 'https://g.page/r/abc/review')).toContain('what we fixed');
   });
