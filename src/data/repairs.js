@@ -32,10 +32,15 @@ const STD_WARRANTIES = (lastDesc) => [
 ];
 
 // Nearby suburbs for the "near you" link-chip group (only built ones get a href).
+// Also the source for the business node's schema.org areaServed — a suburb can
+// sit here with no page of its own; it renders as a plain chip.
+// ponytail: Belmore has search demand but no page on purpose — 11 impressions a
+// month doesn't pay for a unique-copy local page, and the homepage already ranks
+// for it off "257 Belmore Rd". Chip + areaServed is the whole intervention.
 export const SUBURB_CHIPS = [
   'Riverwood', 'Padstow', 'Narwee', 'Beverly Hills', 'Peakhurst',
   'Punchbowl', 'Roselands', 'Kingsgrove', 'Hurstville', 'Revesby',
-  'Mortdale', 'Bankstown',
+  'Mortdale', 'Bankstown', 'Belmore',
 ];
 
 export const SERVICES = [
