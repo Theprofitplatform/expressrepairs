@@ -1,4 +1,5 @@
 import { dayName, parseTimeToMinutes, splitHoursRange, isTradingDay } from './hours.js';
+import { SUBURB_CHIPS } from '../data/repairs.js';
 
 // Keep in sync with the `site` field in astro.config.mjs.
 export const SITE_URL = 'https://expressrepairs.com.au';
@@ -55,6 +56,13 @@ export function localBusinessSchema(site, hours) {
       };
     }),
   };
+  // The suburbs the store actually serves, on the single canonical business
+  // node. Cheaper than a page per suburb and it doesn't dilute anything.
+  schema.areaServed = SUBURB_CHIPS.map((name) => ({
+    '@type': 'City',
+    name,
+    address: { '@type': 'PostalAddress', addressLocality: name, addressRegion: 'NSW', addressCountry: 'AU' },
+  }));
   if (site.image) schema.image = absoluteUrl(site.image);
   if (site.logo) schema.logo = absoluteUrl(site.logo);
   if (site.priceRange) schema.priceRange = site.priceRange;
