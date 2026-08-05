@@ -59,13 +59,25 @@ export function normalizeAuMobile(raw) {
 // rather than saying "reply STOP", because the 'Xpress' alphanumeric sender
 // cannot receive replies — carriers block them. The shop mobile takes both
 // calls and texts, so it is a channel that actually works today.
-// 233 chars with a short name, 270 at the 40-char name cap — both under the
+// 231 chars with a short name, 268 at the 40-char name cap — both under the
 // 306-char two-segment ceiling, so the opt-out costs nothing.
+//
+// Two deliberate choices in the wording:
+//
+// 1. It does NOT say "if you're happy with the repair". Conditioning the ask on
+//    the customer already being satisfied is review gating — soliciting only
+//    the people likely to leave five stars. Google's review policies prohibit
+//    it, and it buys nothing: everyone who walks out with a working phone gets
+//    the same message, and the rating looks after itself.
+// 2. It asks for one specific detail. On 2026-08-05, 13 of the shop's 22
+//    reviews were unquotable because they were four words long ("Good
+//    service"). A review naming the actual repair is a better testimonial AND
+//    carries the device/repair terms people search for.
 export function buildReviewMessage(name, reviewLink) {
   const safeName = oneLine(name, 40) || 'there';
   return (
     `Hi ${safeName}, thanks for choosing Xpress Phone Repairs at Riverwood Plaza! ` +
-    `If you're happy with the repair, a quick Google review means a lot to us: ` +
+    `A quick Google review means a lot - even a line on what we fixed helps: ` +
     `${reviewLink} - The team. To opt out, call or text 0415 303 300.`
   );
 }

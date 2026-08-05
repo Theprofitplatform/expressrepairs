@@ -33,6 +33,19 @@ describe('buildReviewMessage', () => {
     expect(msg).toContain('To opt out, call or text 0415 303 300.');
   });
 
+  it('does not gate the ask on the customer already being happy', () => {
+    // Review gating — asking only the satisfied — breaches Google's review
+    // policies. The message must go out the same to everyone.
+    const msg = buildReviewMessage('Sam', 'https://g.page/r/abc/review');
+    expect(msg).not.toMatch(/if you(’|')?re happy|enjoyed|were satisfied|went well\?/i);
+  });
+
+  it('asks for a specific detail, not just a star rating', () => {
+    // 13 of the shop's 22 reviews were unquotable four-word ratings. Prompting
+    // for the actual repair produces better testimonials and better local SEO.
+    expect(buildReviewMessage('Sam', 'https://g.page/r/abc/review')).toContain('what we fixed');
+  });
+
   it('stays within 2 GSM-7 segments even with the longest allowed name', () => {
     const msg = buildReviewMessage('x'.repeat(40), 'https://g.page/r/Ce96yvDNgJmJEAI/review');
     // 2 concatenated GSM-7 segments = 153 * 2. Exceeding this bills a 3rd.
