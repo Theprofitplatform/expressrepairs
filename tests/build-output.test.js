@@ -517,3 +517,16 @@ describe('mobile nav toggle', () => {
     });
   }
 });
+
+describe('support page', () => {
+  // Google Merchant Center reviews this page for contact info, and the shop's
+  // recurring false claim is "open 7 days" (it's closed Sundays). Guard both.
+  it('ships contact details and an explicit Sunday closure', () => {
+    const html = readFileSync('dist/support/index.html', 'utf8');
+    expect(html).toContain('0415 303 300');
+    expect(html).toContain('(02) 9533 3300');
+    expect(html).toContain('Riverwood Plaza');
+    expect(html).toMatch(/Sunday<\/th><td[^>]*>Closed/);
+    expect(html).not.toMatch(/7 days/i);
+  });
+});

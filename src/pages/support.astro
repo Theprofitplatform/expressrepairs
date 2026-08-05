@@ -1,0 +1,123 @@
+---
+import Layout from '../layouts/Layout.astro';
+import SiteNav from '../components/SiteNav.astro';
+import SiteFooter from '../components/SiteFooter.astro';
+import PageScripts from '../components/PageScripts.astro';
+import { SITE } from '../data/site.js';
+import { HOURS } from '../data/content.js';
+import { breadcrumbSchema } from '../lib/seo.js';
+
+const navLinks = [
+  { label: 'Repairs', href: '/repairs/' },
+  { label: 'Catalogue', href: '/shop/' },
+  { label: 'NBN Plans', href: '/nbn/' },
+  { label: 'Blog', href: '/blog/' },
+];
+
+const schema = breadcrumbSchema([
+  { name: 'Home', path: '/' },
+  { name: 'Contact & Support', path: '/support/' },
+]);
+---
+<Layout
+  title="Contact & Support | Express Repairs"
+  description="Call, visit or message Xpress Phone Repairs Riverwood. Opening hours, store address, and where to go for order, warranty and returns help."
+  path="/support/"
+  schema={schema}
+  htmlAttrs={{ 'data-palette': 'electric-blue', 'data-fontpair': 'jakarta', 'data-dark': 'false' }}
+>
+  <SiteNav links={navLinks} ctaHref="/#contact" />
+
+  <main id="main-content">
+    <section class="section">
+      <div class="container-wide terms-wrap">
+        <nav class="breadcrumb" aria-label="Breadcrumb">
+          <a href="/">Home</a>
+          <span class="crumb-sep">/</span>
+          <span class="crumb-current">Contact &amp; Support</span>
+        </nav>
+
+        <h1 class="section-title" style="margin-top: 20px;">Contact &amp; Support</h1>
+
+        <p>
+          We're a real shop with a real counter. The fastest way to sort anything out — an order, a
+          repair, a warranty claim — is to call us or walk in.
+        </p>
+
+        <h2>1. Call us</h2>
+        <ul>
+          <li><strong><a href={SITE.phoneHref}>{SITE.phone}</a></strong> — mobile, best number for repairs and orders</li>
+          <li><a href={SITE.landlineHref}>{SITE.landline}</a> — store landline</li>
+        </ul>
+        <p>We answer during opening hours. Outside them, leave a message and we'll call you back.</p>
+
+        <h2>2. Visit the store</h2>
+        <p>
+          <strong>{SITE.storeName}</strong><br />
+          {SITE.storeSub}<br />
+          {SITE.addressLines[0]}<br />
+          {SITE.addressLines[1]}
+        </p>
+        <p>
+          <a href="/#visit">Map and directions</a> — we're inside Riverwood Plaza, parking on site.
+        </p>
+
+        <h2>3. Opening hours</h2>
+        <table class="hours-table">
+          <tbody>
+            {HOURS.map((h) => (
+              <tr><th scope="row">{h.day}</th><td>{h.hrs}</td></tr>
+            ))}
+          </tbody>
+        </table>
+
+        <h2>4. Message us</h2>
+        <p>
+          Use the <a href="/#contact">enquiry form</a> on the homepage. It reaches us by email and we
+          reply during opening hours. Include your phone number and we'll usually just call you — it's
+          quicker than a back-and-forth.
+        </p>
+
+        <h2>5. Help with an online order</h2>
+        <p>
+          Orders placed through the <a href="/shop/">catalogue</a> are order requests: we call you to
+          confirm stock, total and delivery before anything is charged or shipped. If you haven't heard
+          from us, call {SITE.phone} and quote the item you ordered.
+        </p>
+        <ul>
+          <li><a href="/shipping-returns/">Shipping &amp; Returns</a> — delivery costs, dispatch times, and your Australian Consumer Law rights</li>
+          <li><a href="/terms/">Terms of Service</a> — how order requests and confirmation calls work</li>
+          <li><a href="/privacy/">Privacy Policy</a> — what we do with your details</li>
+        </ul>
+
+        <h2>6. Warranty and repair claims</h2>
+        <p>
+          Repairs carry the warranty stated on the relevant repair page. If a repair we did isn't right,
+          bring the phone back with your receipt and we'll make it right — most claims are sorted on the
+          spot at the counter. Full details are in <a href="/shipping-returns/">Shipping &amp; Returns</a>.
+        </p>
+
+        <p class="terms-note">
+          Trading as {SITE.storeName}, {SITE.addressShort}.
+        </p>
+
+        <a href="/" class="btn btn-ghost" style="margin-top: 24px;">← Back to home</a>
+      </div>
+    </section>
+  </main>
+
+  <SiteFooter />
+  <PageScripts />
+</Layout>
+
+<style>
+  .terms-wrap { max-width: 760px; }
+  .terms-wrap h2 { font-size: 22px; margin: 36px 0 12px; }
+  .terms-wrap p, .terms-wrap li { font-size: 16px; line-height: 1.7; color: var(--text-muted); }
+  .terms-wrap ul { padding-left: 22px; margin: 12px 0; display: flex; flex-direction: column; gap: 8px; }
+  .terms-wrap a { color: var(--brand-700); font-weight: 600; }
+  .terms-note { margin-top: 36px; font-size: 14px; }
+  .hours-table { border-collapse: collapse; margin: 12px 0; }
+  .hours-table th, .hours-table td { text-align: left; padding: 6px 24px 6px 0; font-size: 16px; line-height: 1.7; color: var(--text-muted); font-weight: 400; }
+  .hours-table th { font-weight: 600; color: var(--text); }
+</style>
