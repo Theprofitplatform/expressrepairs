@@ -92,12 +92,12 @@ describe('review provenance', () => {
     // Emitted as real structured data on the homepage and every suburb/service
     // page. If the GBP count has moved, update SITE.rating AND the snapshot note
     // in src/data/site.js — never guess a number here.
-    expect(SITE.rating).toEqual({ value: 5, count: 22, best: 5 });
+    expect(SITE.rating).toEqual({ value: 5, count: 21, best: 5 });
   });
 
   it('has at least as many reviews counted as quoted', () => {
     // Quoting more reviews than the GBP says exist would be self-evidently made
-    // up. The reverse is fine — we quote a handful of the 22.
+    // up. The reverse is fine — we quote a handful of the 21.
     expect(VERIFIED_REVIEWS.length).toBeLessThanOrEqual(SITE.rating.count);
   });
 });
