@@ -246,6 +246,15 @@ describe('built shop thanks page', () => {
   it('tells the customer we will call to confirm and take payment', () => {
     expect(thanks()).toContain('call you to confirm');
   });
+
+  it('ships the Google Customer Reviews opt-in inline (not bundled/deferred)', () => {
+    // Astro would hoist a plain <script> into a module bundle, which loads too
+    // late for platform.js?onload=renderOptIn to find the callback.
+    const html = thanks();
+    expect(html).toContain('window.renderOptIn');
+    expect(html).toContain('merchant_id: 5832297258');
+    expect(html).toContain('apis.google.com/js/platform.js?onload=renderOptIn');
+  });
 });
 
 describe('built NBN page', () => {
