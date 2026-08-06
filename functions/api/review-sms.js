@@ -5,6 +5,12 @@
 // this endpoint validates the PIN, normalises the mobile to an AU E.164 number,
 // and sends a review-request SMS via sendSms() in _shared.js.
 //
+// An optional `action: 'optout'` field turns the same request into a
+// suppression instead: it records that the number must never be texted
+// again (ORDERS_KV key `optout:<sha256-hex-of-E.164>`, no TTL) and sends
+// nothing. Every other send checks that key first and refuses to send if
+// it's set — see the fail-closed comment at the check below.
+//
 // Provider selection: sendSms picks Twilio when TWILIO_ACCOUNT_SID is set,
 // otherwise ClickSend. Today, ClickSend is live (Twilio not yet configured).
 //
@@ -34,6 +40,15 @@ import {
   oneLine,
   sendSms,
 } from '../_shared.js';
+
+// Hex-encodes a digest buffer (same helper as stripe-webhook.js).
+const hex = (buf) => [...new Uint8Array(buf)].map((b) => b.toString(16).padStart(2, '0')).join('');
+
+// Hashes an E.164 number for the optout: KV key — never store the number
+// itself. crypto.subtle is the Workers-runtime primitive (no Node crypto).
+async function sha256Hex(s) {
+  return hex(await crypto.subtle.digest('SHA-256', new TextEncoder().encode(s)));
+}
 
 // AU mobile → E.164 (+614xxxxxxxx), or null if it isn't a valid AU mobile.
 export function normalizeAuMobile(raw) {
@@ -107,6 +122,37 @@ export async function onRequest({ request, env }) {
 
   const to = normalizeAuMobile(data.mobile);
   if (!to) return json(400, { ok: false, error: 'Enter a valid Australian mobile number.' });
+
+  const optoutKey = `optout:${await sha256Hex(to)}`;
+
+  // Opt-out branch runs after the PIN gate/rate-limit/size-cap checks above
+  // (it reuses this endpoint precisely to inherit them) and short-circuits
+  // before any SMS-sending config is even read. `name` isn't required here.
+  if (data.action === 'optout') {
+    if (!env.ORDERS_KV) return json(503, { ok: false, error: 'Could not record right now.' });
+    try {
+      await env.ORDERS_KV.put(optoutKey, '1');
+    } catch (err) {
+      console.error('optout write failed', err);
+      return json(503, { ok: false, error: 'Could not record right now.' });
+    }
+    return json(200, { ok: true, to });
+  }
+
+  // Suppression check — deliberately fails CLOSED, the opposite of
+  // pinRateLimited's fail-open above. Failing open there locks nobody out of
+  // a staff tool; failing open here would text a customer who legally asked
+  // not to be texted (Spam Act). Sends are one at a time from a staff page,
+  // so a refusal is immediately visible and retryable — unlike the rate
+  // limiter, there's no "everyone locked out" downside to weigh against it.
+  if (!env.ORDERS_KV) return json(503, { ok: false, error: 'Could not send right now.' });
+  try {
+    const suppressed = await env.ORDERS_KV.get(optoutKey);
+    if (suppressed) return json(503, { ok: false, error: 'This number has opted out of texts.' });
+  } catch (err) {
+    console.error('optout check failed', err);
+    return json(503, { ok: false, error: 'Could not send right now.' });
+  }
 
   const reviewLink = env.REVIEW_LINK;
   const smsConfigured = env.TWILIO_ACCOUNT_SID || (env.CLICKSEND_USERNAME && env.CLICKSEND_API_KEY);

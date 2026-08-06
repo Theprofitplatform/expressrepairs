@@ -26,6 +26,10 @@ import Layout from '../../layouts/Layout.astro';
         style="padding:.85rem;font-size:1.05rem;font-weight:700;color:#fff;background:#0a66ff;border:0;border-radius:10px;cursor:pointer">
         Send review request
       </button>
+      <button id="rr-optout" type="button"
+        style="padding:.6rem;font-size:.9rem;font-weight:600;color:#c0261f;background:transparent;border:1px solid #e2b4b0;border-radius:10px;cursor:pointer">
+        Do not text this number
+      </button>
       <p id="rr-status" role="status" aria-live="polite" style="margin:0;min-height:1.4rem;font-size:.95rem"></p>
     </form>
   </main>
@@ -38,6 +42,7 @@ import Layout from '../../layouts/Layout.astro';
       var mobile = document.getElementById('rr-mobile');
       var device = document.getElementById('rr-device');
       var btn = document.getElementById('rr-send');
+      var optoutBtn = document.getElementById('rr-optout');
       try { var saved = localStorage.getItem('rr-pin'); if (saved) pin.value = saved; } catch (e) {}
       form.addEventListener('submit', async function (e) {
         e.preventDefault();
@@ -66,6 +71,32 @@ import Layout from '../../layouts/Layout.astro';
           status.textContent = 'Network error — check connection and try again.';
         } finally {
           btn.disabled = false;
+        }
+      });
+      optoutBtn.addEventListener('click', async function () {
+        status.style.color = '#555';
+        status.textContent = 'Recording…';
+        optoutBtn.disabled = true;
+        try {
+          var res = await fetch('/api/review-sms', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ mobile: mobile.value, pin: pin.value, action: 'optout' })
+          });
+          var data = await res.json().catch(function () { return {}; });
+          if (res.ok && data.ok) {
+            try { localStorage.setItem('rr-pin', pin.value); } catch (e) {}
+            status.style.color = '#0a7d28';
+            status.textContent = (data.to || mobile.value) + ' will not be texted again';
+          } else {
+            status.style.color = '#c0261f';
+            status.textContent = (data.error || 'Could not record.') + ' (HTTP ' + res.status + ')';
+          }
+        } catch (err) {
+          status.style.color = '#c0261f';
+          status.textContent = 'Network error — check connection and try again.';
+        } finally {
+          optoutBtn.disabled = false;
         }
       });
     })();
