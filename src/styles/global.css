@@ -927,8 +927,16 @@ input, select, textarea { font-family: inherit; font-size: inherit; color: inher
 }
 .faq-toggle { width: 28px; height: 28px; border-radius: 50%; background: var(--ink-25); display:grid; place-items:center; font-weight: 800; transition: transform .2s ease, background .2s ease; }
 .faq-item[data-open="true"] .faq-toggle { background: var(--brand-600); color: #fff; transform: rotate(45deg); }
-.faq-a { padding: 0 22px; max-height: 0; overflow: hidden; transition: max-height .3s ease, padding .3s ease; font-size: 14.5px; color: var(--text-muted); line-height: 1.6; }
-.faq-item[data-open="true"] .faq-a { padding: 0 22px 20px; max-height: 400px; }
+/* Open/close animates grid-template-rows, not max-height/padding. The
+   inner wrapper carries constant padding; the container clips it while
+   the 0fr row is collapsed, so no layout property ever animates. */
+.faq-a { display: grid; grid-template-rows: 0fr; overflow: hidden; transition: grid-template-rows .3s ease; font-size: 14.5px; color: var(--text-muted); line-height: 1.6; }
+.faq-item[data-open="true"] .faq-a { grid-template-rows: 1fr; }
+/* Bottom spacing is an ::after spacer, not padding — vertical padding on
+   the inner would floor the 0fr track at 20px and closed items wouldn't
+   fully collapse. */
+.faq-a-inner { min-height: 0; padding: 0 22px; }
+.faq-a-inner::after { content: ""; display: block; height: 20px; }
 
 /* ============ Store / contact ============ */
 .store-grid {
