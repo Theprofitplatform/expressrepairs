@@ -17,6 +17,20 @@ export const oneLine = (s, max = 200) => {
   return out.replace(/  +/g, ' ').trim().slice(0, max);
 };
 
+// AU mobile → E.164 (+614xxxxxxxx), or null if it isn't a valid AU mobile.
+export function normalizeAuMobile(raw) {
+  const s = String(raw ?? '').trim();
+  const hadPlus = s.startsWith('+');
+  const digits = s.replace(/[^\d]/g, '');
+  let national;
+  if (hadPlus && digits.startsWith('61')) national = digits.slice(2);
+  else if (!hadPlus && digits.length === 11 && digits.startsWith('61')) national = digits.slice(2);
+  else if (digits.startsWith('0')) national = digits.slice(1);
+  else national = digits;
+  if (!/^4\d{8}$/.test(national)) return null;
+  return `+61${national}`;
+}
+
 export const hostAllowed = (host, env) => {
   if (!host) return false;
   const extra = String(env.ALLOWED_ORIGINS || '')
@@ -235,6 +249,28 @@ async function clicksendSend(env, to, body) {
     console.error('ClickSend request error', err);
     return { ok: false, status: 'network' };
   }
+}
+
+// Twilio webhook authenticity. Twilio mandates HMAC-SHA1 over the request URL
+// followed by every POST param (name then value, no delimiters) in
+// case-sensitive alphabetical key order, base64-encoded. SHA-1 is Twilio's
+// choice, not ours.
+//
+// Gotcha: the URL must byte-for-byte match what Twilio was configured with.
+// apex vs www, http vs https, or a trailing slash all break the signature.
+export async function validTwilioSignature(url, params, signature, authToken) {
+  if (!signature || !authToken) return false;
+  let data = String(url);
+  for (const k of Object.keys(params || {}).sort()) data += k + params[k];
+  const key = await crypto.subtle.importKey(
+    'raw', new TextEncoder().encode(authToken), { name: 'HMAC', hash: 'SHA-1' }, false, ['sign'],
+  );
+  const mac = await crypto.subtle.sign('HMAC', key, new TextEncoder().encode(data));
+  const expected = btoa(String.fromCharCode(...new Uint8Array(mac)));
+  if (expected.length !== signature.length) return false;
+  let diff = 0;
+  for (let i = 0; i < expected.length; i++) diff |= expected.charCodeAt(i) ^ signature.charCodeAt(i);
+  return diff === 0;
 }
 
 async function twilioSend(env, to, body) {
