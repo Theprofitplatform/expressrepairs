@@ -157,7 +157,7 @@ const phoneSvg = '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" st
         {svc.faqs.map((f, i) => (
           <div class="faq-item" data-open={i === 0 ? 'true' : 'false'}>
             <button type="button" class="faq-q" aria-expanded={i === 0 ? 'true' : 'false'} aria-controls={`faq-a-${i}`}><span>{f.q}</span><span class="faq-toggle" aria-hidden="true">+</span></button>
-            <div class="faq-a" id={`faq-a-${i}`}>{f.a}</div>
+            <div class="faq-a" id={`faq-a-${i}`}><div class="faq-a-inner">{f.a}</div></div>
           </div>
         ))}
       </div>

@@ -172,7 +172,7 @@ export function FAQ() {
                 <span>{f.q}</span>
                 <span className="faq-toggle" aria-hidden="true">+</span>
               </button>
-              <div className="faq-a" id={`home-faq-a-${i}`} role="region">{f.a}</div>
+              <div className="faq-a" id={`home-faq-a-${i}`} role="region"><div className="faq-a-inner">{f.a}</div></div>
             </div>
           ))}
         </div>
