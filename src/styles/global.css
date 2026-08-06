@@ -197,9 +197,8 @@ input, select, textarea { font-family: inherit; font-size: inherit; color: inher
 /* ============ Nav ============ */
 .nav {
   position: sticky; top: 0; z-index: 50;
-  background: color-mix(in oklab, var(--bg) 82%, transparent);
-  backdrop-filter: saturate(180%) blur(12px);
-  -webkit-backdrop-filter: saturate(180%) blur(12px);
+  /* Solid, not translucent — the blur went muddy over dark imagery. */
+  background: var(--bg);
   border-bottom: 1px solid var(--border);
   height: var(--nav-h);
   display: flex; align-items: center;
@@ -445,6 +444,17 @@ input, select, textarea { font-family: inherit; font-size: inherit; color: inher
   .hero-infobar > div:nth-child(-n+2) { border-bottom: 1px solid var(--border); }
 }
 
+/* The hero renders the info bar twice — hp-desktop in the left column,
+   hp-mobile after the booking widget — so on phones the widget comes first.
+   Also tightens the hero→repairs gap that stacking opens up on mobile. */
+.hp-mobile { display: none; }
+@media (max-width: 960px) {
+  .hp-desktop { display: none; }
+  .hp-mobile { display: grid; margin-top: 24px; }
+  .hero { padding-bottom: 48px; }
+  #repairs.section { padding-top: 48px; }
+}
+
 /* ============ Booking Widget (hero right) ============ */
 .booking {
   background: var(--surface);
@@ -650,6 +660,12 @@ input, select, textarea { font-family: inherit; font-size: inherit; color: inher
 .bento-tall  { grid-column: span 1; grid-row: span 2; }
 .bento-wide  { grid-column: span 2; grid-row: span 1; }
 .bento-small { grid-column: span 1; grid-row: span 1; }
+/* Widen the last card (Free Diagnostic) so the grid has no empty slot.
+   Skipped on the single-column phone layout, where span 2 would mint a
+   phantom second column. */
+@media (min-width: 561px) {
+  .bento-grid > a:last-child { grid-column: span 2; }
+}
 @media (max-width: 900px) {
   .bento-grid { grid-template-columns: repeat(2, 1fr); grid-auto-rows: 200px; }
   .bento-hero { grid-column: span 2; grid-row: span 2; }
