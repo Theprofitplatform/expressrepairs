@@ -89,10 +89,38 @@ export function Nav() {
   );
 }
 
-export function Hero() {
+/* Rendered twice in Hero: in the left column on desktop, after the booking
+   widget on mobile (hp-desktop / hp-mobile swap in global.css) so the widget
+   is reachable a full screen sooner on phones. */
+function HeroInfoBar({ className }) {
   const open = isOpenNow(HOURS);
   const d = new Date();
   const today = HOURS.find(h => h.dow === d.getDay());
+  return (
+    <div className={className}>
+      <div>
+        <div className="hero-info-label">Today</div>
+        <div className="hero-info-value">{today ? today.hrs : 'See hours'}</div>
+      </div>
+      <div>
+        <div className="hero-info-label">Turnaround</div>
+        <div className="hero-info-value">30–90 min</div>
+      </div>
+      <div>
+        <div className="hero-info-label">Warranty</div>
+        <div className="hero-info-value">6–12 months</div>
+      </div>
+      <div>
+        <div className="hero-info-label">Status</div>
+        <div className="hero-info-value" style={{color: open ? '#16a34a' : 'var(--text-muted)'}}>
+          {open ? '● Open now' : '○ Closed'}
+        </div>
+      </div>
+    </div>
+  );
+}
+
+export function Hero() {
   return (
     <section className="hero">
       <div className="hero-bg" />
@@ -126,34 +154,16 @@ export function Hero() {
                 {['MD','MT','NB','SA','KK'].map(ini => <span key={ini} className="avatar-initials">{ini}</span>)}
               </div>
               <div className="trust-text">
-                <div className="stars">★★★★★ <strong style={{marginLeft:6}}>{SITE.rating.value.toFixed(1)}/5</strong></div>
+                <div className="stars">★★★★★ <strong style={{marginLeft:6}}>{SITE.rating.value.toFixed(1)}/5 on Google</strong></div>
                 <div>Loved by <strong>1,000+</strong> locals</div>
               </div>
             </div>
 
-            <div className="hero-infobar">
-              <div>
-                <div className="hero-info-label">Today</div>
-                <div className="hero-info-value">{today ? today.hrs : 'See hours'}</div>
-              </div>
-              <div>
-                <div className="hero-info-label">Turnaround</div>
-                <div className="hero-info-value">30–90 min</div>
-              </div>
-              <div>
-                <div className="hero-info-label">Warranty</div>
-                <div className="hero-info-value">6–12 months</div>
-              </div>
-              <div>
-                <div className="hero-info-label">Status</div>
-                <div className="hero-info-value" style={{color: open ? '#16a34a' : 'var(--text-muted)'}}>
-                  {open ? '● Open now' : '○ Closed'}
-                </div>
-              </div>
-            </div>
+            <HeroInfoBar className="hero-infobar hp-desktop" />
           </div>
           <div id="booking">
             <BookingWidget />
+            <HeroInfoBar className="hero-infobar hp-mobile" />
           </div>
         </div>
       </div>
@@ -201,10 +211,13 @@ export function RepairServices() {
   );
 }
 
-export function Plans({ ctaHref = '#contact' }) {
+/* compact: homepage mode — first 3 plans and a "See all plans" link to
+   /plans/ instead of the intl-modal button and footer note. */
+export function Plans({ ctaHref = '#contact', compact = false }) {
   const [mode, setMode] = useState('sim');
   const [intlOpen, setIntlOpen] = useState(false);
-  const plans = mode === 'sim' ? SIM_PLANS : HANDSET_PLANS;
+  const allPlans = mode === 'sim' ? SIM_PLANS : HANDSET_PLANS;
+  const plans = compact ? allPlans.slice(0, 3) : allPlans;
   return (
     <section className="section" id="plans" style={{background:'var(--bg-soft)'}}>
       <div className="container-wide">
@@ -241,16 +254,26 @@ export function Plans({ ctaHref = '#contact' }) {
           ))}
         </div>
 
-        <div style={{display:'flex', justifyContent:'center', marginTop:32}}>
-          <button type="button" className="btn btn-ghost" onClick={() => setIntlOpen(true)}>
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>
-            International call inclusions
-          </button>
-        </div>
+        {compact ? (
+          <div style={{display:'flex', justifyContent:'center', marginTop:32}}>
+            <a href="/plans/" className="btn btn-primary">
+              {allPlans.length > 3 ? `See all ${allPlans.length} plans` : 'See plan details'} <Icon.ArrowRight size={16} />
+            </a>
+          </div>
+        ) : (
+          <>
+            <div style={{display:'flex', justifyContent:'center', marginTop:32}}>
+              <button type="button" className="btn btn-ghost" onClick={() => setIntlOpen(true)}>
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>
+                International call inclusions
+              </button>
+            </div>
 
-        <p className="plan-footer-note">
-          All plans include unlimited talk &amp; text to standard numbers, data banking, and data gifting. Call <a href={SITE.phoneHref} style={{color:'var(--brand-700)', fontWeight:700}}>{SITE.phone}</a> or visit us in-store.
-        </p>
+            <p className="plan-footer-note">
+              All plans include unlimited talk &amp; text to standard numbers, data banking, and data gifting. Call <a href={SITE.phoneHref} style={{color:'var(--brand-700)', fontWeight:700}}>{SITE.phone}</a> or visit us in-store.
+            </p>
+          </>
+        )}
       </div>
       <IntlCallModal open={intlOpen} onClose={() => setIntlOpen(false)} />
     </section>

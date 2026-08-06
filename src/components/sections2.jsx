@@ -100,7 +100,7 @@ export function WhyUs() {
   );
 }
 
-export function Testimonials({ ratingLabel = 'Average rating' }) {
+export function Testimonials() {
   return (
     <section className="section" id="reviews">
       <div className="container-wide">
@@ -125,7 +125,7 @@ export function Testimonials({ ratingLabel = 'Average rating' }) {
         </div>
 
         <div className="t-stats">
-          <div className="t-stat"><div className="t-stat-num">{SITE.rating.value.toFixed(1)}★</div><div className="t-stat-label">{ratingLabel}</div></div>
+          <div className="t-stat"><div className="t-stat-num">{SITE.rating.value.toFixed(1)}★</div><div className="t-stat-label">rating on Google</div></div>
           <div className="t-stat"><div className="t-stat-num">1,000+</div><div className="t-stat-label">Happy customers</div></div>
           <div className="t-stat"><div className="t-stat-num">5,000+</div><div className="t-stat-label">Repairs completed</div></div>
           <div className="t-stat"><div className="t-stat-num">Same Day</div><div className="t-stat-label">Service available</div></div>
