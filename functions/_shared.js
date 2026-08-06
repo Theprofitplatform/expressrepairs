@@ -251,6 +251,28 @@ async function clicksendSend(env, to, body) {
   }
 }
 
+// Twilio webhook authenticity. Twilio mandates HMAC-SHA1 over the request URL
+// followed by every POST param (name then value, no delimiters) in
+// case-sensitive alphabetical key order, base64-encoded. SHA-1 is Twilio's
+// choice, not ours.
+//
+// Gotcha: the URL must byte-for-byte match what Twilio was configured with.
+// apex vs www, http vs https, or a trailing slash all break the signature.
+export async function validTwilioSignature(url, params, signature, authToken) {
+  if (!signature || !authToken) return false;
+  let data = String(url);
+  for (const k of Object.keys(params).sort()) data += k + params[k];
+  const key = await crypto.subtle.importKey(
+    'raw', new TextEncoder().encode(authToken), { name: 'HMAC', hash: 'SHA-1' }, false, ['sign'],
+  );
+  const mac = await crypto.subtle.sign('HMAC', key, new TextEncoder().encode(data));
+  const expected = btoa(String.fromCharCode(...new Uint8Array(mac)));
+  if (expected.length !== signature.length) return false;
+  let diff = 0;
+  for (let i = 0; i < expected.length; i++) diff |= expected.charCodeAt(i) ^ signature.charCodeAt(i);
+  return diff === 0;
+}
+
 async function twilioSend(env, to, body) {
   const sid = env.TWILIO_ACCOUNT_SID;
   const token = env.TWILIO_AUTH_TOKEN;
