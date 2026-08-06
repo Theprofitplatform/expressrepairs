@@ -1,20 +1,26 @@
-// Cloudflare Pages Function — POST /api/review-sms
+// Cloudflare Pages Function - POST /api/review-sms
 //
 // Staff-triggered Google-review request SMS. A PIN-gated internal page
 // (src/pages/staff/review-request.astro) posts { name, mobile, device, pin };
 // this endpoint validates the PIN, normalises the mobile to an AU E.164 number,
-// and sends a review-request SMS via ClickSend.
+// and sends a review-request SMS via sendSms() in _shared.js.
 //
-// Config (Cloudflare Pages → Settings → Environment variables / Secrets):
-//   CLICKSEND_USERNAME  (secret, required)  — ClickSend account username
-//   CLICKSEND_API_KEY   (secret, required)  — ClickSend API key
-//   REVIEW_SMS_PIN      (secret, required)  — staff PIN gating this endpoint
-//   REVIEW_LINK         (required)          — https://g.page/r/…/review
-//   CLICKSEND_SENDER    (optional)          — sender ID, default 'Xpress' (≤11 chars)
+// Provider selection: sendSms picks Twilio when TWILIO_ACCOUNT_SID is set,
+// otherwise ClickSend. Today, ClickSend is live (Twilio not yet configured).
+//
+// Config (Cloudflare Pages - Settings - Environment variables / Secrets):
+//   CLICKSEND_USERNAME  (secret, required)  - ClickSend account username
+//   CLICKSEND_API_KEY   (secret, required)  - ClickSend API key
+//   CLICKSEND_SENDER    (optional)          - sender ID, default 'Xpress' (<= 11 chars)
+//   TWILIO_ACCOUNT_SID  (secret, optional)  - Twilio account SID
+//   TWILIO_AUTH_TOKEN   (secret, optional)  - Twilio auth token
+//   TWILIO_NUMBER       (secret, optional)  - Twilio sender number
+//   REVIEW_SMS_PIN      (secret, required)  - staff PIN gating this endpoint
+//   REVIEW_LINK         (required)          - https://g.page/r/.../review
 //
 // Note: the shared sameSite also allows *.pages.dev (preview deploys), which
 // the old local copy here did not. Acceptable widening: the PIN below is the
-// real gate — Origin/Referer are forgeable off-browser regardless.
+// real gate - Origin/Referer are forgeable off-browser regardless.
 import {
   json,
   sameSite,
