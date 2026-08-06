@@ -1,0 +1,103 @@
+---
+import Layout from '../layouts/Layout.astro';
+import { Nav, RepairServices, Accessories } from '../components/sections.jsx';
+import { HeroV2, PlansV2 } from '../components/sectionsV2.jsx';
+import { BrandsStrip, WhyUs, Testimonials, Warranty, FAQ, Store, Contact, Footer } from '../components/sections2.jsx';
+import { SITE } from '../data/site.js';
+import { NBN_PLANS } from '../data/plans.js';
+
+/* Review-only duplicate of the homepage with proposed UX improvements.
+   noindex + excluded from the sitemap (astro.config.mjs). Once approved,
+   port the diffs into index.astro / sections.jsx and delete this page. */
+
+const nbnFrom = Math.min(...NBN_PLANS.map((p) => p.price));
+---
+<Layout
+  title="Homepage preview — Express Repairs"
+  description="Preview of proposed homepage improvements."
+  path="/home-preview/"
+  noindex={true}
+  htmlAttrs={{ 'data-palette': 'electric-blue', 'data-herovariant': 'split', 'data-planstyle': 'cards', 'data-fontpair': 'mix', 'data-dark': 'false', 'data-homev2': 'true' }}
+>
+  <div class="hp-banner">Preview — proposed homepage improvements. The live homepage is unchanged.</div>
+  <Nav />
+  <main id="main-content">
+    <HeroV2 client:load />
+    <RepairServices />
+    <PlansV2 client:visible />
+    <section class="nbn-crosssell" aria-label="NBN plans">
+      <div class="container-wide nbn-crosssell-inner">
+        <p class="nbn-crosssell-text">
+          <strong>Need internet too?</strong> Home &amp; business NBN from ${nbnFrom}/mth — no lock-in,
+          unlimited data, free static IP.
+        </p>
+        <a href="/nbn/" class="btn btn-primary">See NBN plans</a>
+      </div>
+    </section>
+    <Accessories />
+    <BrandsStrip />
+    <WhyUs />
+    <Testimonials ratingLabel="rating on Google" />
+    <Warranty />
+    <FAQ client:visible />
+    <Store client:visible />
+    <Contact client:visible />
+  </main>
+  <Footer />
+  <a href={SITE.phoneHref} class="mobile-call-cta">
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"></path></svg>
+    Call {SITE.phone}
+  </a>
+</Layout>
+
+<style>
+  .hp-banner {
+    background: var(--ink-900);
+    color: #fff;
+    text-align: center;
+    font-size: 13px;
+    padding: 8px 16px;
+  }
+  .nbn-crosssell {
+    background: var(--bg-soft);
+    border-block: 1px solid var(--border);
+    padding: 28px 0;
+  }
+  .nbn-crosssell-inner {
+    display: flex; align-items: center; justify-content: center;
+    gap: 12px 28px; flex-wrap: wrap; text-align: center;
+  }
+  .nbn-crosssell-text { margin: 0; font-size: 17px; color: var(--text-muted); }
+  .nbn-crosssell-text strong { color: var(--text); }
+</style>
+
+<style is:global>
+  /* V2 overrides, scoped to this page via data-homev2. Port into
+     global.css (unscoped) on approval. */
+
+  /* 6. Solid sticky header — the translucent blur goes muddy over the
+     dark bento images. */
+  [data-homev2] .nav {
+    background: var(--bg);
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
+  }
+
+  /* 4. Fill the empty desktop grid slot: Free Diagnostic (last card)
+     goes wide, so the bottom row is Other Repairs + Free Diagnostic. */
+  @media (min-width: 901px) {
+    [data-homev2] .bento-grid > a:last-child { grid-column: span 2; }
+  }
+
+  /* 1. Mobile: booking widget above the info bar. Two copies of the
+     info bar, one shown per breakpoint. */
+  [data-homev2] .hp-mobile { display: none; }
+  @media (max-width: 960px) {
+    [data-homev2] .hp-desktop { display: none; }
+    [data-homev2] .hp-mobile { display: grid; margin-top: 24px; }
+
+    /* 3. Halve the dead scroll between the hero and the Repairs section. */
+    [data-homev2] .hero { padding-bottom: 48px; }
+    [data-homev2] #repairs.section { padding-top: 48px; }
+  }
+</style>
