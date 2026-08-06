@@ -30,6 +30,20 @@ describe('validTwilioSignature', () => {
     expect(await validTwilioSignature(URL_, PARAMS, 'nope', TOKEN)).toBe(false);
     expect(await validTwilioSignature(URL_, PARAMS, '', TOKEN)).toBe(false);
   });
+
+  it('accepts the same params in non-alphabetical insertion order (proves sort() is load-bearing)', async () => {
+    // Same five keys/values as PARAMS, declared out of alphabetical order.
+    // Object key iteration follows insertion order in JS, so this only
+    // passes against GOOD if the implementation sorts before signing.
+    const reordered = {
+      To: PARAMS.To,
+      From: PARAMS.From,
+      CallStatus: PARAMS.CallStatus,
+      CallSid: PARAMS.CallSid,
+      AccountSid: PARAMS.AccountSid,
+    };
+    expect(await validTwilioSignature(URL_, reordered, GOOD, TOKEN)).toBe(true);
+  });
 });
 
 import { buildMissedCallMessage, onRequest } from '../functions/api/missed-call.js';

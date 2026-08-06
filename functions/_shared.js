@@ -261,7 +261,7 @@ async function clicksendSend(env, to, body) {
 export async function validTwilioSignature(url, params, signature, authToken) {
   if (!signature || !authToken) return false;
   let data = String(url);
-  for (const k of Object.keys(params).sort()) data += k + params[k];
+  for (const k of Object.keys(params || {}).sort()) data += k + params[k];
   const key = await crypto.subtle.importKey(
     'raw', new TextEncoder().encode(authToken), { name: 'HMAC', hash: 'SHA-1' }, false, ['sign'],
   );
