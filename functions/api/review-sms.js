@@ -39,6 +39,7 @@ import {
   clearPinFailures,
   oneLine,
   sendSms,
+  normalizeAuMobile,
 } from '../_shared.js';
 
 // Hex-encodes a digest buffer (same helper as stripe-webhook.js).
@@ -50,19 +51,7 @@ async function sha256Hex(s) {
   return hex(await crypto.subtle.digest('SHA-256', new TextEncoder().encode(s)));
 }
 
-// AU mobile → E.164 (+614xxxxxxxx), or null if it isn't a valid AU mobile.
-export function normalizeAuMobile(raw) {
-  const s = String(raw ?? '').trim();
-  const hadPlus = s.startsWith('+');
-  const digits = s.replace(/[^\d]/g, '');
-  let national;
-  if (hadPlus && digits.startsWith('61')) national = digits.slice(2);
-  else if (!hadPlus && digits.length === 11 && digits.startsWith('61')) national = digits.slice(2);
-  else if (digits.startsWith('0')) national = digits.slice(1);
-  else national = digits;
-  if (!/^4\d{8}$/.test(national)) return null;
-  return `+61${national}`;
-}
+export { normalizeAuMobile };
 
 // Sign-off uses a plain hyphen, not an em-dash: a single non-GSM-7 character
 // (like "—") forces the whole SMS into UCS-2 (67 chars/segment vs 153), adding
