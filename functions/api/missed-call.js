@@ -5,10 +5,18 @@
 // The caller gets a text inviting them to reply.
 //
 // Env: TWILIO_ACCOUNT_SID, TWILIO_AUTH_TOKEN, TWILIO_NUMBER (E.164), ORDERS_KV.
-import { normalizeAuMobile, validTwilioSignature, sendSms } from '../_shared.js';
+import { normalizeAuMobile, validTwilioSignature, sendSms, MAX_BODY_BYTES } from '../_shared.js';
 
 const DEDUP_SECONDS = 6 * 60 * 60; // don't re-text the same caller within 6h
-const DAILY_CAP = 100; // hard backstop against a robocall loop
+export const DAILY_CAP = 100; // hard backstop against a robocall loop
+// ponytail: DAILY_CAP is a read-modify-write over two independent KV calls —
+// the >= check below, the increment further down — with an SMS send in
+// between, so concurrent webhooks can all read the same stale count and all
+// send before any of them writes the bump. The effective ceiling rises with
+// the attacker's concurrency, same failure shape as PIN_GLOBAL_MAX_FAILS in
+// _shared.js. Acceptable for a shop that gets one missed call at a time;
+// upgrade to a Durable Object (strongly consistent, serializes writes) if
+// per-day accuracy ever actually matters.
 
 const TWIML = '<?xml version="1.0" encoding="UTF-8"?><Response><Reject/></Response>';
 const twiml = (status = 200) =>
@@ -25,6 +33,17 @@ export function buildMissedCallMessage() {
 
 export async function onRequest({ request, env }) {
   if (request.method !== 'POST') return twiml(405);
+
+  // Public and unauthenticated: reject an oversized body on the declared
+  // length before buffering it at all. A lying or absent Content-Length just
+  // means this cheap check is skipped for that request — the signature check
+  // right after still blocks anyone who isn't Twilio, so no real defence is
+  // lost by not verifying the real byte count too (contrast readJsonBody in
+  // _shared.js, which re-checks received bytes because its callers are
+  // staff-PIN-gated, not signature-gated).
+  if (Number(request.headers.get('content-length') || 0) > MAX_BODY_BYTES) {
+    return twiml(413);
+  }
 
   const raw = await request.text();
   const params = Object.fromEntries(new URLSearchParams(raw));
@@ -50,8 +69,12 @@ export async function onRequest({ request, env }) {
         return twiml();
       }
     } catch (err) {
-      // Fail closed on the dedup check would brick the feature on a KV blip;
-      // fail open and accept a rare duplicate text.
+      // Fail closed here would brick the feature on a KV blip, so we fail
+      // open — but be honest about what that means: a KV outage or a missing
+      // ORDERS_KV binding doesn't just risk "a rare duplicate text", it takes
+      // out the dedup window AND the DAILY_CAP backstop together for as long
+      // as it lasts, so every missed call gets texted with no loop
+      // protection at all until KV recovers.
       console.error('missed-call KV unavailable', err);
     }
   }

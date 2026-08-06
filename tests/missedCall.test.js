@@ -46,7 +46,8 @@ describe('validTwilioSignature', () => {
   });
 });
 
-import { buildMissedCallMessage, onRequest } from '../functions/api/missed-call.js';
+import { buildMissedCallMessage, onRequest, DAILY_CAP } from '../functions/api/missed-call.js';
+import { MAX_BODY_BYTES } from '../functions/_shared.js';
 
 const ENV = {
   TWILIO_ACCOUNT_SID: 'ACtest',
@@ -128,6 +129,35 @@ describe('missed-call handler', () => {
     req.headers.set('x-twilio-signature', 'forged');
     const res = await onRequest({ request: req, env: { ...ENV, ORDERS_KV: kvStub() } });
     expect(res.status).toBe(403);
+    expect(sent).toHaveLength(0);
+  });
+
+  it('does not text once the daily cap is reached', async () => {
+    const sent = [];
+    globalThis.fetch = vi.fn(async () => { sent.push(1); return new Response('{}', { status: 201 }); });
+    // Same key shape and same date derivation as the handler.
+    const day = new Date().toISOString().slice(0, 10);
+    const kv = kvStub({ [`missed:count:${day}`]: String(DAILY_CAP) });
+    const res = await onRequest({ request: await signedReq(PARAMS), env: { ...ENV, ORDERS_KV: kv } });
+    expect(await res.text()).toContain('<Reject/>');
+    expect(sent).toHaveLength(0);
+  });
+
+  it('rejects an oversized body without reading it, but still returns Reject TwiML', async () => {
+    const sent = [];
+    globalThis.fetch = vi.fn(async () => { sent.push(1); return new Response('{}', { status: 201 }); });
+    const req = {
+      method: 'POST',
+      url: URL_,
+      headers: new Headers({ 'content-length': String(MAX_BODY_BYTES + 1) }),
+      // If the handler reads the body before checking Content-Length, this
+      // throws and the test fails loudly instead of silently passing.
+      text: async () => { throw new Error('body should not have been read'); },
+    };
+    const res = await onRequest({ request: req, env: { ...ENV, ORDERS_KV: kvStub() } });
+    expect(res.status).toBe(413);
+    expect(res.headers.get('content-type')).toContain('xml');
+    expect(await res.text()).toContain('<Reject/>');
     expect(sent).toHaveLength(0);
   });
 });
