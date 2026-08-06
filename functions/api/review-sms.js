@@ -1,20 +1,26 @@
-// Cloudflare Pages Function — POST /api/review-sms
+// Cloudflare Pages Function - POST /api/review-sms
 //
 // Staff-triggered Google-review request SMS. A PIN-gated internal page
 // (src/pages/staff/review-request.astro) posts { name, mobile, device, pin };
 // this endpoint validates the PIN, normalises the mobile to an AU E.164 number,
-// and sends a review-request SMS via ClickSend.
+// and sends a review-request SMS via sendSms() in _shared.js.
 //
-// Config (Cloudflare Pages → Settings → Environment variables / Secrets):
-//   CLICKSEND_USERNAME  (secret, required)  — ClickSend account username
-//   CLICKSEND_API_KEY   (secret, required)  — ClickSend API key
-//   REVIEW_SMS_PIN      (secret, required)  — staff PIN gating this endpoint
-//   REVIEW_LINK         (required)          — https://g.page/r/…/review
-//   CLICKSEND_SENDER    (optional)          — sender ID, default 'Xpress' (≤11 chars)
+// Provider selection: sendSms picks Twilio when TWILIO_ACCOUNT_SID is set,
+// otherwise ClickSend. Today, ClickSend is live (Twilio not yet configured).
+//
+// Config (Cloudflare Pages - Settings - Environment variables / Secrets):
+//   CLICKSEND_USERNAME  (secret, required)  - ClickSend account username
+//   CLICKSEND_API_KEY   (secret, required)  - ClickSend API key
+//   CLICKSEND_SENDER    (optional)          - sender ID, default 'Xpress' (<= 11 chars)
+//   TWILIO_ACCOUNT_SID  (secret, optional)  - Twilio account SID
+//   TWILIO_AUTH_TOKEN   (secret, optional)  - Twilio auth token
+//   TWILIO_NUMBER       (secret, optional)  - Twilio sender number
+//   REVIEW_SMS_PIN      (secret, required)  - staff PIN gating this endpoint
+//   REVIEW_LINK         (required)          - https://g.page/r/.../review
 //
 // Note: the shared sameSite also allows *.pages.dev (preview deploys), which
 // the old local copy here did not. Acceptable widening: the PIN below is the
-// real gate — Origin/Referer are forgeable off-browser regardless.
+// real gate - Origin/Referer are forgeable off-browser regardless.
 import {
   json,
   sameSite,
@@ -25,17 +31,9 @@ import {
   pinRateLimited,
   recordPinFailure,
   clearPinFailures,
+  oneLine,
+  sendSms,
 } from '../_shared.js';
-
-// Single-line, length-capped value — strips CR/LF and other control chars.
-const oneLine = (s, max = 200) => {
-  let out = '';
-  for (const ch of String(s ?? '')) {
-    const code = ch.charCodeAt(0);
-    out += code < 32 || code === 127 ? ' ' : ch;
-  }
-  return out.replace(/  +/g, ' ').trim().slice(0, max);
-};
 
 // AU mobile → E.164 (+614xxxxxxxx), or null if it isn't a valid AU mobile.
 export function normalizeAuMobile(raw) {
@@ -110,37 +108,14 @@ export async function onRequest({ request, env }) {
   const to = normalizeAuMobile(data.mobile);
   if (!to) return json(400, { ok: false, error: 'Enter a valid Australian mobile number.' });
 
-  const username = env.CLICKSEND_USERNAME;
-  const apiKey = env.CLICKSEND_API_KEY;
   const reviewLink = env.REVIEW_LINK;
-  if (!username || !apiKey || !reviewLink) {
+  const smsConfigured = env.TWILIO_ACCOUNT_SID || (env.CLICKSEND_USERNAME && env.CLICKSEND_API_KEY);
+  if (!smsConfigured || !reviewLink) {
     return json(503, { ok: false, error: 'SMS sending not configured.' });
   }
 
-  const from = oneLine(env.CLICKSEND_SENDER, 11) || 'Xpress';
-  const body = buildReviewMessage(data.name, reviewLink);
-  const payload = { messages: [{ source: 'cf-pages', from, to, body }] };
-
-  // ClickSend returns HTTP 200 even for a failed message, so we check the
-  // per-message status too. Any other outcome → 503 (not 502; see file header).
-  try {
-    const res = await fetch('https://rest.clicksend.com/v3/sms/send', {
-      method: 'POST',
-      headers: {
-        Authorization: `Basic ${btoa(`${username}:${apiKey}`)}`,
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify(payload),
-    });
-    const result = await res.json().catch(() => null);
-    const status = result?.data?.messages?.[0]?.status;
-    if (!res.ok || status !== 'SUCCESS') {
-      // Log status only — the ClickSend body echoes the customer's number/message.
-      console.error('ClickSend send failed', res.status, status || 'no-status');
-      return json(503, { ok: false, error: 'Could not send right now.' });
-    }
-  } catch (err) {
-    console.error('ClickSend request error', err);
+  const sent = await sendSms(env, to, buildReviewMessage(data.name, reviewLink));
+  if (!sent.ok) {
     return json(503, { ok: false, error: 'Could not send right now.' });
   }
 
