@@ -7,6 +7,16 @@ export const json = (status, body) =>
     headers: { 'Content-Type': 'application/json' },
   });
 
+// Single-line, length-capped value — strips CR/LF and other control chars.
+export const oneLine = (s, max = 200) => {
+  let out = '';
+  for (const ch of String(s ?? '')) {
+    const code = ch.charCodeAt(0);
+    out += code < 32 || code === 127 ? ' ' : ch;
+  }
+  return out.replace(/  +/g, ' ').trim().slice(0, max);
+};
+
 export const hostAllowed = (host, env) => {
   if (!host) return false;
   const extra = String(env.ALLOWED_ORIGINS || '')
@@ -188,4 +198,72 @@ export async function readJsonBody(request) {
   // (A JSON array passes the check above, but its field reads are undefined and
   // degrade to a 401 — no crash, so this is still safe.)
   return { ok: true, data };
+}
+
+// One send path for every outbound SMS. Provider is selected by env:
+// Twilio when TWILIO_ACCOUNT_SID is set, ClickSend otherwise — so rollback
+// to ClickSend is "remove the Twilio secrets and redeploy", no code change.
+// Returns { ok, status }; never throws, never logs a number or message body.
+export async function sendSms(env, to, body) {
+  if (env.TWILIO_ACCOUNT_SID) return twilioSend(env, to, body);
+  return clicksendSend(env, to, body);
+}
+
+async function clicksendSend(env, to, body) {
+  const username = env.CLICKSEND_USERNAME;
+  const apiKey = env.CLICKSEND_API_KEY;
+  if (!username || !apiKey) return { ok: false, status: 'unconfigured' };
+  const from = oneLine(env.CLICKSEND_SENDER, 11) || 'Xpress';
+  try {
+    const res = await fetch('https://rest.clicksend.com/v3/sms/send', {
+      method: 'POST',
+      headers: {
+        Authorization: `Basic ${btoa(`${username}:${apiKey}`)}`,
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ messages: [{ source: 'cf-pages', from, to, body }] }),
+    });
+    // ClickSend returns HTTP 200 even for a failed message — check per-message status.
+    const result = await res.json().catch(() => null);
+    const status = result?.data?.messages?.[0]?.status;
+    if (!res.ok || status !== 'SUCCESS') {
+      console.error('ClickSend send failed', res.status, status || 'no-status');
+      return { ok: false, status: res.status };
+    }
+    return { ok: true, status: res.status };
+  } catch (err) {
+    console.error('ClickSend request error', err);
+    return { ok: false, status: 'network' };
+  }
+}
+
+async function twilioSend(env, to, body) {
+  const sid = env.TWILIO_ACCOUNT_SID;
+  const token = env.TWILIO_AUTH_TOKEN;
+  const from = env.TWILIO_NUMBER;
+  if (!sid || !token || !from) return { ok: false, status: 'unconfigured' };
+  try {
+    const res = await fetch(
+      `https://api.twilio.com/2010-04-01/Accounts/${sid}/Messages.json`,
+      {
+        method: 'POST',
+        headers: {
+          Authorization: `Basic ${btoa(`${sid}:${token}`)}`,
+          'Content-Type': 'application/x-www-form-urlencoded',
+        },
+        body: new URLSearchParams({ From: from, To: to, Body: body }),
+      },
+    );
+    // Twilio: HTTP 201 = accepted/queued. There is no per-message SUCCESS
+    // field like ClickSend's — 201 is the success signal. Response body
+    // echoes the customer's number, so log status only.
+    if (res.status !== 201) {
+      console.error('Twilio send failed', res.status);
+      return { ok: false, status: res.status };
+    }
+    return { ok: true, status: res.status };
+  } catch (err) {
+    console.error('Twilio request error', err);
+    return { ok: false, status: 'network' };
+  }
 }

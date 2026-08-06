@@ -25,17 +25,9 @@ import {
   pinRateLimited,
   recordPinFailure,
   clearPinFailures,
+  oneLine,
+  sendSms,
 } from '../_shared.js';
-
-// Single-line, length-capped value — strips CR/LF and other control chars.
-const oneLine = (s, max = 200) => {
-  let out = '';
-  for (const ch of String(s ?? '')) {
-    const code = ch.charCodeAt(0);
-    out += code < 32 || code === 127 ? ' ' : ch;
-  }
-  return out.replace(/  +/g, ' ').trim().slice(0, max);
-};
 
 // AU mobile → E.164 (+614xxxxxxxx), or null if it isn't a valid AU mobile.
 export function normalizeAuMobile(raw) {
@@ -110,37 +102,14 @@ export async function onRequest({ request, env }) {
   const to = normalizeAuMobile(data.mobile);
   if (!to) return json(400, { ok: false, error: 'Enter a valid Australian mobile number.' });
 
-  const username = env.CLICKSEND_USERNAME;
-  const apiKey = env.CLICKSEND_API_KEY;
   const reviewLink = env.REVIEW_LINK;
-  if (!username || !apiKey || !reviewLink) {
+  const smsConfigured = env.TWILIO_ACCOUNT_SID || (env.CLICKSEND_USERNAME && env.CLICKSEND_API_KEY);
+  if (!smsConfigured || !reviewLink) {
     return json(503, { ok: false, error: 'SMS sending not configured.' });
   }
 
-  const from = oneLine(env.CLICKSEND_SENDER, 11) || 'Xpress';
-  const body = buildReviewMessage(data.name, reviewLink);
-  const payload = { messages: [{ source: 'cf-pages', from, to, body }] };
-
-  // ClickSend returns HTTP 200 even for a failed message, so we check the
-  // per-message status too. Any other outcome → 503 (not 502; see file header).
-  try {
-    const res = await fetch('https://rest.clicksend.com/v3/sms/send', {
-      method: 'POST',
-      headers: {
-        Authorization: `Basic ${btoa(`${username}:${apiKey}`)}`,
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify(payload),
-    });
-    const result = await res.json().catch(() => null);
-    const status = result?.data?.messages?.[0]?.status;
-    if (!res.ok || status !== 'SUCCESS') {
-      // Log status only — the ClickSend body echoes the customer's number/message.
-      console.error('ClickSend send failed', res.status, status || 'no-status');
-      return json(503, { ok: false, error: 'Could not send right now.' });
-    }
-  } catch (err) {
-    console.error('ClickSend request error', err);
+  const sent = await sendSms(env, to, buildReviewMessage(data.name, reviewLink));
+  if (!sent.ok) {
     return json(503, { ok: false, error: 'Could not send right now.' });
   }
 

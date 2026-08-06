@@ -220,6 +220,43 @@ describe('POST /api/review-sms', () => {
     });
     expect(res.status).toBe(503);
   });
+
+  it('sends via Twilio when TWILIO_ACCOUNT_SID is set', async () => {
+    const calls = [];
+    globalThis.fetch = vi.fn(async (url, opts) => {
+      calls.push({ url, opts });
+      return new Response('{}', { status: 201 });
+    });
+    const env = {
+      ...FULL_ENV, // keeps ClickSend vars — Twilio must WIN, not merely work alone
+      TWILIO_ACCOUNT_SID: 'ACtest',
+      TWILIO_AUTH_TOKEN: 'tok',
+      TWILIO_NUMBER: '+61480000000',
+    };
+    const res = await onRequest({
+      request: makeReq({ body: { name: 'Sam', mobile: '0412345678', pin: PIN } }),
+      env,
+    });
+    expect(res.status).toBe(200);
+    expect(calls).toHaveLength(1);
+    expect(calls[0].url).toContain('api.twilio.com');
+    expect(String(calls[0].opts.body)).toContain('To=%2B61412345678');
+  });
+
+  it('returns 503 when Twilio rejects the send', async () => {
+    globalThis.fetch = vi.fn(async () => new Response('{}', { status: 400 }));
+    const env = {
+      ...FULL_ENV,
+      TWILIO_ACCOUNT_SID: 'ACtest',
+      TWILIO_AUTH_TOKEN: 'tok',
+      TWILIO_NUMBER: '+61480000000',
+    };
+    const res = await onRequest({
+      request: makeReq({ body: { name: 'Sam', mobile: '0412345678', pin: PIN } }),
+      env,
+    });
+    expect(res.status).toBe(503);
+  });
 });
 
 // Fake KV — same Map-backed shape used in tests/supplierOrderApi.test.js,
