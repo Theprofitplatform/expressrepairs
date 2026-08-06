@@ -165,7 +165,7 @@ describe('POST /api/review-sms', () => {
     const spy = clickSendOk();
     const res = await onRequest({
       request: makeReq({ body: { pin: PIN, mobile: '0412345678', name: 'Sam' } }),
-      env: { REVIEW_SMS_PIN: PIN, REVIEW_LINK: 'https://g.page/r/abc/review' },
+      env: { REVIEW_SMS_PIN: PIN, REVIEW_LINK: 'https://g.page/r/abc/review', ORDERS_KV: makeFakeKv() },
     });
     expect(res.status).toBe(503);
     expect(spy).not.toHaveBeenCalled();
@@ -175,7 +175,7 @@ describe('POST /api/review-sms', () => {
     const spy = clickSendOk();
     const res = await onRequest({
       request: makeReq({ body: { pin: PIN, mobile: '0412 345 678', name: 'Sam', device: 'iPhone 13' } }),
-      env: FULL_ENV,
+      env: { ...FULL_ENV, ORDERS_KV: makeFakeKv() },
     });
     expect(res.status).toBe(200);
     expect(await res.json()).toEqual({ ok: true, to: '+61412345678' });
@@ -194,7 +194,7 @@ describe('POST /api/review-sms', () => {
     const spy = clickSendOk();
     await onRequest({
       request: makeReq({ body: { pin: PIN, mobile: '0412345678', name: 'Sam' } }),
-      env: { ...FULL_ENV, CLICKSEND_SENDER: 'SuperLongSenderName' },
+      env: { ...FULL_ENV, CLICKSEND_SENDER: 'SuperLongSenderName', ORDERS_KV: makeFakeKv() },
     });
     const sent = JSON.parse(spy.mock.calls[0][1].body);
     expect(sent.messages[0].from).toBe('SuperLongSe');
@@ -207,7 +207,7 @@ describe('POST /api/review-sms', () => {
     );
     const res = await onRequest({
       request: makeReq({ body: { pin: PIN, mobile: '0412345678', name: 'Sam' } }),
-      env: FULL_ENV,
+      env: { ...FULL_ENV, ORDERS_KV: makeFakeKv() },
     });
     expect(res.status).toBe(503);
   });
@@ -216,7 +216,7 @@ describe('POST /api/review-sms', () => {
     vi.spyOn(globalThis, 'fetch').mockRejectedValue(new Error('boom'));
     const res = await onRequest({
       request: makeReq({ body: { pin: PIN, mobile: '0412345678', name: 'Sam' } }),
-      env: FULL_ENV,
+      env: { ...FULL_ENV, ORDERS_KV: makeFakeKv() },
     });
     expect(res.status).toBe(503);
   });
@@ -232,6 +232,7 @@ describe('POST /api/review-sms', () => {
       TWILIO_ACCOUNT_SID: 'ACtest',
       TWILIO_AUTH_TOKEN: 'tok',
       TWILIO_NUMBER: '+61480000000',
+      ORDERS_KV: makeFakeKv(),
     };
     const res = await onRequest({
       request: makeReq({ body: { name: 'Sam', mobile: '0412345678', pin: PIN } }),
@@ -250,6 +251,7 @@ describe('POST /api/review-sms', () => {
       TWILIO_ACCOUNT_SID: 'ACtest',
       TWILIO_AUTH_TOKEN: 'tok',
       TWILIO_NUMBER: '+61480000000',
+      ORDERS_KV: makeFakeKv(),
     };
     const res = await onRequest({
       request: makeReq({ body: { name: 'Sam', mobile: '0412345678', pin: PIN } }),
@@ -362,5 +364,104 @@ describe('POST /api/review-sms — PIN rate limiting', () => {
     expect(res.status).toBe(200);
     expect(await kv.get(`pinfail:${ip}`)).toBeNull();
     expect(spy).toHaveBeenCalledTimes(1);
+  });
+});
+
+describe('POST /api/review-sms — opt-out', () => {
+  beforeEach(() => vi.restoreAllMocks());
+
+  it('action: "optout" records the suppression and sends nothing', async () => {
+    const spy = clickSendOk();
+    const kv = makeFakeKv();
+    const res = await onRequest({
+      request: makeReq({ body: { pin: PIN, mobile: '0412345678', action: 'optout' } }),
+      env: { ...FULL_ENV, ORDERS_KV: kv },
+    });
+    expect(res.status).toBe(200);
+    expect(await res.json()).toEqual({ ok: true, to: '+61412345678' });
+    expect(spy).not.toHaveBeenCalled();
+    expect([...kv.putOptions.keys()].some((k) => k.startsWith('optout:'))).toBe(true);
+  });
+
+  it('refuses to send to a number that has already opted out', async () => {
+    const spy = clickSendOk();
+    const kv = makeFakeKv();
+    const env = { ...FULL_ENV, ORDERS_KV: kv };
+    await onRequest({
+      request: makeReq({ body: { pin: PIN, mobile: '0412345678', action: 'optout' } }),
+      env,
+    });
+    const res = await onRequest({
+      request: makeReq({ body: { pin: PIN, mobile: '0412345678', name: 'Sam' } }),
+      env,
+    });
+    expect(res.status).toBe(503);
+    expect(spy).not.toHaveBeenCalled();
+  });
+
+  it('still sends to a different, unsuppressed number — the check is per-number, not global', async () => {
+    const spy = clickSendOk();
+    const kv = makeFakeKv();
+    const env = { ...FULL_ENV, ORDERS_KV: kv };
+    await onRequest({
+      request: makeReq({ body: { pin: PIN, mobile: '0412345678', action: 'optout' } }),
+      env,
+    });
+    const res = await onRequest({
+      request: makeReq({ body: { pin: PIN, mobile: '0498765432', name: 'Sam' } }),
+      env,
+    });
+    expect(res.status).toBe(200);
+    expect(spy).toHaveBeenCalledTimes(1);
+  });
+
+  it('stores a SHA-256 hash of the number as the key, never the digits themselves', async () => {
+    const kv = makeFakeKv();
+    const res = await onRequest({
+      request: makeReq({ body: { pin: PIN, mobile: '0412 345 678', action: 'optout' } }),
+      env: { ...FULL_ENV, ORDERS_KV: kv },
+    });
+    expect(res.status).toBe(200);
+    // '0412 345 678' entered and '+61412345678' E.164 share this digit run —
+    // a regression to a plaintext key (either form) would contain it.
+    const digitSubstring = '412345678';
+    for (const key of kv.putOptions.keys()) {
+      expect(key).not.toContain(digitSubstring);
+    }
+  });
+
+  it('fails closed: refuses to send when the suppression check throws', async () => {
+    const spy = clickSendOk();
+    const kv = makeFakeKv();
+    kv.get = async () => { throw new Error('kv down'); };
+    const res = await onRequest({
+      request: makeReq({ body: { pin: PIN, mobile: '0412345678', name: 'Sam' } }),
+      env: { ...FULL_ENV, ORDERS_KV: kv },
+    });
+    expect(res.status).toBe(503);
+    expect(spy).not.toHaveBeenCalled();
+  });
+
+  it('fails closed: refuses to send when ORDERS_KV is unbound', async () => {
+    const spy = clickSendOk();
+    const res = await onRequest({
+      request: makeReq({ body: { pin: PIN, mobile: '0412345678', name: 'Sam' } }),
+      env: FULL_ENV, // no ORDERS_KV binding at all
+    });
+    expect(res.status).toBe(503);
+    expect(spy).not.toHaveBeenCalled();
+  });
+
+  it('rejects an opt-out request with a bad PIN — does not bypass the PIN gate', async () => {
+    const spy = clickSendOk();
+    const kv = makeFakeKv();
+    const res = await onRequest({
+      request: makeReq({ body: { pin: 'wrong-pin-000000', mobile: '0412345678', action: 'optout' } }),
+      env: { ...FULL_ENV, ORDERS_KV: kv },
+    });
+    expect(res.status).toBe(401);
+    expect(spy).not.toHaveBeenCalled();
+    // Only the PIN-failure bookkeeping keys may be written — never an optout: key.
+    expect([...kv.putOptions.keys()].some((k) => k.startsWith('optout:'))).toBe(false);
   });
 });
