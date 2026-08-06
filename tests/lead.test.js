@@ -210,6 +210,33 @@ describe('POST /api/lead — order requests', () => {
     expect(sent.text).toContain(a.name);
   });
 
+  it('links each supplier-sourced item to its supplier product page', async () => {
+    const { PRODUCTS } = await import('../src/data/products.js');
+    const inStock = PRODUCTS.filter((p) => p.inStock !== false);
+    const hoco = inStock.find((p) => p.id.startsWith('H-'));
+    const mm = inStock.find((p) => p.id.startsWith('M-'));
+    const fetchSpy = okResend();
+    await onRequest({
+      request: makeReq({ body: orderBody({ items: [{ id: hoco.id, qty: 1 }, { id: mm.id, qty: 1 }] }) }),
+      env: ENV,
+    });
+    const sent = JSON.parse(fetchSpy.mock.calls[0][1].body);
+    expect(sent.text).toContain(`https://www.hoco.com.au/shop/product/${hoco.id.slice(2)}`);
+    expect(sent.text).toContain(`https://mobilemall.com.au/search/${mm.id.slice(2)}`);
+    expect(sent.html).toContain(`<a href="https://www.hoco.com.au/shop/product/${hoco.id.slice(2)}">order from supplier</a>`);
+    expect(sent.html).toContain(`<a href="https://mobilemall.com.au/search/${mm.id.slice(2)}">order from supplier</a>`);
+  });
+
+  it('gives a DXPOS-native (X-) item no supplier link', async () => {
+    const { PRODUCTS } = await import('../src/data/products.js');
+    const x = PRODUCTS.find((p) => p.id.startsWith('X-') && p.inStock !== false);
+    const fetchSpy = okResend();
+    await onRequest({ request: makeReq({ body: orderBody({ items: [{ id: x.id, qty: 1 }] }) }), env: ENV });
+    const sent = JSON.parse(fetchSpy.mock.calls[0][1].body);
+    expect(sent.text).not.toContain('supplier:');
+    expect(sent.html).not.toContain('order from supplier');
+  });
+
   it('labels pickup as free shipping and delivery as charged below the threshold', async () => {
     const fetchSpy = okResend();
     await onRequest({ request: makeReq({ body: orderBody({ items: [{ id: a.id, qty: 1 }] }) }), env: ENV });
