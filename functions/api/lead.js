@@ -65,6 +65,17 @@ const oneLine = (s, max = MAX_FIELD_LEN) => {
 
 const emailValid = (s) => /^\S+@\S+\.\S+$/.test(s);
 
+// Supplier product page for an ordered item, derived from the catalogue id
+// prefix. Both URLs are verified live: HOCO's Odoo 301s /shop/product/<id> to
+// the slugged product page; MobileMall's /search/<sku> 302s straight to the
+// product. X-* (DXPOS-native) items have no known supplier page — no link.
+const supplierUrl = (id) =>
+  id.startsWith('H-')
+    ? `https://www.hoco.com.au/shop/product/${id.slice(2)}`
+    : id.startsWith('M-')
+      ? `https://mobilemall.com.au/search/${id.slice(2)}`
+      : '';
+
 export async function onRequest({ request, env }) {
   if (request.method !== 'POST') {
     return json(405, { ok: false, error: 'Method not allowed.' });
@@ -158,7 +169,21 @@ export async function onRequest({ request, env }) {
           ? 'Pickup in store — Riverwood Plaza'
           : 'Delivery (AusPost)'],
         ['Address', address],
-        ['Items', order.lines.map((l) => `${l.qty} × ${l.name} — ${fmtPrice(l.lineTotalCents)}`).join('\n')],
+        ['Items',
+          order.lines
+            .map((l) => {
+              const u = supplierUrl(l.id);
+              return `${l.qty} × ${l.name} — ${fmtPrice(l.lineTotalCents)}${u ? `\n    supplier: ${u}` : ''}`;
+            })
+            .join('\n'),
+          // HTML override: same lines, but the supplier URL as a clickable link.
+          order.lines
+            .map((l) => {
+              const u = supplierUrl(l.id);
+              return `${l.qty} × ${esc(l.name)} — ${fmtPrice(l.lineTotalCents)}${u ? ` — <a href="${u}">order from supplier</a>` : ''}`;
+            })
+            .join('<br>'),
+        ],
         ['Subtotal', fmtPrice(order.subtotalCents)],
         ['Shipping', order.shippingCents === 0 ? 'Free' : fmtPrice(order.shippingCents)],
         ['Total', fmtPrice(order.totalCents)],
@@ -181,7 +206,7 @@ export async function onRequest({ request, env }) {
 
   const text = `${heading}\n\n${rows.map(([k, v]) => `${k}: ${v}`).join('\n')}\n\nSource: ${source} form, expressrepairs.com.au`;
   const html = `<h2>${heading}</h2><table cellpadding="6" style="border-collapse:collapse;font-family:system-ui,sans-serif;font-size:15px">${rows
-    .map(([k, v]) => `<tr><td style="color:#666"><strong>${esc(k)}</strong></td><td>${esc(v).replace(/\n/g, '<br>')}</td></tr>`)
+    .map(([k, v, vHtml]) => `<tr><td style="color:#666"><strong>${esc(k)}</strong></td><td>${vHtml || esc(v).replace(/\n/g, '<br>')}</td></tr>`)
     .join('')}</table><p style="color:#999;font-size:13px">Source: ${source} form · expressrepairs.com.au</p>`;
 
   const payload = {
