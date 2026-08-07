@@ -6,7 +6,7 @@ import MobileCta from '../components/MobileCta.astro';
 import PageScripts from '../components/PageScripts.astro';
 import NbnForm from '../components/NbnForm.jsx';
 import { SITE } from '../data/site.js';
-import { NBN_PLANS } from '../data/plans.js';
+import { NBN_PLANS, NBN_INTRO_OFF, NBN_INTRO_MONTHS } from '../data/plans.js';
 import { breadcrumbSchema } from '../lib/seo.js';
 
 const navLinks = [
@@ -66,9 +66,9 @@ const schema = breadcrumbSchema([
         <p class="section-lede">Every plan is month-to-month — no lock-in, no exit fees. Prices per month inc. GST.</p>
 
         <div class="nbn-offer-banner">
-          <strong>Sign up in store and save.</strong> Most customers qualify for
-          <strong>$10/mth off their first 6 months, then $5/mth off ongoing</strong> —
-          visit our Riverwood store and we'll sort it out on the spot.
+          <strong>Every new connection gets ${NBN_INTRO_OFF}/mth off for its first {NBN_INTRO_MONTHS} months</strong> —
+          already taken off the prices below. Have an eligible phone plan with us? You may qualify for
+          <strong>another ${NBN_INTRO_OFF}/mth off, ongoing</strong> — visit our Riverwood store and we'll check on the spot.
         </div>
 
         <div class="nbn-controls">
@@ -85,15 +85,26 @@ const schema = breadcrumbSchema([
               <div class="plan-name">{p.name}</div>
               <div class="plan-price">
                 <span class="dollar">$</span>
-                <span class="num">{p.price}</span>
+                <span class="num">{p.price - NBN_INTRO_OFF}</span>
                 <span class="per">/month</span>
+                <span class="was" aria-label={`Usual price $${p.price} per month`}>${p.price}</span>
               </div>
+              {/* The ongoing rate sits next to the promo rate, not behind a
+                  "total min cost" link — a promo price advertised without its
+                  ongoing price beside it is the thing the ACCC actually acts on. */}
+              <p class="nbn-plan-term">First {NBN_INTRO_MONTHS} months, then ${p.price}/mth</p>
               <div class="plan-data">Typical business-hour speed {p.typical}</div>
               <ul class="plan-features">
                 {p.features.map((f) => <li>{f}</li>)}
                 <li>Free phone number (VoIP)</li>
               </ul>
               <p class="nbn-blurb">{p.blurb}</p>
+              {/* Sits directly above the CTA, the last thing read before choosing —
+                  and after the blurb, so it doesn't get mistaken for one of the
+                  included features above it. */}
+              <p class="nbn-plan-perk">
+                Another ${NBN_INTRO_OFF}/mth off if you have an eligible phone plan with us — ask in store
+              </p>
               <a href={`?plan=${encodeURIComponent(p.name)}#enquire`} class={`btn ${p.featured ? 'btn-primary' : 'btn-ghost'} btn-block`}>
                 Choose {p.name}
               </a>
@@ -210,6 +221,19 @@ const schema = breadcrumbSchema([
   .nbn-arrow:hover:not(:disabled) { border-color: var(--brand-600); color: var(--brand-700); }
   .nbn-arrow:disabled { opacity: .3; cursor: default; }
 
+  /* Struck usual price, riding the same baseline row as the promo number so it
+     reads as one price statement. Not the only place the ongoing rate appears —
+     .nbn-plan-term spells it out, because a strikethrough alone says "was/now"
+     and never says "for how long". */
+  .plan-price .was {
+    font-size: 17px; font-weight: 600; color: var(--text-muted);
+    text-decoration: line-through; margin-left: 8px;
+  }
+  .nbn-plan-term { margin: 0 0 4px; font-size: 13px; font-weight: 600; color: var(--text-muted); }
+  .nbn-plan-perk {
+    margin: 12px 0 0; padding-top: 12px; border-top: 1px solid var(--border);
+    font-size: 13px; line-height: 1.45; color: var(--text-subtle, #6b7280);
+  }
   .nbn-blurb {
     font-size: 14px;
     color: var(--text-subtle, #6b7280);

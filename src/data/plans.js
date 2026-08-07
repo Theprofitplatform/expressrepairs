@@ -18,7 +18,18 @@ export const HANDSET_PLANS = z.array(planSchema).parse([
 ]);
 
 // NBN plans for home & business (resold). `price` is the month-to-month list rate
-// inc GST — no lock-in contracts.
+// inc GST — no lock-in contracts, and the rate every plan reverts to at month 7.
+//
+// Every new connection gets a flat $5/mth off for its first 6 months, so the
+// advertised price is `price - NBN_INTRO_OFF` and `price` is what the card
+// strikes through. A flat amount rather than a field on all nine plans: there
+// is one offer, not nine. Give a plan its own field only if one ever differs.
+// ponytail: the separate ongoing $5 for customers with an eligible phone plan
+// is deliberately NOT modelled here — it is conditional and resolved in store,
+// so no price on the site may assume it.
+export const NBN_INTRO_OFF = 5;
+export const NBN_INTRO_MONTHS = 6;
+
 export const NBN_PLANS = z.array(nbnPlanSchema).parse([
   { name: 'NBN 50/20', typical: '50/17 Mbps', price: 94, blurb: 'For basic web, email & streaming', features: ['No lock-in — cancel anytime', 'Unlimited data', 'Free static IP', '2 free speed-upgrade days every month'] },
   { name: 'NBN 250/100', typical: '250/85 Mbps', price: 109, blurb: 'For VoIP calls, cloud apps & backups', features: ['No lock-in — cancel anytime', 'Unlimited data', 'Free static IP', 'Enhanced service level agreement included', '2 free speed-upgrade days every month'] },
