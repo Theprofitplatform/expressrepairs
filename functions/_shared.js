@@ -214,6 +214,42 @@ export async function readJsonBody(request) {
   return { ok: true, data };
 }
 
+// Hex-encodes a digest buffer (same helper as stripe-webhook.js).
+const hex = (buf) => [...new Uint8Array(buf)].map((b) => b.toString(16).padStart(2, '0')).join('');
+
+// Hashes an E.164 number for the optout: KV key — never store the number
+// itself. crypto.subtle is the Workers-runtime primitive (no Node crypto).
+async function sha256Hex(s) {
+  return hex(await crypto.subtle.digest('SHA-256', new TextEncoder().encode(s)));
+}
+
+export async function optOutKey(to) {
+  return `optout:${await sha256Hex(to)}`;
+}
+
+// Opt-out suppression, shared by EVERY outbound SMS path. Lives here, called
+// from both senders, rather than being re-implemented per endpoint — the two
+// features that send SMS landed on the same day from sibling branches and
+// neither diff showed the other, so /api/missed-call shipped without this
+// check at all. A second copy is how that happens again.
+//
+// Returns { ok: false } when the list could not be read (no binding, or a KV
+// error). Callers MUST treat that as "do not send". This deliberately fails
+// CLOSED even where the surrounding code fails open: missed-call.js tolerates
+// a KV outage for dedup and the daily cap because the cost is a duplicate
+// text, but texting someone who legally asked not to be texted is a Spam Act
+// breach, and no amount of uptime is worth it.
+export async function isOptedOut(env, to) {
+  if (!env.ORDERS_KV) return { ok: false };
+  try {
+    const suppressed = await env.ORDERS_KV.get(await optOutKey(to));
+    return { ok: true, optedOut: Boolean(suppressed) };
+  } catch (err) {
+    console.error('optout check failed', err);
+    return { ok: false };
+  }
+}
+
 // One send path for every outbound SMS. Provider is selected by env:
 // Twilio when TWILIO_ACCOUNT_SID is set, ClickSend otherwise — so rollback
 // to ClickSend is "remove the Twilio secrets and redeploy", no code change.
