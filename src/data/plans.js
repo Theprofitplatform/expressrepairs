@@ -27,8 +27,18 @@ export const HANDSET_PLANS = z.array(planSchema).parse([
 // ponytail: the separate ongoing $5 for customers with an eligible phone plan
 // is deliberately NOT modelled here — it is conditional and resolved in store,
 // so no price on the site may assume it.
+//
+// `noIntro` plans are excluded and sell at list. It's a per-plan flag rather
+// than a price threshold because it's a commercial call, not a function of
+// price — a threshold would silently move a plan in or out of the offer the
+// next time someone edits a number.
 export const NBN_INTRO_OFF = 5;
 export const NBN_INTRO_MONTHS = 6;
+
+// The advertised price. Every surface that quotes an NBN price goes through
+// this — cards, enquiry dropdown, tests — so they can't disagree about who
+// gets the discount.
+export const nbnIntroPrice = (p) => (p.noIntro ? p.price : p.price - NBN_INTRO_OFF);
 
 export const NBN_PLANS = z.array(nbnPlanSchema).parse([
   { name: 'NBN 50/20', typical: '50/17 Mbps', price: 94, blurb: 'For basic web, email & streaming', features: ['No lock-in — cancel anytime', 'Unlimited data', 'Free static IP', '2 free speed-upgrade days every month'] },
@@ -38,6 +48,6 @@ export const NBN_PLANS = z.array(nbnPlanSchema).parse([
   { name: 'NBN 1000/100', typical: '860/85 Mbps', price: 129, blurb: 'For gamers, heavy downloads & many users', features: ['No lock-in — cancel anytime', 'Unlimited data', 'Free static IP'] },
   { name: 'NBN 500/200', typical: '500/170 Mbps', price: 139, blurb: 'For upload-heavy work — video, CCTV, sync', features: ['No lock-in — cancel anytime', 'Unlimited data', 'Free static IP', 'Pro service level agreement included'] },
   { name: 'NBN 1000/400', typical: '860/340 Mbps', price: 163, blurb: 'For serious upload & multi-site work', features: ['No lock-in — cancel anytime', 'Unlimited data', 'Free static IP', 'Pro service level agreement included'] },
-  { name: 'NBN 2000/200', typical: '1700/170 Mbps', price: 209, blurb: 'For the fastest downloads available', features: ['No lock-in — cancel anytime', 'Unlimited data', 'Free static IP'] },
-  { name: 'NBN 2000/500', typical: '1700/425 Mbps', price: 259, blurb: 'Our top plan — maximum everything', features: ['No lock-in — cancel anytime', 'Unlimited data', 'Free static IP', 'Pro service level agreement included'] },
+  { name: 'NBN 2000/200', typical: '1700/170 Mbps', price: 209, noIntro: true, blurb: 'For the fastest downloads available', features: ['No lock-in — cancel anytime', 'Unlimited data', 'Free static IP'] },
+  { name: 'NBN 2000/500', typical: '1700/425 Mbps', price: 259, noIntro: true, blurb: 'Our top plan — maximum everything', features: ['No lock-in — cancel anytime', 'Unlimited data', 'Free static IP', 'Pro service level agreement included'] },
 ]);
