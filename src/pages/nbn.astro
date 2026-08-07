@@ -6,7 +6,7 @@ import MobileCta from '../components/MobileCta.astro';
 import PageScripts from '../components/PageScripts.astro';
 import NbnForm from '../components/NbnForm.jsx';
 import { SITE } from '../data/site.js';
-import { NBN_PLANS, NBN_INTRO_OFF, NBN_INTRO_MONTHS } from '../data/plans.js';
+import { NBN_PLANS, NBN_INTRO_OFF, NBN_INTRO_MONTHS, nbnIntroPrice } from '../data/plans.js';
 import { breadcrumbSchema } from '../lib/seo.js';
 
 const navLinks = [
@@ -66,7 +66,7 @@ const schema = breadcrumbSchema([
         <p class="section-lede">Every plan is month-to-month — no lock-in, no exit fees. Prices per month inc. GST.</p>
 
         <div class="nbn-offer-banner">
-          <strong>Every new connection gets ${NBN_INTRO_OFF}/mth off for its first {NBN_INTRO_MONTHS} months</strong> —
+          <strong>New connections get ${NBN_INTRO_OFF}/mth off for their first {NBN_INTRO_MONTHS} months on most plans</strong> —
           already taken off the prices below. Have an eligible phone plan with us? You may qualify for
           <strong>another ${NBN_INTRO_OFF}/mth off, ongoing</strong> — visit our Riverwood store and we'll check on the spot.
         </div>
@@ -83,16 +83,20 @@ const schema = breadcrumbSchema([
             <div class={`plan ${p.featured ? 'featured' : ''}`}>
               {p.featured && <div class="plan-tag">Most popular</div>}
               <div class="plan-name">{p.name}</div>
+              {/* noIntro plans sell at list: no struck price and no term line.
+                  A strikethrough with no discount behind it is a fake saving,
+                  and a "then $X" line where nothing changes at month 7 is just
+                  wrong — so both are omitted rather than rendered as a no-op. */}
               <div class="plan-price">
                 <span class="dollar">$</span>
-                <span class="num">{p.price - NBN_INTRO_OFF}</span>
+                <span class="num">{nbnIntroPrice(p)}</span>
                 <span class="per">/month</span>
-                <span class="was" aria-label={`Usual price $${p.price} per month`}>${p.price}</span>
+                {!p.noIntro && <span class="was" aria-label={`Usual price $${p.price} per month`}>${p.price}</span>}
               </div>
               {/* The ongoing rate sits next to the promo rate, not behind a
                   "total min cost" link — a promo price advertised without its
                   ongoing price beside it is the thing the ACCC actually acts on. */}
-              <p class="nbn-plan-term">First {NBN_INTRO_MONTHS} months, then ${p.price}/mth</p>
+              {!p.noIntro && <p class="nbn-plan-term">First {NBN_INTRO_MONTHS} months, then ${p.price}/mth</p>}
               <div class="plan-data">Typical business-hour speed {p.typical}</div>
               <ul class="plan-features">
                 {p.features.map((f) => <li>{f}</li>)}

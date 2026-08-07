@@ -315,22 +315,34 @@ describe('Google Customer Reviews seller-rating badge', () => {
 });
 
 describe('built NBN page', () => {
-  it('advertises the intro price with its ongoing price on every card', async () => {
-    const { NBN_PLANS, NBN_INTRO_OFF, NBN_INTRO_MONTHS } = await import('../src/data/plans.js');
+  it('advertises the intro price with its ongoing price on every discounted card', async () => {
+    const { NBN_PLANS, NBN_INTRO_OFF, NBN_INTRO_MONTHS, nbnIntroPrice } = await import('../src/data/plans.js');
     const nbn = readFileSync('dist/nbn/index.html', 'utf8');
     for (const p of NBN_PLANS) {
       expect(nbn).toContain(p.name);
-      expect(nbn).toContain(`>${p.price - NBN_INTRO_OFF}<`); // big intro price
-      // The ongoing rate must appear on the SAME card, not just in the banner or
-      // behind a link. A promo price advertised without its ongoing price beside
-      // it is the thing the ACCC acts on — this is the guard for that, so don't
-      // relax it to a page-wide substring match.
-      expect(nbn).toContain(`First ${NBN_INTRO_MONTHS} months, then $${p.price}/mth`);
+      expect(nbn).toContain(`>${nbnIntroPrice(p)}<`); // the big advertised price
+      const term = `First ${NBN_INTRO_MONTHS} months, then $${p.price}/mth`;
+      if (p.noIntro) {
+        // Sold at list. A "then $X" line where nothing changes at month 7 would
+        // be false, and a struck price with no discount behind it is a fake
+        // saving — so a noIntro plan must carry neither.
+        expect(nbn).not.toContain(term);
+      } else {
+        // The ongoing rate must appear on the SAME card, not just in the banner
+        // or behind a link. A promo price advertised without its ongoing price
+        // beside it is the thing the ACCC acts on — this is the guard for that,
+        // so don't relax it to a page-wide substring match.
+        expect(nbn).toContain(term);
+      }
     }
+    // Struck prices appear on discounted cards only, never on the list-price ones.
+    const struck = (nbn.match(/class="was"/g) || []).length;
+    expect(struck).toBe(NBN_PLANS.filter((p) => !p.noIntro).length);
     expect(nbn).toContain('No lock-in');
-    // Both offers stated, neither brand-named, and the conditional one must stay
-    // conditional — "you may qualify", never a promise.
-    expect(nbn).toContain(`$${NBN_INTRO_OFF}/mth off for its first ${NBN_INTRO_MONTHS} months`);
+    // Both offers stated, neither brand-named. The intro offer must not claim
+    // to cover every plan while noIntro plans exist, and the conditional one
+    // must stay conditional — "you may qualify", never a promise.
+    expect(nbn).toContain(`$${NBN_INTRO_OFF}/mth off for their first ${NBN_INTRO_MONTHS} months on most plans`);
     expect(nbn).toContain('You may qualify for');
     expect(nbn).toContain('eligible phone plan with us');
     expect(nbn).not.toContain('10% off'); // old flat discount fully gone

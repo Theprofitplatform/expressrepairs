@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { sendLead } from '../lib/sendLead.js';
 import { SITE } from '../data/site.js';
-import { NBN_PLANS, NBN_INTRO_OFF } from '../data/plans.js';
+import { NBN_PLANS, nbnIntroPrice } from '../data/plans.js';
 
 // NBN availability/enquiry form. Reuses the /api/lead contract as-is: the
 // chosen plan rides in `model` (shows as "Device" in the lead email), the
@@ -82,7 +82,7 @@ export default function NbnForm() {
             <option value="">Not sure yet — recommend one</option>
             {/* Same intro price the cards advertise. Quoting p.price here would
                 show a higher number than the card the customer just clicked. */}
-            {NBN_PLANS.map((p) => <option key={p.name} value={p.name}>{p.name} — ${p.price - NBN_INTRO_OFF}/mth, then ${p.price}</option>)}
+            {NBN_PLANS.map((p) => <option key={p.name} value={p.name}>{p.name} — ${nbnIntroPrice(p)}/mth{p.noIntro ? "" : `, then $${p.price}`}</option>)}
           </select>
         </div>
         <div className="form-field full">

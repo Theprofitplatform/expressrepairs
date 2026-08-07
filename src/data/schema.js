@@ -45,6 +45,9 @@ export const nbnPlanSchema = z.object({
   typical: z.string(), // supplier's "Typical Business Hour Speed", verbatim
   price: z.number(), // list $/month inc GST, month-to-month (no lock-in)
   featured: z.boolean().optional(),
+  // Excluded from the $5 intro discount — sold at list. Must be declared here
+  // or zod strips it and the plan silently rejoins the offer.
+  noIntro: z.boolean().optional(),
   blurb: z.string(),
   features: z.array(z.string()).min(1),
 });
