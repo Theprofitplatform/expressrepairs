@@ -315,21 +315,37 @@ describe('Google Customer Reviews seller-rating badge', () => {
 });
 
 describe('built NBN page', () => {
-  it('renders every plan card with its list price', async () => {
-    const { NBN_PLANS } = await import('../src/data/plans.js');
+  it('advertises the intro price with its ongoing price on every card', async () => {
+    const { NBN_PLANS, NBN_INTRO_OFF, NBN_INTRO_MONTHS } = await import('../src/data/plans.js');
     const nbn = readFileSync('dist/nbn/index.html', 'utf8');
     for (const p of NBN_PLANS) {
       expect(nbn).toContain(p.name);
-      expect(nbn).toContain(`>${p.price}<`); // big list price
+      expect(nbn).toContain(`>${p.price - NBN_INTRO_OFF}<`); // big intro price
+      // The ongoing rate must appear on the SAME card, not just in the banner or
+      // behind a link. A promo price advertised without its ongoing price beside
+      // it is the thing the ACCC acts on — this is the guard for that, so don't
+      // relax it to a page-wide substring match.
+      expect(nbn).toContain(`First ${NBN_INTRO_MONTHS} months, then $${p.price}/mth`);
     }
     expect(nbn).toContain('No lock-in');
-    // In-store offer, no brand named. The ongoing price must stay next to the
-    // promo price — advertising "$10 off" alone would breach ACCC prominence.
-    expect(nbn).toContain('$10/mth off their first 6 months');
-    expect(nbn).toContain('then $5/mth off ongoing');
+    // Both offers stated, neither brand-named, and the conditional one must stay
+    // conditional — "you may qualify", never a promise.
+    expect(nbn).toContain(`$${NBN_INTRO_OFF}/mth off for its first ${NBN_INTRO_MONTHS} months`);
+    expect(nbn).toContain('You may qualify for');
+    expect(nbn).toContain('eligible phone plan with us');
     expect(nbn).not.toContain('10% off'); // old flat discount fully gone
+    expect(nbn).not.toContain('$10/mth off'); // superseded by the split offer
     const sm = readFileSync('dist/sitemap-0.xml', 'utf8');
     expect(sm).toContain('/nbn/');
+  });
+
+  it('documents both discounts in the NBN terms', () => {
+    const terms = readFileSync('dist/nbn/terms/index.html', 'utf8');
+    // Advertising a promo price on the cards is what obliges us to publish its
+    // conditions — the end date and what happens when eligibility lapses.
+    expect(terms).toContain('Introductory discount');
+    expect(terms).toContain('Phone plan discount');
+    expect(terms).toMatch(/first 6 months/i);
   });
 
   it('is framed for home AND business, not business-only', () => {
