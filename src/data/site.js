@@ -2,13 +2,14 @@ import { siteSchema } from './schema.js';
 
 // Canonical header nav — one list for the homepage Nav() and every SiteNav
 // page, so shop pages can't drift into a stripped-down menu that strands
-// shoppers away from Plans/NBN/Phones. "Catalogue" label is an owner decision.
+// shoppers away from Plans/NBN/Phones. The /shop/ link reads "Shop" — it was
+// "Catalogue", which nobody scans for when they want to buy something.
 export const NAV_LINKS = [
   { label: 'Repairs', href: '/repairs/' },
   { label: 'Phones', href: '/phones/' },
   { label: 'Plans', href: '/plans/' },
   { label: 'NBN', href: '/nbn/' },
-  { label: 'Catalogue', href: '/shop/' },
+  { label: 'Shop', href: '/shop/' },
   { label: 'Blog', href: '/blog/' },
 ];
 

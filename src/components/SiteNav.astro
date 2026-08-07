@@ -7,7 +7,7 @@ import ShopMegaMenu from './ShopMegaMenu.astro';
 const { links = [], ctaHref = '#cta', mega = false } = Astro.props;
 
 // Highlight the section you're in. Prefix match so /shop/c/cases/ still lights
-// up Catalogue and /repairs/screen/ still lights up Repairs. In-page anchors
+// up Shop and /repairs/screen/ still lights up Repairs. In-page anchors
 // ('#faq', '/#plans') are never "current" — they don't identify a page.
 const path = Astro.url.pathname;
 const current = (href) =>

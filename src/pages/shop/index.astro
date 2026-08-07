@@ -4,6 +4,7 @@ import SiteNav from '../../components/SiteNav.astro';
 import SiteFooter from '../../components/SiteFooter.astro';
 import MobileCta from '../../components/MobileCta.astro';
 import ShopSearch from '../../components/ShopSearch.astro';
+import ShopMegaMenu from '../../components/ShopMegaMenu.astro';
 import { PRODUCTS } from '../../data/products.js';
 import { NAV_LINKS } from '../../data/site.js';
 import { slugifyCategory } from '../../lib/shop.js';
@@ -46,16 +47,24 @@ const schema = breadcrumbSchema([
   <SiteNav links={NAV_LINKS} ctaHref="/shop/cart/" mega />
 
   <main id="main-content">
-  <section class="hero" style="padding-bottom: 24px;">
+  {/* Compact hero: this is a landing page into the categories below, so the
+      headline earns one line, not a display-size two. */}
+  <section class="hero" style="padding: 28px 0 20px;">
     <div class="hero-bg"></div>
     <div class="container-wide" style="position: relative; z-index: 1;">
-      <h1 class="hero-title" style="font-size: clamp(36px, 4.8vw, 58px); max-width: 720px;">
-        Cases, chargers &amp; more, <em>ready today</em>.
+      <h1 class="hero-title" style="font-size: clamp(23px, 2.4vw, 28px); max-width: 720px;">
+        Shop cases, chargers &amp; more — <em>ready today</em>.
       </h1>
-      <p class="hero-sub">
+      <p class="hero-sub" style="font-size: 15px; margin-top: 8px; max-width: 640px;">
         Ship Australia-wide (free over $99) or pick up in store at Riverwood Plaza — same stock as our counter.
       </p>
-      <ShopSearch />
+      <div class="shop-hero-tools">
+        <ShopSearch />
+        <details class="shop-browse">
+          <summary class="btn btn-ghost">Browse categories</summary>
+          <ShopMegaMenu />
+        </details>
+      </div>
     </div>
   </section>
 
@@ -70,7 +79,7 @@ const schema = breadcrumbSchema([
           <p style="margin-top: 20px;"><a href="/#contact" class="btn btn-primary btn-sm">Call or visit us</a></p>
         </div>
       ) : (
-        <div class="acc-grid">
+        <div class="acc-grid acc-grid--tiles">
           {categories.map((cat, i) => (
             <a href={`/shop/c/${cat.slug}/`} class="acc-card">
               {cat.img && (
@@ -83,7 +92,7 @@ const schema = breadcrumbSchema([
                     decoding="async"
                     width="400"
                     height="300"
-                    style="width: 100%; height: auto; aspect-ratio: 4 / 3; object-fit: contain; background: #fff; padding: 12px; box-sizing: border-box;"
+                    style="width: 100%; height: auto; aspect-ratio: 4 / 3; object-fit: contain; background: #fff; padding: 8px; box-sizing: border-box;"
                   />
                 </div>
               )}

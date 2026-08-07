@@ -8,10 +8,14 @@
 // ship ~27MB of uncacheable duplicate JS across the 10,347 pages that carry
 // the nav. As a public file it is one request, cached for the whole session.
 // The cost is no bundling: plain ES2020, no imports.
-const nav = document.querySelector('[data-cascade]');
-const mega = nav?.closest('.mega');
-
-if (nav && mega) {
+//
+// A page can carry more than one panel — /shop/ renders a second copy in its
+// "Browse categories" dropdown — so every [data-cascade] gets its own state.
+// The wrapper is what opens the panel and what the fetch hangs off: .mega in
+// the nav, .shop-browse for the in-page <details>.
+for (const nav of document.querySelectorAll('[data-cascade]')) {
+  const mega = nav.closest('.mega, .shop-browse');
+  if (!mega) continue;
   const col = (name) => nav.querySelector(`[data-col="${name}"]`);
   const head = (name) => nav.querySelector(`[data-head="${name}"]`);
   const cats = col('cats');
