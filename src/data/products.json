@@ -11,6 +11,17 @@
     "sku": "649275269714"
   },
   {
+    "id": "X-00012",
+    "name": "ACC-[BC-31841] iRoo R31C Super Strong Magnetic Long ...",
+    "category": "Accessories",
+    "brand": "iRoo",
+    "priceCents": 3900,
+    "image": "https://www.hoco.com.au/web/image/product.template/4090/image_1024",
+    "thumb": "https://www.hoco.com.au/web/image/product.template/4090/image_256",
+    "inStock": true,
+    "sku": "6383022413596"
+  },
+  {
     "id": "X-00055",
     "name": "Apple EarPods (Lightning Connector)",
     "category": "Cables & Charging",
@@ -77,6 +88,17 @@
     "sku": "662225484074"
   },
   {
+    "id": "X-00382",
+    "name": "Car Charger hoco. NZ16B, 45W, 3A, 2 x USB-C, Grey",
+    "category": "Cables & Charging",
+    "brand": "hoco.",
+    "priceCents": 2995,
+    "image": "https://www.hoco.com.au/web/image/product.template/7893/image_1024",
+    "thumb": "https://www.hoco.com.au/web/image/product.template/7893/image_256",
+    "inStock": true,
+    "sku": "6942007644778"
+  },
+  {
     "id": "X-00401",
     "name": "Coco Heavy Duty Ring Handle Stand | A11 Plus/A9 Plus (Green)",
     "category": "Accessories",
@@ -121,6 +143,50 @@
     "sku": "6942007635509"
   },
   {
+    "id": "X-00544",
+    "name": "hoco. CW42 Seperate Magnetic Car Charger",
+    "category": "Cables & Charging",
+    "brand": "hoco.",
+    "priceCents": 4995,
+    "image": "https://www.hoco.com.au/web/image/product.template/3801/image_1024",
+    "thumb": "https://www.hoco.com.au/web/image/product.template/3801/image_256",
+    "inStock": true,
+    "sku": "6931474782458"
+  },
+  {
+    "id": "X-00581",
+    "name": "hoco. EW51 True Wireless Active Noise Reduction",
+    "category": "Audio",
+    "brand": "hoco.",
+    "priceCents": 7995,
+    "image": "https://www.hoco.com.au/web/image/product.template/6603/image_1024",
+    "thumb": "https://www.hoco.com.au/web/image/product.template/6603/image_256",
+    "inStock": true,
+    "sku": "6931474792365"
+  },
+  {
+    "id": "X-00677",
+    "name": "hoco. UA15 IP to HD Cable 1080 HD 2M",
+    "category": "Cables & Charging",
+    "brand": "hoco.",
+    "priceCents": 3495,
+    "image": "https://www.hoco.com.au/web/image/product.template/3957/image_1024",
+    "thumb": "https://www.hoco.com.au/web/image/product.template/3957/image_256",
+    "inStock": true,
+    "sku": "6931474750365"
+  },
+  {
+    "id": "X-00719",
+    "name": "hoco. X83 Type C to Lightning Cable (1M)",
+    "category": "Cables & Charging",
+    "brand": "hoco.",
+    "priceCents": 1995,
+    "image": "https://www.hoco.com.au/web/image/product.template/4004/image_1024",
+    "thumb": "https://www.hoco.com.au/web/image/product.template/4004/image_256",
+    "inStock": true,
+    "sku": "6931474770851"
+  },
+  {
     "id": "X-00488",
     "name": "Hanman Folio | Samsung Tab A11 Plus (Black)",
     "category": "Tablet & iPad Cases",
@@ -143,6 +209,61 @@
     "sku": "6931474761132"
   },
   {
+    "id": "X-00516",
+    "name": "hoco. BS52 Billowing Bluetooth Speaker With Microphone - Black",
+    "category": "Audio",
+    "brand": "hoco.",
+    "priceCents": 8900,
+    "image": "https://www.hoco.com.au/web/image/product.template/8002/image_1024",
+    "thumb": "https://www.hoco.com.au/web/image/product.template/8002/image_256",
+    "inStock": true,
+    "sku": "10390"
+  },
+  {
+    "id": "X-00519",
+    "name": "hoco. CA101 Waterproof Motorcycle Bicycle Holder - Black",
+    "category": "Accessories",
+    "brand": "hoco.",
+    "priceCents": 2500,
+    "image": "https://www.hoco.com.au/web/image/product.template/3753/image_1024",
+    "thumb": "https://www.hoco.com.au/web/image/product.template/3753/image_256",
+    "inStock": true,
+    "sku": "10414"
+  },
+  {
+    "id": "X-00534",
+    "name": "hoco. CA68 300% Stronger 6Pcs Magnetic Double Air Vent Car Holder - Black",
+    "category": "Accessories",
+    "brand": "hoco.",
+    "priceCents": 2500,
+    "image": "https://www.hoco.com.au/web/image/product.template/3765/image_1024",
+    "thumb": "https://www.hoco.com.au/web/image/product.template/3765/image_256",
+    "inStock": true,
+    "sku": "10416"
+  },
+  {
+    "id": "X-00541",
+    "name": "hoco. CW24 15W 3 in 1 Wireless Charger - White",
+    "category": "Cables & Charging",
+    "brand": "hoco.",
+    "priceCents": 4500,
+    "image": "https://www.hoco.com.au/web/image/product.template/3792/image_1024",
+    "thumb": "https://www.hoco.com.au/web/image/product.template/3792/image_256",
+    "inStock": true,
+    "sku": "10327"
+  },
+  {
+    "id": "X-00546",
+    "name": "hoco. CW49 Sam Watch Charger",
+    "category": "Cables & Charging",
+    "brand": "hoco.",
+    "priceCents": 3900,
+    "image": "https://www.hoco.com.au/web/image/product.template/6180/image_1024",
+    "thumb": "https://www.hoco.com.au/web/image/product.template/6180/image_256",
+    "inStock": true,
+    "sku": "15079"
+  },
+  {
     "id": "X-00550",
     "name": "hoco. CW6 Pro 15W Wireless Charger - Black",
     "category": "Cables & Charging",
@@ -154,6 +275,17 @@
     "sku": "6931474755032"
   },
   {
+    "id": "X-00580",
+    "name": "hoco. EW49 Wireless Earphones - White",
+    "category": "Audio",
+    "brand": "hoco.",
+    "priceCents": 8900,
+    "image": "https://mobilemall.com.au/media/catalog/product/cache/d6d55d0333314389277ff64759832085/1/0/10019151.main.jpg",
+    "thumb": "https://mobilemall.com.au/media/catalog/product/cache/d6d55d0333314389277ff64759832085/1/0/10019151.main.jpg",
+    "inStock": true,
+    "sku": "6931474791405"
+  },
+  {
     "id": "X-00590",
     "name": "hoco. H77 View folding magnetic ring car holder",
     "category": "Accessories",
@@ -163,6 +295,17 @@
     "thumb": "https://img.expressrepairs.com.au/products/X-00590.webp",
     "inStock": true,
     "sku": "6942007647878"
+  },
+  {
+    "id": "X-00597",
+    "name": "hoco. J101 10000mAh 22.5W Ultra Thin Astute Power Bank - Black",
+    "category": "Cables & Charging",
+    "brand": "hoco.",
+    "priceCents": 2700,
+    "image": "https://www.hoco.com.au/web/image/product.template/3867/image_1024",
+    "thumb": "https://www.hoco.com.au/web/image/product.template/3867/image_256",
+    "inStock": true,
+    "sku": "10380"
   },
   {
     "id": "X-00606",
@@ -196,6 +339,28 @@
     "thumb": "https://mobilemall.com.au/media/catalog/product/cache/d6d55d0333314389277ff64759832085/h/o/hoco-m101-usb-c-16.jpg",
     "inStock": true,
     "sku": "6931474782366"
+  },
+  {
+    "id": "X-00642",
+    "name": "hoco. M111 Plug and Play Primero Digital Handfree",
+    "category": "Audio",
+    "brand": "hoco.",
+    "priceCents": 1995,
+    "image": "https://www.hoco.com.au/web/image/product.template/6569/image_1024",
+    "thumb": "https://www.hoco.com.au/web/image/product.template/6569/image_256",
+    "inStock": true,
+    "sku": "19332"
+  },
+  {
+    "id": "X-00661",
+    "name": "hoco. Q3 Pro Mini Size PD20W 22.5W Power Bank 10000mAh - Black",
+    "category": "Cables & Charging",
+    "brand": "hoco.",
+    "priceCents": 5995,
+    "image": "https://www.hoco.com.au/web/image/product.template/3924/image_1024",
+    "thumb": "https://www.hoco.com.au/web/image/product.template/3924/image_256",
+    "inStock": true,
+    "sku": "6931474765840"
   },
   {
     "id": "X-00665",
@@ -242,6 +407,61 @@
     "sku": "6931474725790"
   },
   {
+    "id": "X-00678",
+    "name": "hoco. UA15 lightning to 4K HDMI - Black",
+    "category": "Cables & Charging",
+    "brand": "hoco.",
+    "priceCents": 4995,
+    "image": "https://www.hoco.com.au/web/image/product.template/3957/image_1024",
+    "thumb": "https://www.hoco.com.au/web/image/product.template/3957/image_256",
+    "inStock": true,
+    "sku": "10143"
+  },
+  {
+    "id": "X-00679",
+    "name": "hoco. UA16 Type C to HDTV 4K 2M",
+    "category": "Cables & Charging",
+    "brand": "hoco.",
+    "priceCents": 3495,
+    "image": "https://www.hoco.com.au/web/image/product.template/6171/image_1024",
+    "thumb": "https://www.hoco.com.au/web/image/product.template/6171/image_256",
+    "inStock": true,
+    "sku": "6931474755025"
+  },
+  {
+    "id": "X-00680",
+    "name": "hoco. UA16 USB-C to 4K HDMI - Grey",
+    "category": "Cables & Charging",
+    "brand": "hoco.",
+    "priceCents": 4995,
+    "image": "https://www.hoco.com.au/web/image/product.template/6171/image_1024",
+    "thumb": "https://www.hoco.com.au/web/image/product.template/6171/image_256",
+    "inStock": true,
+    "sku": "10144"
+  },
+  {
+    "id": "X-00682",
+    "name": "hoco. UA17 Lightning to USB-C OTG Adapter 6931474761996 - Black",
+    "category": "Cables & Charging",
+    "brand": "hoco.",
+    "priceCents": 2495,
+    "image": "https://www.hoco.com.au/web/image/product.template/6551/image_1024",
+    "thumb": "https://www.hoco.com.au/web/image/product.template/6551/image_256",
+    "inStock": true,
+    "sku": "10208"
+  },
+  {
+    "id": "X-00687",
+    "name": "hoco. UA23 Flowing Wireless Display Adapter For iPhone - Black",
+    "category": "Cables & Charging",
+    "brand": "hoco.",
+    "priceCents": 6500,
+    "image": "https://www.hoco.com.au/web/image/product.template/6577/image_1024",
+    "thumb": "https://www.hoco.com.au/web/image/product.template/6577/image_256",
+    "inStock": true,
+    "sku": "10269"
+  },
+  {
     "id": "X-00701",
     "name": "hoco. WA16 Flexible series bamboo pattern band for iWatch (42/44/45/49mm) Rose Gold",
     "category": "Accessories",
@@ -251,6 +471,28 @@
     "thumb": "https://img.expressrepairs.com.au/products/X-00701.webp",
     "inStock": true,
     "sku": "6931474792952"
+  },
+  {
+    "id": "X-00709",
+    "name": "hoco. X101 Silicone USB-C to Lightning Cable (1M)",
+    "category": "Cables & Charging",
+    "brand": "hoco.",
+    "priceCents": 1995,
+    "image": "https://www.hoco.com.au/web/image/product.template/6596/image_1024",
+    "thumb": "https://www.hoco.com.au/web/image/product.template/6596/image_256",
+    "inStock": true,
+    "sku": "6942007604024"
+  },
+  {
+    "id": "X-00727",
+    "name": "hoco. Z52 PD38W 1C1A Spacious Car Charge",
+    "category": "Cables & Charging",
+    "brand": "hoco.",
+    "priceCents": 2995,
+    "image": "https://www.hoco.com.au/web/image/product.template/6573/image_1024",
+    "thumb": "https://www.hoco.com.au/web/image/product.template/6573/image_256",
+    "inStock": true,
+    "sku": "6942007601740"
   },
   {
     "id": "X-01186",
@@ -273,6 +515,61 @@
     "thumb": "https://img.expressrepairs.com.au/products/X-01159.webp",
     "inStock": true,
     "sku": "15290"
+  },
+  {
+    "id": "X-01170",
+    "name": "IRoo R18 Magnetic Car Holder",
+    "category": "Accessories",
+    "brand": "iRoo",
+    "priceCents": 6900,
+    "image": "https://www.hoco.com.au/web/image/product.template/5802/image_1024",
+    "thumb": "https://www.hoco.com.au/web/image/product.template/5802/image_256",
+    "inStock": true,
+    "sku": "649275352492"
+  },
+  {
+    "id": "X-01145",
+    "name": "Iroo B02 Plus USB A to Type C Cable - 2 Metre",
+    "category": "Cables & Charging",
+    "brand": "iRoo",
+    "priceCents": 2995,
+    "image": "https://www.hoco.com.au/web/image/product.template/4050/image_1024",
+    "thumb": "https://www.hoco.com.au/web/image/product.template/4050/image_256",
+    "inStock": true,
+    "sku": "6383022414340"
+  },
+  {
+    "id": "X-01192",
+    "name": "Iroo X7 Easy Grip Clamp Car Holder Mount",
+    "category": "Accessories",
+    "brand": "iRoo",
+    "priceCents": 2995,
+    "image": "https://www.hoco.com.au/web/image/product.template/4103/image_1024",
+    "thumb": "https://www.hoco.com.au/web/image/product.template/4103/image_256",
+    "inStock": true,
+    "sku": "6383022413978"
+  },
+  {
+    "id": "X-01570",
+    "name": "Roo R101 V2 MagSafe | Super Strong Magnetic Air Vent",
+    "category": "Accessories",
+    "brand": "",
+    "priceCents": 2995,
+    "image": "https://www.hoco.com.au/web/image/product.template/4074/image_1024",
+    "thumb": "https://www.hoco.com.au/web/image/product.template/4074/image_256",
+    "inStock": true,
+    "sku": "649275309410"
+  },
+  {
+    "id": "X-01571",
+    "name": "Roo X3 [2in1] | Windscreen/Back Headrest in-car Phone/",
+    "category": "Accessories",
+    "brand": "",
+    "priceCents": 3995,
+    "image": "https://www.hoco.com.au/web/image/product.template/6247/image_1024",
+    "thumb": "https://www.hoco.com.au/web/image/product.template/6247/image_256",
+    "inStock": true,
+    "sku": "649275206894"
   },
   {
     "id": "X-01582",
@@ -715,6 +1012,17 @@
     "sku": "6931474771209"
   },
   {
+    "id": "X-01147",
+    "name": "iRoo B08C Charging Cable USB-C",
+    "category": "Cables & Charging",
+    "brand": "iRoo",
+    "priceCents": 2495,
+    "image": "https://www.hoco.com.au/web/image/product.template/4052/image_1024",
+    "thumb": "https://www.hoco.com.au/web/image/product.template/4052/image_256",
+    "inStock": true,
+    "sku": "6383022411448"
+  },
+  {
     "id": "X-01148",
     "name": "iRoo B08L | Lightning USB Cable - 1 Meter",
     "category": "Cables & Charging",
@@ -746,6 +1054,39 @@
     "thumb": "https://img.expressrepairs.com.au/products/X-01165.webp",
     "inStock": true,
     "sku": "6383022434836"
+  },
+  {
+    "id": "X-01166",
+    "name": "iRoo R105 Mag Grip Car holder",
+    "category": "Accessories",
+    "brand": "iRoo",
+    "priceCents": 4995,
+    "image": "https://www.hoco.com.au/web/image/product.template/5777/image_1024",
+    "thumb": "https://www.hoco.com.au/web/image/product.template/5777/image_256",
+    "inStock": true,
+    "sku": "649275117145"
+  },
+  {
+    "id": "X-01179",
+    "name": "iRoo R37 Car Magnet Holder",
+    "category": "Accessories",
+    "brand": "iRoo",
+    "priceCents": 3495,
+    "image": "https://www.hoco.com.au/web/image/product.template/4093/image_1024",
+    "thumb": "https://www.hoco.com.au/web/image/product.template/4093/image_256",
+    "inStock": true,
+    "sku": "638302239493"
+  },
+  {
+    "id": "X-01190",
+    "name": "iRoo X6 Car Phone Holder",
+    "category": "Accessories",
+    "brand": "iRoo",
+    "priceCents": 3995,
+    "image": "https://www.hoco.com.au/web/image/product.template/7960/image_1024",
+    "thumb": "https://www.hoco.com.au/web/image/product.template/7960/image_256",
+    "inStock": true,
+    "sku": "6492752782732"
   },
   {
     "id": "X-03459",
