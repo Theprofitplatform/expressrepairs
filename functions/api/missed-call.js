@@ -5,7 +5,9 @@
 // The caller gets a text inviting them to reply.
 //
 // Env: TWILIO_ACCOUNT_SID, TWILIO_AUTH_TOKEN, TWILIO_NUMBER (E.164), ORDERS_KV.
-import { normalizeAuMobile, validTwilioSignature, sendSms, MAX_BODY_BYTES } from '../_shared.js';
+import {
+  normalizeAuMobile, validTwilioSignature, sendSms, isOptedOut, MAX_BODY_BYTES,
+} from '../_shared.js';
 
 const DEDUP_SECONDS = 6 * 60 * 60; // don't re-text the same caller within 6h
 export const DAILY_CAP = 100; // hard backstop against a robocall loop
@@ -56,6 +58,14 @@ export async function onRequest({ request, env }) {
   // fail and still be billed.
   const to = normalizeAuMobile(params.From);
   if (!to) return twiml();
+
+  // Spam Act suppression, checked before anything else that could send. Note
+  // this fails CLOSED while the dedup/cap block below fails OPEN — the two are
+  // deliberately different and the difference is the point. A KV outage there
+  // costs a duplicate text; a KV outage here would text someone who asked us
+  // to stop. When we cannot prove consent, we do not send.
+  const optout = await isOptedOut(env, to);
+  if (!optout.ok || optout.optedOut) return twiml();
 
   const kv = env.ORDERS_KV;
   const day = new Date().toISOString().slice(0, 10);

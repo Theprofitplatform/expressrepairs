@@ -40,16 +40,9 @@ import {
   oneLine,
   sendSms,
   normalizeAuMobile,
+  optOutKey,
+  isOptedOut,
 } from '../_shared.js';
-
-// Hex-encodes a digest buffer (same helper as stripe-webhook.js).
-const hex = (buf) => [...new Uint8Array(buf)].map((b) => b.toString(16).padStart(2, '0')).join('');
-
-// Hashes an E.164 number for the optout: KV key — never store the number
-// itself. crypto.subtle is the Workers-runtime primitive (no Node crypto).
-async function sha256Hex(s) {
-  return hex(await crypto.subtle.digest('SHA-256', new TextEncoder().encode(s)));
-}
 
 export { normalizeAuMobile };
 
@@ -112,15 +105,13 @@ export async function onRequest({ request, env }) {
   const to = normalizeAuMobile(data.mobile);
   if (!to) return json(400, { ok: false, error: 'Enter a valid Australian mobile number.' });
 
-  const optoutKey = `optout:${await sha256Hex(to)}`;
-
   // Opt-out branch runs after the PIN gate/rate-limit/size-cap checks above
   // (it reuses this endpoint precisely to inherit them) and short-circuits
   // before any SMS-sending config is even read. `name` isn't required here.
   if (data.action === 'optout') {
     if (!env.ORDERS_KV) return json(503, { ok: false, error: 'Could not record right now.' });
     try {
-      await env.ORDERS_KV.put(optoutKey, '1');
+      await env.ORDERS_KV.put(await optOutKey(to), '1');
     } catch (err) {
       console.error('optout write failed', err);
       return json(503, { ok: false, error: 'Could not record right now.' });
@@ -134,13 +125,10 @@ export async function onRequest({ request, env }) {
   // not to be texted (Spam Act). Sends are one at a time from a staff page,
   // so a refusal is immediately visible and retryable — unlike the rate
   // limiter, there's no "everyone locked out" downside to weigh against it.
-  if (!env.ORDERS_KV) return json(503, { ok: false, error: 'Could not send right now.' });
-  try {
-    const suppressed = await env.ORDERS_KV.get(optoutKey);
-    if (suppressed) return json(503, { ok: false, error: 'This number has opted out of texts.' });
-  } catch (err) {
-    console.error('optout check failed', err);
-    return json(503, { ok: false, error: 'Could not send right now.' });
+  const optout = await isOptedOut(env, to);
+  if (!optout.ok) return json(503, { ok: false, error: 'Could not send right now.' });
+  if (optout.optedOut) {
+    return json(503, { ok: false, error: 'This number has opted out of texts.' });
   }
 
   const reviewLink = env.REVIEW_LINK;

@@ -1,5 +1,5 @@
 import { describe, it, expect, vi } from 'vitest';
-import { createHmac } from 'node:crypto';
+import { createHmac, createHash } from 'node:crypto';
 import { validTwilioSignature } from '../functions/_shared.js';
 
 // Vector generated independently with Node's crypto.createHmac (not the
@@ -118,6 +118,35 @@ describe('missed-call handler', () => {
     const sent = [];
     globalThis.fetch = vi.fn(async () => { sent.push(1); return new Response('{}', { status: 201 }); });
     const kv = kvStub({ 'missed:+61412345678': '1' });
+    await onRequest({ request: await signedReq(PARAMS), env: { ...ENV, ORDERS_KV: kv } });
+    expect(sent).toHaveLength(0);
+  });
+
+  it('does not text a caller who has opted out', async () => {
+    const sent = [];
+    globalThis.fetch = vi.fn(async () => { sent.push(1); return new Response('{}', { status: 201 }); });
+    // sha256('+61412345678') — the same hashed key /api/review-sms writes.
+    const key = `optout:${createHash('sha256').update('+61412345678').digest('hex')}`;
+    const res = await onRequest({
+      request: await signedReq(PARAMS),
+      env: { ...ENV, ORDERS_KV: kvStub({ [key]: '1' }) },
+    });
+    expect(sent).toHaveLength(0);
+    expect(await res.text()).toContain('<Reject/>');
+  });
+
+  it('fails closed on the opt-out check: no KV binding means no send', async () => {
+    const sent = [];
+    globalThis.fetch = vi.fn(async () => { sent.push(1); return new Response('{}', { status: 201 }); });
+    // Deliberately contrasts with dedup/cap, which tolerate a missing binding.
+    await onRequest({ request: await signedReq(PARAMS), env: { ...ENV } });
+    expect(sent).toHaveLength(0);
+  });
+
+  it('fails closed on the opt-out check when KV throws', async () => {
+    const sent = [];
+    globalThis.fetch = vi.fn(async () => { sent.push(1); return new Response('{}', { status: 201 }); });
+    const kv = { get: async () => { throw new Error('kv down'); }, put: async () => {} };
     await onRequest({ request: await signedReq(PARAMS), env: { ...ENV, ORDERS_KV: kv } });
     expect(sent).toHaveLength(0);
   });
