@@ -456,7 +456,7 @@ describe('built shop mega menu', () => {
     const page = readFileSync('dist/shop/H-2762/index.html', 'utf8');
     expect(page).toContain('src="/shop-menu.js"');
     // Inlining it would put 2.6KB of uncacheable JS on all 10,347 pages.
-    expect(page).not.toContain('querySelector("[data-cascade]")');
+    expect(page).not.toContain('querySelectorAll("[data-cascade]")');
     const script = readFileSync('dist/shop-menu.js', 'utf8');
     expect(script).toContain('/shop/menu.json');
     const inPage = ['data-cascade', 'data-col="cats"', 'data-col="families"', 'data-col="models"',

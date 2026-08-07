@@ -218,7 +218,7 @@ input, select, textarea { font-family: inherit; font-size: inherit; color: inher
 .nav-links a { padding: 8px 14px; border-radius: 10px; font-size: 14.5px; color: var(--text-muted); font-weight: 500; transition: color .15s ease, background .15s ease; }
 .nav-links a:hover { color: var(--text); background: var(--ink-25); }
 /* Current section, set by SiteNav. Prefix match, so /shop/c/cases/ still lights
-   up Catalogue. */
+   up Shop. */
 .nav-links a[aria-current="page"] { color: var(--text); font-weight: 600; }
 .nav-cta { display:flex; align-items:center; gap: 10px; }
 .nav-phone { display:flex; align-items:center; gap: 8px; font-weight: 600; color: var(--text); font-size: 14.5px; }
@@ -295,6 +295,43 @@ input, select, textarea { font-family: inherit; font-size: inherit; color: inher
 }
 .mega-foot a { font-weight: 600; color: var(--brand-700); }
 
+/* In-page "Browse categories" dropdown on /shop/. Same .mega-panel markup and
+   the same /shop/menu.json cascade as the nav menu — only the box it sits in
+   differs, so the panel is re-anchored here rather than re-built. A <details>
+   rather than the nav's :hover, because mid-page a hover trigger would pop
+   open as the pointer crosses it, and taps have no hover at all.
+
+   Search and the button share one row so the hero ends above the fold. The row
+   is the positioning context, not the button: a 4-column panel anchored to a
+   mid-row button runs off the right edge at 1280px. Same shape as the nav,
+   where the panel spans the header rather than the trigger. */
+.shop-hero-tools { position: relative; display: flex; align-items: stretch; flex-wrap: wrap; gap: 12px; margin-top: 18px; }
+.shop-hero-tools .shop-search { flex: 1 1 320px; }
+/* .hero clips to overflow:hidden for its background art, so the panel has to
+   buy its way out — the same clip ShopSearch's script lifts for suggestions,
+   except this one has an :open state to key off and needs no JS. */
+.hero:has(.shop-browse[open]) { overflow: visible; }
+.shop-browse { display: flex; }
+.shop-browse > summary { list-style: none; cursor: pointer; height: 100%; }
+.shop-browse > summary::-webkit-details-marker { display: none; }
+.shop-browse > summary::after {
+  content: ""; width: 7px; height: 7px; flex: none;
+  border-right: 1.8px solid currentColor; border-bottom: 1.8px solid currentColor;
+  transform: translateY(-2px) rotate(45deg); opacity: .55;
+  transition: transform .15s ease, opacity .15s ease;
+}
+.shop-browse[open] > summary::after { transform: translateY(1px) rotate(-135deg); opacity: 1; }
+/* The nav panel is a full-bleed bar under a sticky header; this one is a card
+   anchored to its button, so left/right/top and the chrome are all replaced. */
+.shop-browse .mega-panel {
+  top: calc(100% + 8px);
+  border: 1px solid var(--border); border-radius: 16px;
+  max-height: min(70vh, 640px); z-index: 40;
+}
+.shop-browse[open] .mega-panel { opacity: 1; visibility: visible; transform: none; }
+.shop-browse .mega-inner { padding: 22px 24px 20px; }
+.shop-browse .mega-foot > div { padding: 12px 24px; }
+
 .nav-toggle { display: none; }
 
 /* One breakpoint for "desktop row off, drawer on". They used to be two: the
@@ -314,6 +351,15 @@ input, select, textarea { font-family: inherit; font-size: inherit; color: inher
     border: 1px solid var(--border); border-radius: 10px;
     background: var(--surface); color: var(--text); cursor: pointer;
   }
+
+  /* ponytail: the four cascade columns don't fit here, and the hamburger above
+     already carries a stacked copy of this same menu. Restyling a second
+     drawer for the one page with this button buys nothing — if /shop/ ever
+     needs it on phones, reuse the .nav[data-open] panel rules below.
+     Must not sit between .nav-links and .nav-toggle: the breakpoint test
+     matches those two declarations back to back in the bundled CSS. */
+  .shop-browse { display: none; }
+
   .nav[data-open="true"] .nav-links {
     display: block;
     position: absolute; top: var(--nav-h); left: 0; right: 0;
@@ -727,6 +773,17 @@ input, select, textarea { font-family: inherit; font-size: inherit; color: inher
 @media (max-width: 560px) { .acc-grid--dense { grid-template-columns: repeat(2, 1fr); gap: 12px; } }
 .acc-grid--dense .acc-body { padding: 12px 14px 16px; }
 .acc-grid--dense .acc-title { font-size: 14.5px; font-weight: 600; }
+
+/* Compact category tiles for the /shop/ landing page: nine categories at base
+   .acc-grid width ran three rows deep and pushed most of them under the fold.
+   Six per row on desktop, three on phones — a name and a count is all the tile
+   carries, so it survives shrinking. */
+.acc-grid--tiles { grid-template-columns: repeat(auto-fill, minmax(170px, 1fr)); gap: 14px; }
+.acc-grid--tiles .acc-card { border-radius: 14px; }
+.acc-grid--tiles .acc-body { padding: 10px 12px 14px; gap: 2px; }
+.acc-grid--tiles .acc-title { font-size: 14px; font-weight: 600; }
+.acc-grid--tiles .acc-price { margin-top: 2px; font-size: 12.5px; }
+@media (max-width: 560px) { .acc-grid--tiles { grid-template-columns: repeat(3, 1fr); gap: 10px; } }
 .acc-card {
   background: var(--surface); border: 1px solid var(--border); border-radius: 20px; overflow:hidden;
   transition: all .2s ease; display:flex; flex-direction:column;
