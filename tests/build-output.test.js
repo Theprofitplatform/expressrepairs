@@ -321,10 +321,13 @@ describe('built NBN page', () => {
     for (const p of NBN_PLANS) {
       expect(nbn).toContain(p.name);
       expect(nbn).toContain(`>${p.price}<`); // big list price
-      expect(nbn).toContain(`>${(p.price * 0.9).toFixed(2)}<`); // 10%-off toggle price
     }
     expect(nbn).toContain('No lock-in');
-    expect(nbn).toContain('Want an extra 10% off?'); // in-store offer, no brand named
+    // In-store offer, no brand named. The ongoing price must stay next to the
+    // promo price — advertising "$10 off" alone would breach ACCC prominence.
+    expect(nbn).toContain('$10/mth off their first 6 months');
+    expect(nbn).toContain('then $5/mth off ongoing');
+    expect(nbn).not.toContain('10% off'); // old flat discount fully gone
     const sm = readFileSync('dist/sitemap-0.xml', 'utf8');
     expect(sm).toContain('/nbn/');
   });
