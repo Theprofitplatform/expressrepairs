@@ -18,7 +18,6 @@ const navLinks = [
 
 // Every plan, cheapest first.
 const shown = [...NBN_PLANS].sort((a, b) => a.price - b.price);
-const withDiscount = (price) => (price * 0.9).toFixed(2);
 
 const schema = breadcrumbSchema([
   { name: 'Home', path: '/' },
@@ -67,15 +66,12 @@ const schema = breadcrumbSchema([
         <p class="section-lede">Every plan is month-to-month — no lock-in, no exit fees. Prices per month inc. GST.</p>
 
         <div class="nbn-offer-banner">
-          <strong>Want an extra 10% off?</strong> Visit our Riverwood store and we'll show you how to qualify.
+          <strong>Sign up in store and save.</strong> Most customers qualify for
+          <strong>$10/mth off their first 6 months, then $5/mth off ongoing</strong> —
+          visit our Riverwood store and we'll sort it out on the spot.
         </div>
 
-        <input type="checkbox" id="showDiscount" class="price-toggle-input" />
         <div class="nbn-controls">
-          <label for="showDiscount" class="price-toggle">
-            <span class="price-toggle-switch" aria-hidden="true"></span>
-            <span>Show prices with 10% off</span>
-          </label>
           <div class="nbn-arrows">
             <button type="button" class="nbn-arrow" data-dir="prev" aria-label="Scroll to cheaper plans"><span aria-hidden="true">←</span></button>
             <button type="button" class="nbn-arrow" data-dir="next" aria-label="Scroll to faster plans"><span aria-hidden="true">→</span></button>
@@ -89,8 +85,7 @@ const schema = breadcrumbSchema([
               <div class="plan-name">{p.name}</div>
               <div class="plan-price">
                 <span class="dollar">$</span>
-                <span class="num price-list">{p.price}</span>
-                <span class="num price-off">{withDiscount(p.price)}</span>
+                <span class="num">{p.price}</span>
                 <span class="per">/month</span>
               </div>
               <div class="plan-data">Typical business-hour speed {p.typical}</div>
@@ -201,7 +196,7 @@ const schema = breadcrumbSchema([
   @media (max-width: 620px) { .nbn-grid > .plan { flex-basis: 84%; } }
 
   .nbn-controls {
-    display: flex; align-items: center; justify-content: space-between;
+    display: flex; align-items: center; justify-content: flex-end;
     gap: 16px; flex-wrap: wrap; margin-top: 22px;
   }
   .nbn-arrows { display: flex; gap: 8px; }
@@ -215,29 +210,6 @@ const schema = breadcrumbSchema([
   .nbn-arrow:hover:not(:disabled) { border-color: var(--brand-600); color: var(--brand-700); }
   .nbn-arrow:disabled { opacity: .3; cursor: default; }
 
-  .price-toggle-input { position: absolute; opacity: 0; width: 0; height: 0; }
-  .price-toggle {
-    display: inline-flex; align-items: center; gap: 10px;
-    cursor: pointer; font-size: 14px; font-weight: 700;
-  }
-  .price-toggle-switch {
-    width: 44px; height: 26px; border-radius: 999px; flex-shrink: 0;
-    background: var(--border); position: relative; transition: background .2s ease;
-  }
-  .price-toggle-switch::after {
-    content: ""; position: absolute; top: 3px; left: 3px; width: 20px; height: 20px;
-    border-radius: 50%; background: #fff; box-shadow: var(--shadow-sm);
-    transition: transform .2s ease;
-  }
-  .price-toggle-input:checked + .nbn-controls .price-toggle-switch { background: var(--brand-600); }
-  .price-toggle-input:checked + .nbn-controls .price-toggle-switch::after { transform: translateX(18px); }
-  .price-toggle-input:focus-visible + .nbn-controls .price-toggle-switch {
-    outline: 2px solid var(--brand-600); outline-offset: 2px;
-  }
-  .price-off { display: none; }
-  .plan-price .price-off { font-size: 44px; } /* "84.60" is wider than "94" */
-  .price-toggle-input:checked ~ .nbn-grid .price-list { display: none; }
-  .price-toggle-input:checked ~ .nbn-grid .price-off { display: inline; }
   .nbn-blurb {
     font-size: 14px;
     color: var(--text-subtle, #6b7280);
